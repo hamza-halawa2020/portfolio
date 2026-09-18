@@ -83,7 +83,7 @@ export class PublicPage implements OnInit {
     const path = this.route.snapshot.pathFromRoot.flatMap((snapshot) => snapshot.url.map((segment) => segment.path)).join('/');
     const locale = this.localeService.activateLocaleFromUrl(`/${path}`);
     const page = PAGE_COPY[this.pageKey()][locale];
-    const canonicalPath = path ? `/${path}` : `/${locale}`;
+    const canonicalPath = this.canonicalPath(path, locale);
 
     this.seo.apply({
       alternates: this.alternatesForCurrentRoute(canonicalPath),
@@ -110,5 +110,17 @@ export class PublicPage implements OnInit {
       { locale: this.locale(), path },
       { locale: this.locale() === 'ar' ? 'en' : 'ar', path: alternatePath },
     ];
+  }
+
+  private canonicalPath(path: string, locale: 'en' | 'ar'): string {
+    if (!path) {
+      return `/${locale}`;
+    }
+
+    if (path.startsWith('en') || path.startsWith('ar')) {
+      return `/${path}`;
+    }
+
+    return `/en/${path}`;
   }
 }

@@ -6,43 +6,116 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale',
+    path: 'projects',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/projects',
+    path: 'projects/:slug',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/projects/:slug',
+    path: 'about',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/about',
+    path: 'services',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/services',
+    path: 'blog',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/blog',
+    path: 'blog/:slug',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/blog/:slug',
+    path: 'contact',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/contact',
+    path: 'privacy',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/privacy',
+    path: 'en',
     renderMode: RenderMode.Server,
   },
   {
-    path: ':locale/**',
+    path: 'ar',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/projects',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/projects',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/projects/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/projects/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/about',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/about',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/services',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/services',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/blog',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/blog',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/blog/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/blog/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/contact',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/contact',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/privacy',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'ar/privacy',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'en/**',
+    renderMode: RenderMode.Server,
+    status: 404,
+  },
+  {
+    path: 'ar/**',
     renderMode: RenderMode.Server,
     status: 404,
   },

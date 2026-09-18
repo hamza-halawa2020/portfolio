@@ -40,6 +40,10 @@ app.use(
   }),
 );
 
+app.get('/', (_req, res) => {
+  res.redirect(302, '/en');
+});
+
 /**
  * Handle all other requests by rendering the Angular application.
  */
