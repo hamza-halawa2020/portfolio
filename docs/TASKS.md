@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 8 | 0 | 17 | 0 |
+| 9 | 0 | 16 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -275,7 +275,7 @@
 
 ### BE-002 - Implement models, factories, seeders, enums, and policies
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: BE-001
 - Files: `backend/app/Models/`, `backend/database/factories/`, `backend/database/seeders/`, `backend/app/Policies/`
 - Acceptance criteria:
@@ -285,7 +285,15 @@
 - Tests:
   - `php artisan test`
 - Notes:
-- Completed:
+  - Added Eloquent models for all BE-001 business tables.
+  - Added relationship methods, casts, composable scopes, sensitive attribute hiding, and polymorphic SEO metadata relationships.
+  - Added string-backed enums for publication status, project media type, testimonial status, contact message status, and analytics event type.
+  - Added `HasLocalizedAttributes` for explicit localized reads with English fallback and no request/global-locale coupling.
+  - Added factories with bilingual fake data and useful states.
+  - Added production-guarded `DevelopmentPortfolioSeeder` with fictional bilingual content and idempotent `updateOrCreate` usage.
+  - Registered a broad authenticated-user dashboard policy for current business models; fine-grained role/permission rules are deferred.
+  - Added focused tests for model relationships, casts, enums, localization, hidden sensitive attributes, policies, and seeder idempotency.
+- Completed: 2026-09-18
 
 ### BE-003 - Implement public API resources and read endpoints
 

@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, Eloquent business models, Filament dashboard, public API feature code, public website pages, localization/theme implementation.
+- Missing application code: CI files, Filament dashboard, public API feature code, public website pages, localization/theme implementation.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -175,8 +175,8 @@ npm --version
 - Laravel 13.32.0 application in `backend/`.
 - PHP requirement is constrained to `^8.5`.
 - Current installed backend packages are the Laravel skeleton defaults only: `laravel/framework`, `laravel/tinker`, and development tooling for Faker, Pail, Pint, Mockery, Collision, and PHPUnit.
-- Portfolio business migrations are implemented for projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
-- Filament, Sanctum, Spatie Permission, media packages, Eloquent business models, and business feature packages are not installed yet.
+- Portfolio business migrations and Eloquent model layer are implemented for projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
+- Filament, Sanctum, Spatie Permission, media packages, API controllers/resources, and business workflow actions are not installed yet.
 - Backend app name is `Portfolio Platform API`.
 - Backend timezone is UTC.
 - Default locale is English (`en`), and supported locales are documented as `en,ar`.
@@ -198,6 +198,7 @@ npm --version
 - Dashboard access uses authenticated Laravel users.
 - Filament resources enforce policies.
 - Public APIs never expose dashboard-only fields or visitor identifiers.
+- Model serialization hides visitor hashes, user-agent hashes, contact emails, contact phone numbers, and admin notes by default.
 
 ## API Communication
 
@@ -228,6 +229,20 @@ npm --version
 
 - Use translation files for interface strings.
 - Use JSON translation columns for manageable dynamic content by default. BE-001 implements JSON columns for localized content and slug values; localized slug uniqueness remains an application validation concern until a future generated-column/index strategy is approved.
+- BE-002 adds `HasLocalizedAttributes::localized($attribute, $locale, $fallback)` for explicit locale reads without coupling models to HTTP request state or the global app locale. English and Arabic arrays remain directly accessible through casts.
+
+## Authorization Strategy
+
+- BE-002 registers a reusable dashboard policy for current business models.
+- Authenticated dashboard users may view and manage dashboard-owned content at the model-policy layer.
+- Guest users are denied by Laravel's policy user typing before controller or dashboard code is introduced.
+- Fine-grained roles and permissions are deferred until the Filament/auth milestone.
+
+## Development Seed Strategy
+
+- BE-002 adds a production-guarded development seeder with small fictional bilingual content.
+- Seeders use predictable keys and `updateOrCreate` where practical.
+- Seeders do not truncate tables, seed analytics events, create real credentials, or include real client data.
 
 ```json
 {

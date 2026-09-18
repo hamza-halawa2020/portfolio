@@ -87,6 +87,26 @@ Update on 2026-09-18: FND-005 accepts the currently running local MySQL `8.0.41`
 - Reason: JSON columns match the documented initial translation strategy and remain portable across the current test database and MySQL target.
 - Consequences: Business migrations avoid MySQL 8.4-only features. Future API/admin tasks must validate localized slugs before writes, and any generated-column index strategy must document MySQL compatibility.
 
+Update on 2026-09-18: BE-002 added a lightweight `HasLocalizedAttributes` model trait. Models do not resolve locale from the HTTP request or global app state; callers pass the requested locale explicitly and may fall back to English.
+
+## DEC-012 - Initial dashboard model authorization
+
+- Date: 2026-09-18
+- Context: BE-002 needs policies for dashboard-managed models before Filament, roles, and permissions are installed.
+- Options considered: no policies until Filament; one reusable authenticated-user dashboard policy; per-model role policies before roles exist.
+- Selected option: register one reusable dashboard policy for current business models that allows authenticated users and denies guests.
+- Reason: This protects dashboard-managed resources at the model-policy layer without inventing roles before the authentication and permissions milestone.
+- Consequences: ADM-001 or a later permissions task must replace or refine this broad policy when Filament authentication and role/permission rules are implemented.
+
+## DEC-013 - Development seed data
+
+- Date: 2026-09-18
+- Context: BE-002 requires useful seeders without real client data or destructive behavior.
+- Options considered: no business seeders; random-only factories; a small idempotent fictional development seeder.
+- Selected option: add a production-guarded `DevelopmentPortfolioSeeder` with fictional bilingual records and predictable lookup keys.
+- Reason: This supports local dashboard/API development while keeping data safe and repeatable.
+- Consequences: Production data import remains out of scope. The development seeder must not truncate tables, create credentials, or seed real client information.
+
 ## DEC-008 - Laravel backend foundation scope
 
 - Date: 2026-09-18

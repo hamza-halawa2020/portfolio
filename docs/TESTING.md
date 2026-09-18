@@ -70,6 +70,12 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - BE-001 local MySQL `artisan migrate --force`: passed; portfolio business schema migration applied as batch 2 without destructive reset.
   - BE-001 local MySQL `artisan migrate:status`: passed; portfolio business schema migration shows `[2] Ran`.
   - BE-001 Pint check: passed.
+  - BE-002 PHP syntax checks for new enums, policy, seeders, localization trait, and focused tests: passed.
+  - BE-002 focused `ModelLayerTest`: passed, 6 tests and 33 assertions.
+  - BE-002 focused `DevelopmentSeederTest`: passed, 1 test and 3 assertions.
+  - BE-002 full backend test suite: passed, 13 tests and 105 assertions.
+  - BE-002 Pint check: passed.
+  - BE-002 local MySQL `artisan db:seed --force`: passed; ran the idempotent `DevelopmentPortfolioSeeder`.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -164,3 +170,4 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - Playwright is configured, but browser binaries were not installed or tested during FND-004 because the task did not require running E2E tests.
 - FND-005 is complete using approved local fallbacks. Redis/Valkey, Mailpit/SMTP, and MySQL 8.4 staging/production verification remain pending infrastructure tasks.
 - BE-001 schema tests verify portfolio tables, JSON-capable translation columns, hash-based visitor privacy columns, and key unique constraints. SQLite reports Laravel JSON columns as `text`, so tests accept both `json` and SQLite `text` storage types.
+- BE-002 model tests verify relationships, casts, enum values, localized access, hidden sensitive fields, and authenticated dashboard policy behavior.

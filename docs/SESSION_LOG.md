@@ -224,3 +224,26 @@
   - `vendor\bin\pint --test` through Herd PHP: passed.
 - Current blockers: None for BE-001.
 - Recommended next task: BE-002 - Implement models, factories, seeders, enums, and policies.
+
+## 2026-09-18 - BE-002
+
+- Tasks attempted: BE-002 - Implement models, factories, seeders, enums, and policies.
+- Tasks completed: BE-002 - Implement models, factories, seeders, enums, and policies.
+- Files changed: `backend/app/Models/`, `backend/app/Enums/`, `backend/app/Policies/DashboardPolicy.php`, `backend/app/Providers/AppServiceProvider.php`, `backend/database/factories/`, `backend/database/seeders/`, `backend/tests/Feature/ModelLayerTest.php`, `backend/tests/Feature/DevelopmentSeederTest.php`, `README.md`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DATABASE_SCHEMA.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Added Eloquent models for the implemented business schema, including relationships, casts, scopes, and sensitive attribute hiding.
+  - Added string-backed enums for publication status, media type, testimonial status, contact message status, and analytics event type.
+  - Added `HasLocalizedAttributes` for explicit localized reads with English fallback and no HTTP request/global-locale coupling.
+  - Added factories with fictional bilingual content and explicit states.
+  - Added a production-guarded `DevelopmentPortfolioSeeder` with small fictional bilingual seed data using `updateOrCreate`.
+  - Registered a broad authenticated-user dashboard policy for current business models; fine-grained roles and permissions remain deferred.
+  - Did not add API routes/controllers/resources, Filament resources, notifications, uploads, analytics collection logic, Redis integration, or Angular integration.
+- Tests executed and results:
+  - PHP syntax checks for new enums, policy, seeders, localization trait, and focused tests: passed.
+  - `artisan test --filter=ModelLayerTest`: passed, 6 tests and 33 assertions.
+  - `artisan test --filter=DevelopmentSeederTest`: passed, 1 test and 3 assertions.
+  - `artisan test`: passed, 13 tests and 105 assertions.
+  - `vendor\bin\pint --test` through Herd PHP: passed.
+  - Local MySQL `artisan db:seed --force`: passed; ran `DevelopmentPortfolioSeeder` without truncation.
+- Current blockers: None for BE-002.
+- Recommended next task: BE-003 - Implement public API resources and read endpoints.

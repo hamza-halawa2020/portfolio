@@ -81,4 +81,13 @@ cd backend
 herd php artisan test
 ```
 
+Seed small fictional local development content only after migrations are applied:
+
+```powershell
+cd backend
+herd php artisan db:seed
+```
+
+The development seeder is guarded from production and uses `updateOrCreate`; it does not truncate tables or create real client data.
+
 See `docs/TASKS.md` for the current task status and `docs/SESSION_LOG.md` for verification history.

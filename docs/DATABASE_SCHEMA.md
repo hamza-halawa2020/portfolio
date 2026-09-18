@@ -46,6 +46,8 @@ FND-005 verified these migrations as already run against the local MySQL `8.0.41
 
 BE-001 verified the full migration set with an in-memory SQLite `migrate:fresh --seed` run and applied the portfolio business schema to the local MySQL database with `artisan migrate`. No destructive local MySQL reset was performed.
 
+BE-002 added Eloquent models, factories, policies, and a development seeder for the implemented tables. The seeder writes a small fictional bilingual dataset with `updateOrCreate` and is guarded from production.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -56,6 +58,7 @@ BE-001 verified the full migration set with an in-memory SQLite `migrate:fresh -
 - Visitor and analytics records use hashes such as `visitor_id_hash`, `ip_hash`, and `user_agent_hash`.
 - Laravel's default `sessions.ip_address` column predates the business schema and is framework session infrastructure. Public visitor analytics and interaction tables do not store raw IP addresses.
 - Localized slug uniqueness for JSON slug columns is enforced later at the validation/application layer unless a future database-specific generated-column strategy is approved for MySQL 8 compatibility.
+- Models expose explicit localized reads through `localized($attribute, $locale, $fallback)` while preserving the full English/Arabic arrays for API resources and dashboard forms.
 
 ## users
 
