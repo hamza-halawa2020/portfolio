@@ -372,7 +372,7 @@
 
 ### ADM-002 - Implement content management resources
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: ADM-001
 - Files: Filament resources for projects, media, blog, services, skills, experience, testimonials, messages, settings, SEO
 - Acceptance criteria:

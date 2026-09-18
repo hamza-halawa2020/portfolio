@@ -14,4 +14,12 @@ return [
         'testimonials' => (int) env('RATE_LIMIT_TESTIMONIALS_PER_HOUR', 5),
         'contact' => (int) env('RATE_LIMIT_CONTACT_PER_HOUR', 5),
     ],
+
+    'media' => [
+        'disk' => env('PORTFOLIO_MEDIA_DISK', 'public'),
+        'image_mimes' => ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
+        'video_mimes' => ['video/mp4', 'video/webm'],
+        'max_image_kb' => (int) env('PORTFOLIO_MAX_IMAGE_KB', 5120),
+        'max_video_kb' => (int) env('PORTFOLIO_MAX_VIDEO_KB', 51200),
+    ],
 ];
