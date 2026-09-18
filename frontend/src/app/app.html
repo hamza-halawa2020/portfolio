@@ -49,7 +49,7 @@
 <main id="main-content" tabindex="-1">
   <router-outlet (activate)="onRouteActivate()" />
 
-  @if (!routeActive()) {
+  @if (currentLocale() === 'en' || !routeActive()) {
     <section class="page-shell-fallback">
       <p class="eyebrow">{{ copy().placeholderEyebrow }}</p>
       <h1>{{ fallbackPage().title }}</h1>
