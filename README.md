@@ -62,7 +62,7 @@ C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version
 
 ## Current State
 
-The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, public read/write API, Filament dashboard authentication, and dashboard content management resources are initialized.
+The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, public read/write API, Filament dashboard authentication, dashboard content management resources, moderation/inbox workflows, analytics widgets, and comprehensive local seed data are initialized.
 
 ## Backend
 
@@ -102,7 +102,16 @@ herd php artisan portfolio:provision-owner-admin
 
 The dashboard is available at `/admin`. Registration is disabled, access requires a user with `is_admin=true`, and dashboard responses send `noindex` plus private no-store cache headers. The provisioning command prompts interactively for owner details and hides the password input.
 
-Implemented content resources cover projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and parent-owned SEO metadata. Testimonial moderation, contact inbox, and analytics widgets remain later dashboard tasks.
+Implemented dashboard resources cover projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, parent-owned SEO metadata, testimonial moderation, contact inbox workflows, and analytics widgets.
+
+Local development seed data:
+
+```powershell
+cd backend
+herd php artisan db:seed --force
+```
+
+The development seeder is local/testing-only, non-destructive, idempotent, and covers safe application-owned business tables. Contact attachment fixtures are excluded until secure private attachment storage exists. Local administrator provisioning reads ignored `.env` variables named `LOCAL_DEV_ADMIN_NAME`, `LOCAL_DEV_ADMIN_EMAIL`, and `LOCAL_DEV_ADMIN_PASSWORD`; do not commit real values.
 
 Seed small fictional local development content only after migrations are applied:
 

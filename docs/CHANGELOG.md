@@ -33,6 +33,11 @@
 - MySQL generated-column unique indexes for English and Arabic localized slugs on routed content tables.
 - Configurable portfolio media disk, upload MIME allowlists, and image/video size limits.
 - Admin content feature tests covering policy-protected resources, translation preservation, sanitization, slug validation, SEO persistence, reading-time calculation, and media file replacement cleanup.
+- Testimonial moderation dashboard resource with approve, reject, archive, and feature actions.
+- Private contact inbox dashboard resource with status and admin-note workflows.
+- Dashboard analytics widgets for visits, unique visitors, project views, project likes, contact submissions, pending testimonials, daily trends, top projects, and device breakdowns.
+- Admin analytics query service and moderation/inbox services to keep Filament widgets/resources thin.
+- Comprehensive local/testing development seeder with bilingual fictional content, analytics fixtures, safe media fixtures, and optional local administrator provisioning from ignored environment variables.
 
 ### Changed
 
@@ -49,6 +54,7 @@
 - Contact attachments are explicitly rejected by public writes until private storage and upload security are configured.
 - Dashboard model policies now require explicit administrator access instead of any authenticated user.
 - Localized JSON slug uniqueness is now protected by admin validation plus MySQL generated-column unique indexes for routed content tables.
+- Development seeding now reuses existing local technology records by name to preserve earlier local data and avoid duplicate unique names.
 
 ### Fixed
 
@@ -63,6 +69,8 @@
 - Dashboard responses send `X-Robots-Tag: noindex, nofollow, noarchive` and private no-store cache headers.
 - Admin rich text is sanitized server-side before persistence with an explicit HTML allowlist.
 - Project and cover media uploads reject unsafe MIME types, use server-generated filenames, and clean up replaced files only when they are no longer referenced.
+- Local administrator provisioning reads credentials from ignored `.env`, hashes the password, refuses production, avoids password resets on repeat seed runs, and refuses to elevate existing non-admin accounts automatically.
+- Public APIs continue to hide testimonial verification emails, contact messages, admin notes, raw identifiers, and raw IP data.
 
 ### Removed
 

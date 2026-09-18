@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, testimonial moderation dashboard, contact inbox dashboard, analytics dashboard, public website pages, localization/theme implementation, sitemap/robots, and frontend API consumption.
+- Missing application code: CI files, public website pages, localization/theme implementation, sitemap/robots, frontend API consumption, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -178,6 +178,7 @@ npm --version
 - Portfolio business migrations and Eloquent model layer are implemented for projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
 - Filament `5.8.2` is installed for the owner dashboard. Sanctum, Spatie Permission, and media packages are not installed yet.
 - Filament content resources are implemented for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and SEO metadata through parent resource forms.
+- Filament engagement resources are implemented for testimonial moderation and private contact inbox handling. Dashboard analytics widgets are implemented for current schema metrics.
 - Backend app name is `Portfolio Platform API`.
 - Backend timezone is UTC.
 - Default locale is English (`en`), and supported locales are documented as `en,ar`.
@@ -213,6 +214,7 @@ npm --version
 - Public visitor cookies are not admin authentication credentials.
 - Filament resources enforce policies.
 - Filament content resources keep presentation concerns in resources/pages and delegate create/update/delete workflows to focused services under `App\Services\Admin\Content`.
+- Testimonial moderation and contact inbox resources also delegate state changes to services. Analytics widgets delegate aggregation to `App\Queries\Admin\AnalyticsDashboardQuery`.
 - Public APIs never expose dashboard-only fields or visitor identifiers.
 - Model serialization hides visitor hashes, user-agent hashes, contact emails, contact phone numbers, and admin notes by default.
 
@@ -237,6 +239,17 @@ npm --version
 - Rich content is sanitized server-side before persistence. The current allowlist includes paragraphs, headings, lists, blockquotes, pre/code, strong/emphasis, line breaks, and safe links.
 - Public API query/services remain the source of public visibility and localization behavior; admin resources do not duplicate public response business rules.
 - No persistent application cache entries are currently populated for public content, so there is no cache store invalidation to perform yet. Future stored cache use must add invalidation inside these admin services.
+- ADM-003 adds lightweight cache invalidation hooks for testimonial/contact workflows. These are harmless while public content uses HTTP cache headers only and become useful once stored application caches are introduced.
+
+## Admin Moderation And Analytics Architecture
+
+- Testimonial moderation supports pending, approved, rejected, archived, and featured states through `TestimonialModerationService`.
+- Public testimonial reads remain approved-only and never expose verification email addresses.
+- Contact inbox workflows expose private dashboard-only contact details to administrators and update only status/admin notes through `ContactInboxService`.
+- Local mail remains `log`; the dashboard does not claim email replies were sent.
+- Analytics aggregation lives in `App\Queries\Admin\AnalyticsDashboardQuery`, not Filament widgets.
+- Dashboard metrics distinguish page-view analytics events, distinct hashed visitors, project view records, project likes, contact submissions, and pending testimonials.
+- Daily trends and project rankings use existing `analytics_events`, `project_views`, `project_likes`, `contact_messages`, and `testimonials` data. No statistics are invented when no records exist.
 
 ## Public Write Workflow Architecture
 
@@ -267,7 +280,7 @@ npm --version
 - Track project views and likes through first-party visitor identifiers, hashed IP values using a server-side secret, user-agent hash where appropriate, project ID, and time windows.
 - Count one unique project view per project, visitor, and UTC calendar day. This implements the current `project_views` unique constraint; a true rolling 24-hour window would require a future schema/service change.
 - Public analytics and visitor interaction tables do not store raw IP addresses.
-- Aggregate analytics through scheduled jobs where useful.
+- ADM-003 dashboard analytics read current event/interaction tables directly through query services. Scheduled aggregation and cleanup jobs remain INT-002 scope.
 - Document limitations from VPNs, shared networks, deleted cookies, and changing IPs in the privacy page.
 
 ## Translation Strategy
@@ -286,9 +299,10 @@ npm --version
 
 ## Development Seed Strategy
 
-- BE-002 adds a production-guarded development seeder with small fictional bilingual content.
+- ADM-003 expands the production-denied development seeder with comprehensive fictional bilingual content, dashboard filter records, local analytics fixtures, and optional local administrator provisioning through ignored environment variables.
 - Seeders use predictable keys and `updateOrCreate` where practical.
-- Seeders do not truncate tables, seed analytics events, create real credentials, or include real client data.
+- Seeders do not truncate tables, create real credentials, seed real client data, or insert rows into framework infrastructure tables merely for coverage.
+- Contact attachments are not seeded because secure private attachment storage is not implemented.
 
 ```json
 {

@@ -384,3 +384,45 @@
 - Current blockers: No ADM-002 implementation blocker. Herd PHP still prints the known OPcache startup warning. Redis/Valkey, Mailpit/SMTP, MySQL 8.4 environment verification, testimonial moderation, contact inbox, analytics widgets, and frontend public pages remain future work.
 - Remaining tasks: ADM-003, FE-001 and later frontend/content/deployment tasks, plus deferred infrastructure tasks INF-001, INF-002, and INF-003.
 - Recommended next task: ADM-003 - Implement analytics dashboard, unless deferred infrastructure is prioritized first.
+
+## 2026-09-19 - ADM-003
+
+- Tasks attempted: ADM-003 - Implement analytics dashboard; ADM-003A - Expand comprehensive local development seed data; ADM-003B - Provision local development administrator.
+- Tasks completed: ADM-003, ADM-003A, and ADM-003B.
+- Implemented:
+  - Added Filament resources for testimonial moderation and private contact inbox workflows.
+  - Added `TestimonialModerationService`, `ContactInboxService`, and `PublicContentCacheInvalidator`.
+  - Added dashboard analytics widgets for overview stats, daily trends, top projects, and device breakdowns.
+  - Added `AnalyticsDashboardQuery` for all dashboard aggregation queries.
+  - Added `TestimonialStatus::Archived` for the archive workflow using the existing string status column.
+  - Expanded `DevelopmentPortfolioSeeder` with stable fictional bilingual records, safe generated image fixtures, interactions, analytics events/summaries, and local/testing-only production denial.
+  - Added local administrator provisioning via ignored `.env` variables through `LocalDevelopmentAdministratorProvisioner`.
+  - Added empty `.env.example` placeholders for `LOCAL_DEV_ADMIN_NAME`, `LOCAL_DEV_ADMIN_EMAIL`, and `LOCAL_DEV_ADMIN_PASSWORD`.
+- Seeder coverage:
+  - Covered users, project categories, technologies, projects, project-technology pivots, project media, project views, project likes, testimonials, blog categories, tags, blog posts, blog-post-tag pivots, services, experience, skills, contact messages, site settings, social links, SEO metadata, analytics events, and daily analytics summaries.
+  - Excluded contact attachments because secure private attachment storage is not implemented.
+  - Did not seed framework infrastructure tables.
+- Local seed result:
+  - `herd php artisan db:seed --force`: passed non-destructively against local MySQL after the seeder was adjusted to reuse existing technology names.
+  - Verification showed 2 users, 7 projects, 7 posts, 7 project media records, 567 project views, 12 likes, 6 testimonials, 4 contact messages, 370 analytics events, 140 daily summaries, and 0 contact attachments.
+  - Local administrator provisioning completed for `admin@example.com`; password was sourced from ignored `.env` and verified as hashed.
+- Verification:
+  - `herd php artisan test --filter=AdminModerationAnalyticsTest`: passed, 5 tests and 40 assertions.
+  - `herd php artisan test --filter=DevelopmentSeederCoverageTest`: passed, 6 tests and 58 assertions.
+  - `herd php artisan test --filter=AdminDashboardAuthTest`: passed, 11 tests and 57 assertions.
+  - `herd php artisan test --filter=PublicApiArchitectureTest`: passed, 8 tests and 235 assertions.
+  - `herd php artisan test --filter=PublicReadApiTest`: passed, 10 tests and 72 assertions.
+  - `herd php artisan test --filter=PublicWriteApiTest`: passed, 11 tests and 88 assertions.
+  - `herd php artisan test`: passed, 69 tests and 680 assertions.
+  - `herd php vendor\bin\pint --test`: passed.
+  - `herd composer validate --strict`: passed.
+  - `herd composer audit`: passed, no security vulnerability advisories found.
+  - `herd php artisan route:list --path=admin`: passed, 17 admin routes registered.
+  - `herd php artisan migrate --force`: passed, nothing to migrate.
+  - `herd php artisan migrate:status`: passed, all migrations marked ran.
+  - `cmd /c npm run build`: passed.
+  - `cmd /c npm test -- --watch=false`: passed, 1 test file and 2 tests.
+  - Temporary Laravel HTTP smoke was attempted, but the local server did not become reachable from the automation shell.
+- Current blockers: No ADM-003 implementation blocker. Browser smoke remains limited by temporary local server startup from automation. Herd PHP still prints the known OPcache startup warning.
+- Remaining tasks: FE-001 and later frontend/content/deployment tasks, plus deferred infrastructure tasks INF-001, INF-002, and INF-003.
+- Recommended next task: FE-001 - Implement frontend app shell, SSR, routing, and layout, unless deferred infrastructure is prioritized first.

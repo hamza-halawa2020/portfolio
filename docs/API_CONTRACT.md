@@ -58,6 +58,7 @@ Write workflow rules:
 - Project views are unique by project, visitor hash, and UTC calendar date, matching the existing `project_views` schema unique constraint.
 - Project likes are idempotent and unique by project and visitor hash.
 - Testimonial submissions are pending by default, never expose `contact_email`, and reject public moderation fields such as `status`, `is_featured`, and review/admin fields.
+- Dashboard moderation can approve, reject, archive, and feature testimonials. Only approved testimonials are returned by `GET /api/v1/testimonials`; pending, rejected, and archived testimonials remain private.
 - Contact submissions are private dashboard records, never returned by public APIs, and reject `status`, `admin_notes`, and `attachment` until safe private attachment storage is configured.
 - Duplicate testimonial/contact submissions receive generic validation feedback to avoid exposing moderation internals.
 - `TestimonialSubmitted` and `ContactMessageSubmitted` events dispatch after database commit for future queued notification listeners.

@@ -56,6 +56,8 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 
 ADM-002 added MySQL generated stored columns and unique indexes for localized JSON slugs on `project_categories`, `projects`, `blog_categories`, `tags`, `blog_posts`, and `services`. The migration is MySQL-specific and safely no-ops for SQLite test databases.
 
+ADM-003 did not require schema changes. It uses existing testimonial, contact, analytics, project view, and project like tables.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -140,6 +142,7 @@ ADM-002 added MySQL generated stored columns and unique indexes for localized JS
 - Privacy-sensitive fields: `contact_email`, review workflow fields.
 - Public API exclusion: never expose `contact_email`.
 - BE-004 write behavior: public submissions are created with `pending` status, `is_featured=false`, and a consent timestamp. Public requests cannot set moderation or review fields.
+- ADM-003 dashboard behavior: administrators can set `pending`, `approved`, `rejected`, or `archived`; only `approved` testimonials are public.
 
 ## blog_categories
 
@@ -199,6 +202,7 @@ ADM-002 added MySQL generated stored columns and unique indexes for localized JS
 - Foreign keys: `contact_message_id` references `contact_messages.id` cascade delete.
 - Privacy-sensitive fields: uploaded file metadata and content.
 - BE-004 status: public attachment uploads are explicitly rejected until a private disk, validation limits, malware-scanning expectations, and dashboard access controls are configured.
+- ADM-003 seeding status: contact attachments are intentionally excluded from development fixtures until secure private attachment storage exists.
 
 ## site_settings
 
@@ -223,9 +227,11 @@ ADM-002 added MySQL generated stored columns and unique indexes for localized JS
 - Columns: `id`, `event_type`, `visitor_id_hash` nullable, `ip_hash` nullable, `user_agent_hash` nullable, `url`, `referrer_domain` nullable, `device_category` nullable, `browser` nullable, `country` nullable, `occurred_at`, timestamps.
 - Indexes: `event_type`, `occurred_at`, `visitor_id_hash`.
 - Privacy-sensitive fields: hashes and derived analytics attributes.
+- ADM-003 behavior: dashboard widgets aggregate total page visits, distinct hashed visitors, device/referrer/browser/country breakdowns, and daily trends without exposing hashes.
 
 ## analytics_daily_summaries
 
 - Purpose: aggregated dashboard reporting.
 - Columns: `id`, `date`, `metric`, `dimension` nullable, `value`, timestamps.
 - Unique constraints: `date`, `metric`, `dimension`.
+- ADM-003 development fixtures use `dimension=development_fixture` so they are distinguishable from future production summaries.

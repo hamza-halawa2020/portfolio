@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 14 | 3 | 10 | 0 |
+| 17 | 0 | 10 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -396,7 +396,7 @@
 
 ### ADM-003 - Implement analytics dashboard
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: BE-004, ADM-001
 - Files: Filament widgets, analytics services, aggregation jobs
 - Acceptance criteria:
@@ -406,11 +406,19 @@
 - Tests:
   - Backend tests for aggregation logic.
 - Notes:
-- Completed:
+  - Added testimonial moderation and contact inbox resources because the ADM-003 request clarified this scope alongside analytics.
+  - Added testimonial approve, reject, archive, and feature actions through `TestimonialModerationService`.
+  - Added private contact message status and admin note workflows through `ContactInboxService`.
+  - Added dashboard analytics widgets for total visits, unique visitors, project views, likes, contact submissions, pending testimonials, daily trends, top projects, and device breakdowns.
+  - Added `AnalyticsDashboardQuery` so aggregation queries stay out of Filament widgets.
+  - Public testimonial API remains approved-only; pending, rejected, and archived testimonials stay private.
+  - Verification passed: focused ADM-003 tests, dashboard auth tests, public read/write/architecture tests, full backend suite, Pint, Composer validate/audit, admin route list, migration status, Angular build, and Angular tests.
+  - Browser smoke was attempted with a temporary local server, but the server did not become reachable from the automation shell. Equivalent route, RTL, authorization, and API behavior are covered by feature tests.
+- Completed: 2026-09-19
 
 ### ADM-003A - Expand comprehensive local development seed data
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: BE-002, ADM-003
 - Files: `backend/database/seeders/DevelopmentPortfolioSeeder.php`, development fixture files, seeder tests, documentation
 - Acceptance criteria:
@@ -421,11 +429,17 @@
 - Tests:
   - Seeder coverage, repeatability, preservation, production denial, and privacy tests.
 - Notes:
-- Completed:
+  - Expanded `DevelopmentPortfolioSeeder` to cover safe application-owned business tables with fictional bilingual records and development analytics fixtures.
+  - Seeded users, project categories, technologies, projects, project-technology pivots, project media, project views, project likes, testimonials, blog categories, tags, blog posts, blog-post-tag pivots, services, experience, skills, contact messages, site settings, social links, SEO metadata, analytics events, and daily analytics summaries.
+  - Contact attachments are intentionally excluded because secure private attachment storage is not implemented and public uploads remain rejected.
+  - Framework infrastructure tables are not artificially seeded.
+  - Seeder is local/testing-only, idempotent, non-destructive, preserves user-created records, uses stable fixture identifiers, and avoids raw IP storage.
+  - Non-destructive local MySQL seeding passed with `herd php artisan db:seed --force`.
+- Completed: 2026-09-19
 
 ### ADM-003B - Provision local development administrator
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: ADM-001, ADM-003A
 - Files: `backend/.env.example`, provisioning service or seeder integration, tests, documentation
 - Acceptance criteria:
@@ -437,7 +451,11 @@
 - Tests:
   - Local administrator provisioning tests.
 - Notes:
-- Completed:
+  - Added local-only administrator provisioning from ignored `.env` variables through `LocalDevelopmentAdministratorProvisioner`.
+  - `.env.example` contains empty placeholders only; the password is not committed, documented, logged, or passed in command arguments.
+  - Local administrator provisioning is idempotent, stores a hashed password, does not reset an existing administrator password on repeated seed runs, and refuses to elevate an existing non-admin account with the configured email.
+  - Local database provisioning completed for `admin@example.com`.
+- Completed: 2026-09-19
 
 ## Phase 4 - Angular Foundations
 

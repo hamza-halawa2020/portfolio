@@ -121,6 +121,24 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - ADM-002 `herd php artisan route:list --path=admin`: passed; 15 admin routes registered, including content resources.
   - ADM-002 `herd php artisan migrate:status`: passed; localized slug unique index migration is marked ran.
   - ADM-002 frontend `cmd /c npm run build`: passed.
+  - ADM-003 focused `AdminModerationAnalyticsTest`: passed, 5 tests and 40 assertions.
+  - ADM-003 focused `DevelopmentSeederCoverageTest`: passed, 6 tests and 58 assertions.
+  - ADM-003 dashboard auth regression `AdminDashboardAuthTest`: passed, 11 tests and 57 assertions.
+  - ADM-003 public API architecture regression `PublicApiArchitectureTest`: passed, 8 tests and 235 assertions.
+  - ADM-003 public read regression `PublicReadApiTest`: passed, 10 tests and 72 assertions.
+  - ADM-003 public write regression `PublicWriteApiTest`: passed, 11 tests and 88 assertions.
+  - ADM-003 full backend `herd php artisan test`: passed, 69 tests and 680 assertions.
+  - ADM-003 `herd php vendor\bin\pint --test`: passed.
+  - ADM-003 `herd composer validate --strict`: passed, `./composer.json is valid`.
+  - ADM-003 `herd composer audit`: passed, no security vulnerability advisories found.
+  - ADM-003 `herd php artisan route:list --path=admin`: passed; 17 admin routes registered, including testimonials and contact inbox.
+  - ADM-003 `herd php artisan migrate --force`: passed, nothing to migrate.
+  - ADM-003 `herd php artisan migrate:status`: passed; all migrations marked ran.
+  - ADM-003 non-destructive local MySQL `herd php artisan db:seed --force`: passed after adjusting the seeder to reuse existing local technology names.
+  - ADM-003 local seed verification: passed with 2 users, 7 projects, 7 posts, 7 project media records, 567 project views, 12 likes, 6 testimonials, 4 contacts, 370 analytics events, 140 daily summaries, 0 contact attachments, and local admin email `admin@example.com` with a hashed password.
+  - ADM-003 frontend `cmd /c npm run build`: passed.
+  - ADM-003 frontend `cmd /c npm test -- --watch=false`: passed, 1 test file and 2 tests.
+  - ADM-003 temporary Laravel HTTP smoke was attempted, but the server did not become reachable from the automation shell. Route registration, dashboard authorization, Arabic RTL login behavior, and seeded public API behavior are covered by automated tests.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -219,6 +237,7 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - BE-003 public API tests verify published-only read behavior, localized responses, filter validation, localized slug lookup, pagination metadata, public cache headers, privacy exclusions, and a basic project-list query-count guard.
 - BE-003 architecture tests verify public API controllers do not contain Eloquent query calls, controllers delegate to services, services apply visibility rules independently from HTTP, query services apply filters/eager loading, invalid transport input is rejected before query filters run, and Resources do not trigger unexpected lazy-loading queries in the covered project-detail path.
 - BE-004 public write tests verify anonymous project views, likes/unlikes, testimonial submissions, contact submissions, validation/spam controls, privacy exclusions, event dispatch, direct service usage, endpoint-specific rate limiting, transaction usage, query-free Resources, and thin controller boundaries.
-- Sitemap/robots, testimonial moderation dashboard, contact inbox dashboard, analytics dashboard, Redis-backed cache/queues, frontend API integration, notification listener delivery, and contact attachments are still untested because their implementation tasks have not started.
+- Sitemap/robots, Redis-backed cache/queues, frontend API integration, notification listener delivery, production analytics cleanup jobs, S3 media storage, and contact attachments are still untested because their implementation tasks have not started.
 - ADM-001 covers Filament dashboard authentication, explicit administrator authorization, noindex/private headers, English/Arabic direction, login throttling, logout, and interactive owner provisioning.
 - ADM-002 covers implemented admin content services/resources, but does not test image transcoding, video conversion, S3 storage, or public browser upload flows because those capabilities are not implemented yet.
+- ADM-003 covers testimonial moderation, contact inbox workflows, analytics aggregation boundaries, thin widget/query architecture, comprehensive seeder coverage, seeder repeatability, production refusal, local admin provisioning safety, and public privacy checks.

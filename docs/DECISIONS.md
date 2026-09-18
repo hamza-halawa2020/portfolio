@@ -167,6 +167,33 @@ Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Fo
 - Reason: Server-side sanitization protects both current API consumers and future rendering paths. Filesystem abstraction supports local storage now and S3-compatible storage later.
 - Consequences: SVG/HTML-style unsafe uploads remain rejected unless a future task adds explicit sanitization. Image transcoding and video conversion are not claimed or implemented.
 
+## DEC-020 - Dashboard moderation and analytics service boundaries
+
+- Date: 2026-09-19
+- Context: ADM-003 requires testimonial moderation, contact inbox management, and privacy-conscious analytics without putting business logic in Filament resources or widgets.
+- Options considered: query directly from Filament resources/widgets; create dedicated services/query classes.
+- Selected option: use `TestimonialModerationService`, `ContactInboxService`, and `AnalyticsDashboardQuery`.
+- Reason: This keeps Filament focused on presentation/action wiring and keeps aggregation rules testable.
+- Consequences: Future widgets and dashboard pages should add query/service methods instead of embedding Eloquent aggregation logic in UI classes.
+
+## DEC-021 - Comprehensive local development fixtures
+
+- Date: 2026-09-19
+- Context: Local development needs enough fictional data to exercise public APIs, dashboard filters, analytics, and bilingual content while preserving real/user-created records.
+- Options considered: use factories with random appended records; keep the small BE-002 seeder; expand the development seeder with stable fixtures.
+- Selected option: expand `DevelopmentPortfolioSeeder` with stable fixture keys, `updateOrCreate`, `syncWithoutDetaching`, local/testing-only guards, and no destructive operations.
+- Reason: Stable fixtures are repeatable and support dashboard/API development without polluting production.
+- Consequences: The seeder refuses production, excludes contact attachments until private storage exists, does not seed framework infrastructure tables, and marks analytics summaries with `development_fixture`.
+
+## DEC-022 - Local administrator provisioning from ignored environment
+
+- Date: 2026-09-19
+- Context: The user authorized a weak local-only administrator password but required it to remain out of committed files and command-line arguments.
+- Options considered: hardcode credentials in the seeder; document the password; read credentials from ignored `.env`.
+- Selected option: read `LOCAL_DEV_ADMIN_NAME`, `LOCAL_DEV_ADMIN_EMAIL`, and `LOCAL_DEV_ADMIN_PASSWORD` from ignored `.env` and provision only in local/testing environments.
+- Reason: This satisfies local convenience while keeping secrets out of tracked files and logs.
+- Consequences: `.env.example` contains empty placeholders only. Existing non-admin accounts with the configured email are not elevated automatically, and existing admin passwords are not reset on repeat seed runs.
+
 ## DEC-008 - Laravel backend foundation scope
 
 - Date: 2026-09-18

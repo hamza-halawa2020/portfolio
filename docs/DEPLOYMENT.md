@@ -61,6 +61,9 @@ RATE_LIMIT_CONTACT_PER_HOUR=5
 PORTFOLIO_MEDIA_DISK=public
 PORTFOLIO_MAX_IMAGE_KB=5120
 PORTFOLIO_MAX_VIDEO_KB=51200
+LOCAL_DEV_ADMIN_NAME=
+LOCAL_DEV_ADMIN_EMAIL=
+LOCAL_DEV_ADMIN_PASSWORD=
 DB_CONNECTION=sqlite
 # Local .env may use MySQL 8.0.41 for initial development.
 # Staging/production target: MySQL 8.4 LTS.
@@ -76,7 +79,7 @@ CACHE_STORE=database
 MAIL_MAILER=log
 ```
 
-Secrets such as database usernames, database passwords, mail passwords, app keys, visitor hash secrets, and production service credentials must exist only in ignored `.env` files or deployment secret stores.
+Secrets such as database usernames, database passwords, mail passwords, app keys, visitor hash secrets, local administrator passwords, and production service credentials must exist only in ignored `.env` files or deployment secret stores. `LOCAL_DEV_ADMIN_*` variables are for local/testing seeding only and must not be configured in staging or production.
 
 ## Build Commands
 
@@ -126,7 +129,7 @@ Angular SSR output:
 
 Filament `5.8.2` was installed during ADM-001. Sanctum, Spatie Permission, and media packages are still deferred.
 
-ADM-002 content resources are registered under `/admin` for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and parent-owned SEO metadata. Testimonial moderation, contact inbox, and analytics widgets remain future dashboard tasks.
+ADM-002 content resources are registered under `/admin` for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and parent-owned SEO metadata. ADM-003 adds testimonial moderation, contact inbox, and analytics dashboard widgets.
 
 Dashboard setup commands:
 
@@ -139,6 +142,15 @@ herd php artisan route:list --path=admin
 ```
 
 The provisioning command is interactive and hides password input. Do not create or commit real owner credentials in documentation, seeders, or tests.
+
+Development fixture seeding:
+
+```powershell
+cd backend
+herd php artisan db:seed --force
+```
+
+The seeder refuses production, does not truncate tables, does not reset local MySQL, does not seed framework infrastructure tables, and provisions the optional local administrator only from ignored `.env` variables. Contact attachment fixtures are excluded until secure private attachment storage exists.
 
 Bootstrap 5.3.8 was verified but is not selected by default because the original project requirement specifies Tailwind CSS. Add Bootstrap only if a later decision explicitly changes the frontend styling stack.
 
@@ -250,6 +262,7 @@ Filament dashboard deployment requirements:
 - Keep dashboard routes private and protected by Laravel session/CSRF middleware.
 - Confirm dashboard responses include `X-Robots-Tag: noindex, nofollow, noarchive` and private no-store cache headers.
 - Confirm English LTR and Arabic RTL dashboard rendering with `/admin/login?locale=en` and `/admin/login?locale=ar`.
+- Keep local development fixture seeding disabled in staging and production. Do not configure `LOCAL_DEV_ADMIN_*` in deployed environments.
 
 ## Reverse Proxy
 
