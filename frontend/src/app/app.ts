@@ -27,6 +27,10 @@ export class App {
   protected readonly isRtl = computed(() => this.currentLocale() === 'ar');
   protected readonly themeOptions: readonly ThemePreference[] = ['light', 'dark', 'system'];
   protected readonly fallbackPage = computed(() => this.fallbackForUrl(this.currentUrl()));
+  protected fallbackDescription = '';
+  protected fallbackEyebrow = '';
+  protected fallbackNote = '';
+  protected fallbackTitle = '';
 
   constructor() {
     this.localeService.activateLocaleFromUrl(this.router.url);
@@ -62,6 +66,10 @@ export class App {
 
   private applyFallbackSeo(url: string): void {
     const page = this.fallbackForUrl(url);
+    this.fallbackDescription = page.description;
+    this.fallbackEyebrow = this.copy().placeholderEyebrow;
+    this.fallbackNote = this.copy().placeholderNote;
+    this.fallbackTitle = page.title;
 
     this.seo.apply({
       description: page.description,

@@ -50,10 +50,10 @@
   <router-outlet />
 
   <section class="page-shell-fallback">
-    <p class="eyebrow" [textContent]="copy().placeholderEyebrow"></p>
-    <h1 [textContent]="fallbackPage().title"></h1>
-    <p class="lede" [textContent]="fallbackPage().description"></p>
-    <p class="page-note" [textContent]="copy().placeholderNote"></p>
+    <p class="eyebrow">{{ fallbackEyebrow }}</p>
+    <h1>{{ fallbackTitle }}</h1>
+    <p class="lede">{{ fallbackDescription }}</p>
+    <p class="page-note">{{ fallbackNote }}</p>
   </section>
 </main>
 
