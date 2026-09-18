@@ -10,6 +10,7 @@ FND-003 initialized the Laravel 13 skeleton. BE-001 added the first portfolio bu
 - `0001_01_01_000001_create_cache_table.php`
 - `0001_01_01_000002_create_jobs_table.php`
 - `2026_09_18_130000_create_portfolio_business_schema.php`
+- `2026_09_18_190000_add_admin_authorization_fields_to_users_table.php`
 
 Implemented portfolio business tables:
 
@@ -50,6 +51,8 @@ BE-002 added Eloquent models, factories, policies, and a development seeder for 
 
 BE-004 implemented public write workflows against the existing schema. Project views use the existing `project_id`, `visitor_id_hash`, and `viewed_on` unique constraint, so uniqueness is enforced per UTC calendar date rather than as a rolling 24-hour interval. Project likes use the existing `project_id` and `visitor_id_hash` unique constraint for idempotent likes. Contact attachment records remain unused by public writes until safe private storage is configured.
 
+ADM-001 added explicit dashboard administrator fields to `users` for the initial Filament authorization strategy.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -65,9 +68,11 @@ BE-004 implemented public write workflows against the existing schema. Project v
 ## users
 
 - Purpose: dashboard users and authenticated administrators.
-- Columns: `id`, `name`, `email`, `email_verified_at` nullable, `password`, `remember_token`, timestamps.
-- Indexes: unique `email`.
+- Columns: `id`, `name`, `email`, `email_verified_at` nullable, `password`, `is_admin`, `admin_granted_at` nullable, `admin_granted_by` nullable, `remember_token`, timestamps.
+- Indexes: unique `email`, `is_admin`.
+- Foreign keys: `admin_granted_by` references `users.id` with null-on-delete.
 - Privacy-sensitive fields: `email`, `password`, remember token.
+- Dashboard behavior: only users with `is_admin=true` may access the Filament admin panel or dashboard-managed model policies.
 
 ## project_categories
 

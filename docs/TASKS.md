@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 12 | 1 | 12 | 0 |
+| 13 | 0 | 12 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -348,7 +348,7 @@
 
 ### ADM-001 - Configure Filament dashboard and authentication
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: BE-002
 - Files: `backend/app/Providers/Filament/`, `backend/app/Filament/`
 - Acceptance criteria:
@@ -358,7 +358,17 @@
 - Tests:
   - Backend auth and authorization tests.
 - Notes:
-- Completed:
+  - Installed Filament `5.8.2` and registered the admin panel at `/admin`.
+  - Dashboard routes are limited to `/admin`, `/admin/login`, and `POST /admin/logout`; public registration is disabled.
+  - Dashboard access requires explicit `users.is_admin=true` authorization through `User::canAccessPanel()` and dashboard model policies.
+  - Added `is_admin`, `admin_granted_at`, and `admin_granted_by` to users for the initial owner authorization strategy.
+  - Added `portfolio:provision-owner-admin` interactive owner provisioning command with hidden password input.
+  - Added admin noindex/private-cache middleware and admin locale middleware for English LTR and Arabic RTL rendering.
+  - Published Filament assets and verified the dashboard login route with a temporary local server.
+  - Verification passed: PHP syntax checks, focused `AdminDashboardAuthTest` (11 tests, 57 assertions), full backend suite (53 tests, 560 assertions), `vendor\bin\pint --test`, `herd composer validate --strict`, `herd composer audit`, admin route list, migration status, frontend build/unit checks, Playwright browser install, Playwright Chromium assertion, and `/admin/login?locale=ar` HTTP smoke.
+  - Playwright's Windows process remained attached to the Angular dev server after the passing assertion and required manual interruption during cleanup.
+  - Herd PHP continues to print the known OPcache startup warning, but all ADM-001 backend checks pass.
+- Completed: 2026-09-18
 
 ### ADM-002 - Implement content management resources
 

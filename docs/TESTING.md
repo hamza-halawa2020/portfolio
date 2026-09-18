@@ -94,6 +94,23 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - BE-004 local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
   - BE-004 `git diff --check`: passed with line-ending normalization warnings only.
   - BE-004 `migrate:fresh --seed --env=testing` was not executed because the sandbox rejected it as a destructive database command; BE-004 verification used the full test suite's safe database refresh behavior instead.
+  - ADM-001 `herd php -v`: passed, PHP `8.5.10`; Herd still prints the known OPcache startup warning.
+  - ADM-001 `herd composer --version`: passed, Composer `2.10.2` through PHP `8.5.10`.
+  - ADM-001 Filament installation: passed with `filament/filament` locked at `v5.8.2`; `herd php artisan filament:assets` published Filament assets.
+  - ADM-001 PHP syntax checks for changed admin model, policy, middleware, provider, command, migration, and tests: passed.
+  - ADM-001 `herd php artisan route:list --path=admin`: passed; registered `/admin`, `/admin/login`, and `POST /admin/logout` only.
+  - ADM-001 `herd php artisan migrate:status`: passed; admin authorization migration is marked ran.
+  - ADM-001 `herd composer validate --strict`: passed, `./composer.json is valid`.
+  - ADM-001 `herd composer audit`: passed, no security vulnerability advisories found.
+  - ADM-001 focused `AdminDashboardAuthTest`: passed, 11 tests and 57 assertions.
+  - ADM-001 full backend `herd php artisan test`: passed, 53 tests and 560 assertions.
+  - ADM-001 `herd php vendor\bin\pint --test`: passed.
+  - ADM-001 `cmd /c npx @angular/cli@22 version`: passed with Angular CLI `22.1.8`, Angular `22.1.7`, Node `24.19.0`, and npm `11.19.0`; the global Angular CLI 19 was not used.
+  - ADM-001 frontend `cmd /c npm run build`: passed.
+  - ADM-001 frontend `cmd /c npm test -- --watch=false`: passed, 1 test file and 2 tests.
+  - ADM-001 Playwright browser install: passed with `cmd /c npx playwright install chromium`.
+  - ADM-001 `cmd /c npx playwright test`: the Chromium spec assertion passed; on Windows the command stayed attached to the Angular dev server and required manual interruption during cleanup.
+  - ADM-001 temporary Laravel HTTP smoke: passed for `/admin/login?locale=ar` with status `200`, `X-Robots-Tag: noindex, nofollow, noarchive`, private no-store cache headers, and RTL markup.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -192,4 +209,5 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - BE-003 public API tests verify published-only read behavior, localized responses, filter validation, localized slug lookup, pagination metadata, public cache headers, privacy exclusions, and a basic project-list query-count guard.
 - BE-003 architecture tests verify public API controllers do not contain Eloquent query calls, controllers delegate to services, services apply visibility rules independently from HTTP, query services apply filters/eager loading, invalid transport input is rejected before query filters run, and Resources do not trigger unexpected lazy-loading queries in the covered project-detail path.
 - BE-004 public write tests verify anonymous project views, likes/unlikes, testimonial submissions, contact submissions, validation/spam controls, privacy exclusions, event dispatch, direct service usage, endpoint-specific rate limiting, transaction usage, query-free Resources, and thin controller boundaries.
-- Sitemap/robots, Filament dashboard authorization flows, Redis-backed cache/queues, frontend API integration, notification listener delivery, contact attachments, and Playwright browser execution are still untested because their implementation tasks have not started.
+- Sitemap/robots, dashboard content resources, Redis-backed cache/queues, frontend API integration, notification listener delivery, and contact attachments are still untested because their implementation tasks have not started.
+- ADM-001 covers Filament dashboard authentication, explicit administrator authorization, noindex/private headers, English/Arabic direction, login throttling, logout, and interactive owner provisioning.

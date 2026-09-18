@@ -5,7 +5,7 @@ Production-ready bilingual portfolio platform for a Laravel developer.
 ## Applications
 
 - `frontend/` - Angular 22 public website foundation with SSR and hydration.
-- `backend/` - Laravel 13 API with implemented public read/write endpoints. Filament dashboard is not installed yet.
+- `backend/` - Laravel 13 API with implemented public read/write endpoints and a Filament owner dashboard at `/admin`.
 - `docs/` - Project requirements, architecture, task tracking, testing, deployment, and session logs.
 
 ## Local Environment
@@ -62,7 +62,7 @@ C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version
 
 ## Current State
 
-The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, and public read/write API are initialized.
+The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, public read/write API, and Filament dashboard authentication are initialized.
 
 ## Backend
 
@@ -91,6 +91,16 @@ herd php artisan route:list --path=api/v1
 Implemented public read endpoints include `/api/v1/site`, `/api/v1/about`, `/api/v1/projects`, `/api/v1/projects/{slug}`, `/api/v1/posts`, `/api/v1/posts/{slug}`, `/api/v1/testimonials`, `/api/v1/services`, taxonomies, and social links.
 
 Implemented public write endpoints include `POST /api/v1/projects/{slug}/views`, `POST /api/v1/projects/{slug}/likes`, `DELETE /api/v1/projects/{slug}/likes`, `POST /api/v1/testimonials`, and `POST /api/v1/contact`.
+
+Filament dashboard:
+
+```powershell
+cd backend
+herd php artisan route:list --path=admin
+herd php artisan portfolio:provision-owner-admin
+```
+
+The dashboard is available at `/admin`. Registration is disabled, access requires a user with `is_admin=true`, and dashboard responses send `noindex` plus private no-store cache headers. The provisioning command prompts interactively for owner details and hides the password input.
 
 Seed small fictional local development content only after migrations are applied:
 

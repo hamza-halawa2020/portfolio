@@ -325,3 +325,37 @@
   - `migrate:fresh --seed --env=testing`: not executed because the sandbox rejected it as a destructive database command; full tests exercised Laravel's safe test database refresh path.
 - Current blockers: None for BE-004. Herd PHP still prints the known OPcache startup warning, but syntax checks, Artisan, tests, routes, migrations, and Pint pass.
 - Recommended next task: ADM-001 - Configure Filament dashboard and authentication, unless the deferred infrastructure tasks INF-001, INF-002, or INF-003 are prioritized first.
+
+## 2026-09-18 - ADM-001
+
+- Tasks attempted: ADM-001 - Configure Filament dashboard and authentication.
+- Tasks completed: ADM-001 - Configure Filament dashboard and authentication.
+- Implemented:
+  - Installed `filament/filament` `v5.8.2` and published Filament assets.
+  - Registered the Filament admin panel at `/admin` with login/logout, no public registration, neutral monochrome colors, and light/dark mode.
+  - Added explicit admin authorization fields to `users`: `is_admin`, `admin_granted_at`, and `admin_granted_by`.
+  - Updated `User::canAccessPanel()` and dashboard policies so authentication alone is denied unless `is_admin=true`.
+  - Added `portfolio:provision-owner-admin` for interactive owner provisioning with hidden password input.
+  - Added admin locale handling for English LTR and Arabic RTL, plus noindex/private-cache response headers for dashboard routes.
+  - Verified BE-004 `VISITOR_HASH_SECRET` is configured in the ignored local `.env`.
+- Verification:
+  - `herd php -v`: passed, PHP `8.5.10`; known OPcache startup warning remains.
+  - `herd composer --version`: passed, Composer `2.10.2` through Herd PHP `8.5.10`.
+  - PHP syntax checks for changed admin files and tests: passed.
+  - `herd php artisan route:list --path=admin`: passed; `/admin`, `/admin/login`, and `POST /admin/logout` are registered.
+  - `herd php artisan migrate:status`: passed; admin authorization migration is marked ran.
+  - `herd composer validate --strict`: passed.
+  - `herd composer audit`: passed, no security vulnerability advisories found.
+  - `herd php artisan test --filter=AdminDashboardAuthTest`: passed, 11 tests and 57 assertions.
+  - `herd php artisan test`: passed, 53 tests and 560 assertions.
+  - `herd php vendor\bin\pint --test`: passed.
+  - `cmd /c npx @angular/cli@22 version`: passed using project-local Angular CLI 22, not global CLI 19.
+  - `cmd /c npm run build`: passed.
+  - `cmd /c npm test -- --watch=false`: passed, 1 test file and 2 tests.
+  - `cmd /c npx playwright install chromium`: passed.
+  - `cmd /c npx playwright test`: Chromium assertion passed; the Windows command stayed attached to the Angular dev server and required manual interruption during cleanup.
+  - Temporary Laravel HTTP smoke for `/admin/login?locale=ar`: passed with status `200`, noindex header, private no-store cache header, and RTL markup.
+- Documentation updated: `README.md`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/DATABASE_SCHEMA.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, and `docs/SESSION_LOG.md`.
+- Current blockers: No ADM-001 implementation blocker. Herd PHP still prints the known OPcache startup warning. Playwright passes the browser assertion but may require manual interruption during Angular dev-server cleanup on Windows.
+- Remaining tasks: ADM-002, ADM-003, FE-001 and later frontend/content/deployment tasks, plus deferred infrastructure tasks INF-001, INF-002, and INF-003.
+- Recommended next task: ADM-002 - Implement content management resources, unless deferred infrastructure is prioritized first.

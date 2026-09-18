@@ -121,7 +121,19 @@ Angular SSR output:
 - SSR server entry: `frontend/dist/portfolio-frontend/server/server.mjs`
 - Local SSR serve script: `npm run serve:ssr:portfolio-frontend`
 
-Filament, Sanctum, permissions, and project feature packages were intentionally not installed during FND-003.
+Filament `5.8.2` was installed during ADM-001. Sanctum, Spatie Permission, and media packages are still deferred.
+
+Dashboard setup commands:
+
+```powershell
+cd backend
+herd php artisan migrate --force
+herd php artisan filament:assets
+herd php artisan portfolio:provision-owner-admin
+herd php artisan route:list --path=admin
+```
+
+The provisioning command is interactive and hides password input. Do not create or commit real owner credentials in documentation, seeders, or tests.
 
 Bootstrap 5.3.8 was verified but is not selected by default because the original project requirement specifies Tailwind CSS. Add Bootstrap only if a later decision explicitly changes the frontend styling stack.
 
@@ -212,6 +224,15 @@ Angular SSR output must be deployed with a Node-compatible SSR runtime or adapte
 
 Laravel must run behind HTTPS with secure environment values, production cookies, queues, scheduler, cache configuration, and storage links configured.
 
+Filament dashboard deployment requirements:
+
+- Serve the dashboard at `/admin` over HTTPS only.
+- Disable public registration; owner/admin creation must use `portfolio:provision-owner-admin`.
+- Verify `users.is_admin=true` for the intended owner account.
+- Keep dashboard routes private and protected by Laravel session/CSRF middleware.
+- Confirm dashboard responses include `X-Robots-Tag: noindex, nofollow, noarchive` and private no-store cache headers.
+- Confirm English LTR and Arabic RTL dashboard rendering with `/admin/login?locale=en` and `/admin/login?locale=ar`.
+
 ## Reverse Proxy
 
 Reverse proxy must route public website requests to Angular SSR and API/dashboard requests to Laravel, or use a documented alternative topology.
@@ -234,6 +255,7 @@ Production backup strategy must include MySQL backups, uploaded media backups, a
 - Credentialed CORS verification for the Angular origin and the encrypted `PUBLIC_VISITOR_COOKIE`.
 - Sitemap and robots responses.
 - Dashboard authentication.
+- Dashboard authorization denies ordinary authenticated users.
 - Storage upload and public media access.
 
 Current BE-004 API deployment note: public read/write endpoints are registered under `/api/v1`. Reads return short public cache headers; writes return `no-store`, use endpoint-specific rate limits, and require the visitor hash secret/cookie configuration. Redis is not required locally because the current rate limiter uses the configured Laravel cache store.

@@ -98,6 +98,8 @@ Update on 2026-09-18: BE-002 added a lightweight `HasLocalizedAttributes` model 
 - Reason: This protects dashboard-managed resources at the model-policy layer without inventing roles before the authentication and permissions milestone.
 - Consequences: ADM-001 or a later permissions task must replace or refine this broad policy when Filament authentication and role/permission rules are implemented.
 
+Update on 2026-09-18: ADM-001 replaced this broad policy with explicit `users.is_admin` authorization.
+
 ## DEC-013 - Development seed data
 
 - Date: 2026-09-18
@@ -126,6 +128,24 @@ Update on 2026-09-18: BE-002 added a lightweight `HasLocalizedAttributes` model 
 - Consequences: CORS must allow credentials only for explicit trusted origins. Public write rate limiters use privacy-safe visitor/IP hash keys. Project view uniqueness currently follows the schema's UTC date window, not a rolling 24-hour interval. Contact attachments are rejected until private storage and upload security are implemented.
 
 Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Form Requests, DTOs, application services, API Resources, named rate limiters, encrypted visitor cookies, HMAC-only interaction storage, pending testimonials, private contact messages, and after-commit submission events.
+
+## DEC-016 - Initial Filament owner dashboard authorization
+
+- Date: 2026-09-18
+- Context: ADM-001 requires Filament authentication, dashboard authorization, no public registration, and policy enforcement before content resources are created.
+- Options considered: allow any authenticated user; create full roles/permissions immediately; use a minimal explicit administrator flag now.
+- Selected option: use `users.is_admin` as the initial explicit administrator gate for Filament panel access and dashboard policies.
+- Reason: This satisfies strict authorization without installing a broader permissions model before resource workflows exist.
+- Consequences: Owner access is provisioned with `portfolio:provision-owner-admin`. Registration is disabled. Future Spatie Permission work may replace or augment this flag, but cannot loosen dashboard authorization accidentally.
+
+## DEC-017 - Filament admin localization and indexing posture
+
+- Date: 2026-09-18
+- Context: The dashboard must support English/Arabic, LTR/RTL, light/dark mode, and must not be indexable.
+- Options considered: rely only on app default locale; add explicit admin locale resolution; leave indexing to external robots configuration.
+- Selected option: resolve admin locale from `?locale=`, session, or `Accept-Language`, and apply noindex/private-cache headers in the Filament middleware stack.
+- Reason: This verifies locale direction inside the dashboard itself and protects private dashboard screens regardless of public robots configuration.
+- Consequences: Dashboard routes send `X-Robots-Tag` and private no-store headers. Public SEO robots/sitemap work remains separate.
 
 ## DEC-008 - Laravel backend foundation scope
 

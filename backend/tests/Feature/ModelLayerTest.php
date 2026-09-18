@@ -110,14 +110,18 @@ class ModelLayerTest extends TestCase
         $this->assertArrayNotHasKey('admin_notes', $contact->toArray());
     }
 
-    public function test_dashboard_policy_allows_authenticated_dashboard_user(): void
+    public function test_dashboard_policy_requires_explicit_administrator(): void
     {
-        $user = User::factory()->create();
+        $ordinaryUser = User::factory()->create();
+        $admin = User::factory()->administrator()->create();
         $project = Project::factory()->create();
 
-        $this->assertTrue(Gate::forUser($user)->allows('viewAny', Project::class));
-        $this->assertTrue(Gate::forUser($user)->allows('create', Project::class));
-        $this->assertTrue(Gate::forUser($user)->allows('update', $project));
+        $this->assertFalse(Gate::forUser($ordinaryUser)->allows('viewAny', Project::class));
+        $this->assertFalse(Gate::forUser($ordinaryUser)->allows('create', Project::class));
+        $this->assertFalse(Gate::forUser($ordinaryUser)->allows('update', $project));
+        $this->assertTrue(Gate::forUser($admin)->allows('viewAny', Project::class));
+        $this->assertTrue(Gate::forUser($admin)->allows('create', Project::class));
+        $this->assertTrue(Gate::forUser($admin)->allows('update', $project));
         $this->assertFalse(Gate::allows('update', $project));
     }
 }
