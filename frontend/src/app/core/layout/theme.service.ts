@@ -36,8 +36,8 @@ export class ThemeService {
 
   private applyTheme(preference: ThemePreference): void {
     const theme = this.resolveAppliedTheme(preference);
-    this.document.documentElement.dataset['bsTheme'] = theme;
-    this.document.documentElement.dataset['themePreference'] = preference;
+    this.document.documentElement.setAttribute('data-bs-theme', theme);
+    this.document.documentElement.setAttribute('data-theme-preference', preference);
   }
 
   private readInitialPreference(): ThemePreference {
