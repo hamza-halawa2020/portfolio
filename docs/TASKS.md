@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 17 | 0 | 10 | 0 |
+| 17 | 1 | 9 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -461,7 +461,7 @@
 
 ### FE-001 - Implement frontend app shell, SSR, routing, and layout
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: FND-004, BE-003
 - Files: `frontend/src/`
 - Acceptance criteria:

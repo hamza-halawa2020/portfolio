@@ -1,6 +1,60 @@
-<main>
-  <h1>{{ title }}</h1>
-  <p>The platform frontend is initialized.</p>
+<a class="skip-link" href="#main-content">{{ copy().skipToContent }}</a>
+
+<header class="site-header">
+  <nav class="navbar navbar-expand-lg shell-nav" [class.is-rtl]="isRtl()" aria-label="Primary navigation">
+    <a class="brand" [routerLink]="['/', currentLocale()]">{{ copy().brand }}</a>
+
+    <button
+      class="menu-button"
+      type="button"
+      [attr.aria-expanded]="isMenuOpen()"
+      aria-controls="primary-navigation"
+      (click)="toggleMenu()"
+    >
+      <span aria-hidden="true"></span>
+      <span class="visually-hidden">{{ isMenuOpen() ? copy().closeMenu : copy().menu }}</span>
+    </button>
+
+    <div class="nav-panel" id="primary-navigation" [class.is-open]="isMenuOpen()">
+      <ul class="nav-list">
+        @for (item of navItems; track item.key) {
+          <li>
+            <a
+              [routerLink]="localizedUrl(item.key)"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: item.key === 'home' }"
+            >
+              {{ copy().navigation[item.key] }}
+            </a>
+          </li>
+        }
+      </ul>
+
+      <div class="shell-controls" [attr.aria-label]="copy().languageLabel">
+        <a class="control-link" [class.is-active]="currentLocale() === 'en'" [routerLink]="languageSwitchUrl('en')" (click)="setLocale('en')">EN</a>
+        <a class="control-link" [class.is-active]="currentLocale() === 'ar'" [routerLink]="languageSwitchUrl('ar')" (click)="setLocale('ar')">AR</a>
+      </div>
+
+      <div class="theme-controls" [attr.aria-label]="copy().themeLabel">
+        @for (theme of themeOptions; track theme) {
+          <button type="button" [class.is-active]="themeService.preference() === theme" (click)="setTheme(theme)">
+            {{ copy().themes[theme] }}
+          </button>
+        }
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main id="main-content" tabindex="-1">
+  <router-outlet />
 </main>
 
-<router-outlet />
+<footer class="site-footer">
+  <p>{{ copy().footerLead }}</p>
+  <nav aria-label="Footer navigation">
+    <a [routerLink]="['/', currentLocale(), 'privacy']">{{ copy().navigation['privacy'] }}</a>
+    <a [routerLink]="['/', currentLocale(), 'contact']">{{ copy().navigation['contact'] }}</a>
+  </nav>
+  <small>{{ copy().footerNote }}</small>
+</footer>

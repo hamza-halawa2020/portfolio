@@ -1,1 +1,60 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap-reboot.min.css';
+@import 'bootstrap/dist/css/bootstrap-utilities.min.css';
+
+:root {
+  color-scheme: light;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f8f9fa;
+  --color-text: #111111;
+  --color-muted: #5f6368;
+  --color-border: #dedede;
+  --color-border-strong: #111111;
+  --layout-max: 76rem;
+  --layout-gutter: clamp(1rem, 4vw, 2rem);
+}
+
+:root[data-bs-theme='dark'] {
+  color-scheme: dark;
+  --color-surface: #101010;
+  --color-surface-raised: #191919;
+  --color-text: #f6f6f6;
+  --color-muted: #b8b8b8;
+  --color-border: #333333;
+  --color-border-strong: #f6f6f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-surface);
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+button,
+a {
+  border-radius: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

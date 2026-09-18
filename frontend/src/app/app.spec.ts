@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
+import { routes } from './app.routes';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter(routes)],
     })
       .compileComponents();
   });
@@ -15,11 +18,13 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the initialized shell', async () => {
+  it('should render the localized shell navigation', async () => {
     const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('main h1')?.textContent).toContain('Portfolio Platform');
-    expect(compiled.querySelector('main p')?.textContent).toContain('frontend is initialized');
+    expect(compiled.querySelector('header')?.textContent).toContain('Portfolio Platform');
+    expect(compiled.querySelector('nav')?.textContent).toContain('Projects');
+    expect(compiled.querySelector('#main-content')).toBeTruthy();
   });
 });
