@@ -11,6 +11,17 @@ SEO is a core project requirement. Public pages must be rendered through Angular
 - Project and blog detail pages must be indexable and server-rendered.
 - Do not rely on client-side JavaScript for titles, descriptions, or primary content.
 
+FND-004 foundation status:
+
+- Angular SSR is enabled.
+- Hydration is configured with `provideClientHydration()`.
+- Server entry point exists at `frontend/src/server.ts`.
+- Server routes configuration exists at `frontend/src/app/app.routes.server.ts`.
+- Production build generated browser and server output under `frontend/dist/portfolio-frontend`.
+- Initial prerendered HTML contains `lang="en"`, title `Portfolio Platform`, semantic `<main>`, hydration state, and no `noindex`.
+
+Detailed metadata, canonical URLs, `hreflang`, Open Graph, Twitter/X cards, JSON-LD, sitemap, robots, redirects, and localized URLs remain for the dedicated SEO implementation tasks.
+
 ## URL and Localization Strategy
 
 - Arabic and English pages use separate URLs.
@@ -82,4 +93,3 @@ SEO is a core project requirement. Public pages must be rendered through Angular
 8. Crawl internal links and image alt text.
 9. Check for duplicate titles/descriptions and accidental `noindex`.
 10. Confirm dashboard pages are not indexable.
-

@@ -4,7 +4,7 @@
 
 The repository will support native and Docker-based local development after foundation tasks are complete.
 
-Current state: the Laravel backend has been initialized in `backend/`; the Angular frontend has not been initialized.
+Current state: the Laravel backend has been initialized in `backend/`; the Angular frontend foundation has been initialized in `frontend/`.
 
 ### Selected Local Strategy After Herd Verification
 
@@ -57,7 +57,17 @@ herd php artisan test
 vendor\bin\pint.bat --test
 ```
 
-Frontend commands will be finalized when Angular is initialized.
+Frontend commands:
+
+```powershell
+$nodeDir="$env:USERPROFILE\.config\herd\bin\nvm\v24.21.0"
+$env:PATH="$nodeDir;$env:PATH"
+cd frontend
+npm install
+npm run build
+npm test -- --watch=false
+npm audit
+```
 
 Framework initialization command used for the backend:
 
@@ -65,11 +75,18 @@ Framework initialization command used for the backend:
 herd composer create-project laravel/laravel backend "^13.0"
 ```
 
-Planned frontend initialization command for a later task:
+Frontend initialization command used:
 
 ```powershell
-npx @angular/cli@22 ng new frontend --standalone --routing --style=scss --ssr --strict
+npx @angular/cli@22 new portfolio-frontend --directory frontend --routing --style css --ssr --standalone --strict --package-manager npm --skip-git --defaults
 ```
+
+Angular SSR output:
+
+- Browser output: `frontend/dist/portfolio-frontend/browser`
+- Server output: `frontend/dist/portfolio-frontend/server`
+- SSR server entry: `frontend/dist/portfolio-frontend/server/server.mjs`
+- Local SSR serve script: `npm run serve:ssr:portfolio-frontend`
 
 Filament, Sanctum, permissions, and project feature packages were intentionally not installed during FND-003.
 
@@ -145,7 +162,7 @@ herd isolate 8.5
 
 ## Angular Deployment
 
-Angular SSR output must be deployed with a Node-compatible SSR runtime or adapter selected during implementation. Static prerendered pages may be served through the same deployment.
+Angular SSR output must be deployed with a Node-compatible SSR runtime or adapter selected during implementation. The current foundation build uses Angular's SSR server output under `frontend/dist/portfolio-frontend/server` and prerenders the root route.
 
 ## Laravel Deployment
 

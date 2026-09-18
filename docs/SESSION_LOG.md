@@ -116,3 +116,32 @@
   - No portfolio business migrations were added.
 - Current blockers: No FND-003 blockers. Monitor the Herd OPcache warning during future Laravel work.
 - Recommended next task: FND-004 - Initialize Angular frontend, using Node.js 24 and project-local Angular CLI 22.
+
+## 2026-09-18 - FND-004
+
+- Tasks attempted: FND-004 - Initialize Angular frontend.
+- Tasks completed: FND-004 - Initialize Angular frontend.
+- Files changed: `frontend/`, `README.md`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/SEO.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Removed only `frontend/.gitkeep` to allow Angular initialization.
+  - Initialized Angular with Herd-managed Node.js 24 and command: `npx @angular/cli@22 new portfolio-frontend --directory frontend --routing --style css --ssr --standalone --strict --package-manager npm --skip-git --defaults`.
+  - Replaced the generated Angular demo page with a minimal semantic shell containing the application name, a short initialized statement, and a `<main>` element.
+  - Set the document title to `Portfolio Platform`.
+  - Added minimal Playwright configuration because FND-004 acceptance criteria require Playwright configuration.
+  - Did not install Tailwind, Transloco, API integration, public pages, final design system, or E2E browser binaries.
+- Tests executed and results:
+  - Herd Node environment check: passed, Node.js `v24.21.0`.
+  - Herd npm check: passed, npm `11.19.0`.
+  - `npx @angular/cli@22 version`: passed, Angular CLI `22.1.8`, Angular `22.1.7`, Node `24.21.0`, npm `11.19.0`.
+  - `npm run build`: passed; browser and server SSR output generated under `frontend/dist/portfolio-frontend`.
+  - `npm test -- --watch=false`: passed; 1 test file, 2 tests.
+  - `npm audit`: passed; found 0 vulnerabilities.
+  - `npx playwright --version`: passed, Playwright `1.63.0`.
+  - SSR output inspection: passed; `frontend/dist/portfolio-frontend/browser/index.html` contains `lang="en"`, title `Portfolio Platform`, semantic `<main>`, hydration state/markers, and no `noindex`.
+  - File checks: passed; `package-lock.json`, `src/server.ts`, `src/app/app.routes.server.ts`, `dist/portfolio-frontend/browser`, `dist/portfolio-frontend/server/server.mjs`, and `playwright.config.ts` exist.
+  - Nested Git check: passed; `frontend/.git` does not exist.
+- Known warnings:
+  - PowerShell blocks `npm.ps1` and `npx.ps1`, so commands used Herd Node's `npm.cmd` and `npx.cmd`.
+  - `npm install --save-dev @playwright/test` emitted npm's install-scripts review warning for packages with install scripts; install and audit completed successfully.
+- Current blockers: No FND-004 blockers.
+- Recommended next task: FND-005 should be reviewed because it still describes Docker, but the user explicitly selected Laravel Herd and no Docker. Update or replace that task before executing any environment-service setup.

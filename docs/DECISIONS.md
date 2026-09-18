@@ -73,3 +73,12 @@ Update on 2026-09-18: Herd PHP `8.5.10`, Herd Composer `2.10.2`, and Herd-manage
 - Selected option: initialize only the Laravel 13 skeleton and default development tooling.
 - Reason: The task acceptance criteria only required the backend foundation, PHP `^8.5`, safe environment files, and passing default tests.
 - Consequences: Filament, Sanctum, Spatie Permission, API resources, project models, and business migrations remain for later backend/dashboard tasks.
+
+## DEC-009 - Angular frontend foundation scope
+
+- Date: 2026-09-18
+- Context: FND-004 required Angular 22, strict TypeScript, routing, SSR, hydration, unit testing, and Playwright configuration, while explicitly deferring public pages, API integration, Tailwind, Transloco, and final design.
+- Options considered: initialize Angular only; initialize Angular plus full app shell/localization/theme; initialize Angular plus final homepage.
+- Selected option: initialize only the Angular foundation with a minimal semantic shell, Vitest unit test, and Playwright configuration.
+- Reason: This satisfies foundation verification without creating throwaway public-page content or final design decisions.
+- Consequences: Tailwind, Transloco, theme handling, public routes, API integration, and E2E browser installation/runs remain for later frontend tasks.

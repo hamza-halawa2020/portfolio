@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 5 | 0 | 17 | 0 |
+| 6 | 0 | 16 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -140,7 +140,7 @@
 
 ### FND-004 - Initialize Angular frontend
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: FND-001, FND-002
 - Files: `frontend/`
 - Acceptance criteria:
@@ -153,7 +153,14 @@
   - `cmd /c npm run build`
   - `cmd /c npm test`
 - Notes:
-- Completed:
+  - Initialized Angular app `portfolio-frontend` in `frontend/` with Angular CLI `22.1.8` using Herd-managed Node.js `24.21.0` and npm `11.19.0`.
+  - Angular framework packages are `22.1.7`; Angular CLI/build/SSR packages are `22.1.8`.
+  - Standalone, routing, strict TypeScript, CSS, SSR, hydration, Vitest, and Playwright configuration are present.
+  - Replaced the generated Angular demo page with a minimal semantic shell and title `Portfolio Platform`.
+  - Production build generated browser/server output under `frontend/dist/portfolio-frontend`.
+  - No nested `frontend/.git` repository was created.
+  - Tailwind, Transloco, public pages, API integration, final design system, and E2E browser installation/runs are deferred to later tasks.
+- Completed: 2026-09-18
 
 ### FND-005 - Configure Docker and development services
 

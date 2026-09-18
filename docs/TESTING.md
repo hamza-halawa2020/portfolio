@@ -37,6 +37,15 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - FND-003 `backend\vendor\bin\pint.bat --test`: passed.
   - FND-003 `.env` ignore check: passed through `backend/.gitignore`.
   - FND-003 `.env.example` secret check: passed; `APP_KEY` is empty and no generated key is present.
+  - FND-004 Node environment check through Herd Node path: passed, Node.js `v24.21.0`, npm `11.19.0`.
+  - FND-004 `npx @angular/cli@22 version`: passed, Angular CLI `22.1.8`, Angular `22.1.7`, Node `24.21.0`.
+  - FND-004 Angular initialization: passed with `npx @angular/cli@22 new portfolio-frontend --directory frontend --routing --style css --ssr --standalone --strict --package-manager npm --skip-git --defaults`.
+  - FND-004 `npm run build`: passed; generated browser and server SSR output under `frontend/dist/portfolio-frontend`.
+  - FND-004 `npm test -- --watch=false`: passed; 1 test file, 2 tests.
+  - FND-004 `npm audit`: passed, found 0 vulnerabilities.
+  - FND-004 `npx playwright --version`: passed, Playwright `1.63.0`.
+  - FND-004 SSR HTML inspection: passed; prerendered HTML includes `lang="en"`, title `Portfolio Platform`, semantic `<main>`, hydration markers/state, and no `noindex`.
+  - FND-004 nested Git check: passed; no `frontend/.git` exists.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -99,6 +108,10 @@ herd composer --working-dir=backend audit
 cd backend
 herd php artisan test
 npx @angular/cli@22 ng version
+npm run build
+npm test -- --watch=false
+npm audit
+npm run test:e2e
 ```
 
 Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
@@ -111,3 +124,6 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - The globally installed Angular CLI is `19.0.7`, so Angular 22 CLI must be invoked through a project-local install or `npx`.
 - Direct `node` in the Codex sandbox still resolves to `v22.13.0`; use the Herd-managed Node `24.21.0` binary or prepend its directory for Angular commands.
 - Herd PHP prints an OPcache API warning on startup. It comes from the CLI PHP configuration loaded at `C:\Users\hamza\.config\herd\bin\php85\php.ini`. Composer, Artisan, Pint, and tests still pass; keep monitoring it as an environment issue.
+- PowerShell blocks the Herd Node `npm.ps1` and `npx.ps1` shims; use `npm.cmd` and `npx.cmd` or prepend the Herd Node path in a command-scoped environment.
+- `npm install --save-dev @playwright/test` emitted npm's install-scripts review warning for packages with install scripts. The install and audit completed successfully.
+- Playwright is configured, but browser binaries were not installed or tested during FND-004 because the task did not require running E2E tests.

@@ -4,7 +4,7 @@ Production-ready bilingual portfolio platform for a Laravel developer.
 
 ## Applications
 
-- `frontend/` - Angular 22 public website. Not initialized yet.
+- `frontend/` - Angular 22 public website foundation with SSR and hydration.
 - `backend/` - Laravel 13 API foundation. Filament dashboard is not installed yet.
 - `docs/` - Project requirements, architecture, task tracking, testing, deployment, and session logs.
 
@@ -29,17 +29,20 @@ herd php
 herd composer
 ```
 
-Angular work must use Node.js 24 LTS and a project-local Angular CLI 22 invocation:
+Angular work must use Node.js 24 LTS and the project-local Angular CLI 22:
 
 ```powershell
-npx @angular/cli@22
+cd frontend
+npm run build
+npm test -- --watch=false
+npm run test:e2e
 ```
 
 Do not use the globally installed Angular CLI 19.
 
 ## Current State
 
-The repository foundations and Laravel backend foundation are initialized. The Angular application has not been created yet.
+The repository foundations, Laravel backend foundation, and Angular frontend foundation are initialized.
 
 ## Backend
 

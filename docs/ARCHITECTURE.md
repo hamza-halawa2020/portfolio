@@ -4,8 +4,8 @@
 
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
-- Application state: Laravel backend initialized in `backend/`; Angular frontend still represented by `frontend/.gitkeep`.
-- Missing application code: Angular app, CI files, Filament dashboard, public API feature code.
+- Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
+- Missing application code: CI files, Filament dashboard, public API feature code, public website pages, localization/theme implementation.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -39,6 +39,9 @@ Updated verification after Herd runtime selection:
 | Angular CLI via `npx @angular/cli@22` | `22.1.8` with Node `24.21.0` |
 | Laravel backend | Laravel Framework `13.32.0` |
 | Backend PHP constraint | `^8.5` |
+| Angular frontend | Angular `22.1.7`, Angular CLI `22.1.8`, npm `11.19.0` |
+| Frontend test runner | Vitest `4.1.11` |
+| Frontend E2E foundation | Playwright `1.63.0` configured |
 
 ## Required Target Versions
 
@@ -131,17 +134,20 @@ npm --version
 
 ## Frontend Architecture
 
-- Angular standalone application in `frontend/`.
+- Angular 22.1.7 standalone application in `frontend/`.
 - Angular Router with lazy-loaded page routes.
-- Angular SSR and hydration for public pages.
+- Angular SSR and hydration are configured through `@angular/ssr`, `src/server.ts`, `src/main.server.ts`, `src/app/app.config.server.ts`, `src/app/app.routes.server.ts`, and `provideClientHydration()`.
+- Production SSR build output is generated at `frontend/dist/portfolio-frontend` with browser output in `browser/` and server output in `server/`.
 - Prerender suitable static pages such as privacy and selected content pages when data availability allows.
-- bootstarp CSS integrated with CSS custom properties for monochrome design tokens.
+- CSS is the initial stylesheet format for the Angular foundation.
+- Tailwind, Bootstrap, Transloco, final design system, API integration, public pages, and final SEO services are deferred to later tasks.
 - Transloco or equivalent maintained runtime translation solution for UI text.
 - Angular services/repositories for API access; components stay focused on rendering and local UI state.
 - Signals for local UI state such as theme menu, language choice, and small interaction states.
 - RxJS for API workflows and asynchronous forms.
 - Reactive Forms for contact and testimonial submissions.
 - Dedicated SEO service for localized metadata, canonical links, `hreflang`, Open Graph, Twitter/X cards, and JSON-LD.
+- Current shell is intentionally minimal: title `Portfolio Platform`, an English `lang` attribute, semantic `<main>`, and no `noindex` metadata.
 
 ## Backend Architecture
 
