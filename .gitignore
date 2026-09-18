@@ -1,0 +1,50 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+dist/
+build/
+.angular/
+.vite/
+coverage/
+playwright-report/
+test-results/
+
+# Laravel
+backend/storage/*.key
+backend/storage/app/*
+!backend/storage/app/.gitignore
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/bootstrap/cache/*.php
+backend/public/storage
+
+# Angular
+frontend/.angular/
+frontend/dist/
+frontend/.out/
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local runtime markers
+.phpunit.result.cache
+.nvmrc.local
+

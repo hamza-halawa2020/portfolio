@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 2 | 0 | 19 | 1 |
+| 3 | 1 | 18 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -66,7 +66,7 @@
 
 ### FND-001A - Verify Laravel Herd runtime before repository initialization
 
-- Status: [!] Blocked
+- Status: [x] Completed
 - Dependencies: FND-001
 - Files: `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/SESSION_LOG.md`
 - Acceptance criteria:
@@ -85,14 +85,18 @@
   - `npm --version`
   - `nvm list`
 - Notes:
-  - Codex sandbox cannot execute `herd` or `nvm` because they are not visible on PATH.
-  - User shell verified `herd php -v` as PHP `8.4.25`, `herd composer --version` as Composer `2.10.2`, `node -v` as `v22.13.0`, and `npm -v` as `11.3.0`.
-  - Blocked until PHP 8.5 is selected through Herd and Node.js 24 LTS is active.
-- Completed:
+  - Herd CLI `1.30.0` verified through installed Herd binary.
+  - Herd PHP `8.5.10` verified through `herd php -v`.
+  - Herd Composer `2.10.2` verified through `herd composer --version`, using PHP `8.5.10`.
+  - Herd PHP 8.5 binary verified at `C:/Users/hamza/.config/herd/bin/php85/php.exe`.
+  - Herd NVM has Node `24.21.0`; direct Herd-managed Node binary verified as `v24.21.0` with npm `11.19.0`.
+  - Angular CLI `22.1.8` verified through `npx @angular/cli@22` with Node `24.21.0`.
+  - PHP startup prints an OPcache API warning but commands exit successfully; monitor during Laravel initialization.
+- Completed: 2026-09-18
 
 ### FND-002 - Initialize repository foundations
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: FND-001
 - Files: `.editorconfig`, `.gitignore`, `README.md`, root workspace files
 - Acceptance criteria:
