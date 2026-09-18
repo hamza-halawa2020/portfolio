@@ -5,7 +5,7 @@ Production-ready bilingual portfolio platform for a Laravel developer.
 ## Applications
 
 - `frontend/` - Angular 22 public website. Not initialized yet.
-- `backend/` - Laravel 13 API and Filament dashboard. Not initialized yet.
+- `backend/` - Laravel 13 API foundation. Filament dashboard is not installed yet.
 - `docs/` - Project requirements, architecture, task tracking, testing, deployment, and session logs.
 
 ## Local Environment
@@ -39,7 +39,23 @@ Do not use the globally installed Angular CLI 19.
 
 ## Current State
 
-The repository foundations are initialized, but the Laravel and Angular applications have not been created yet.
+The repository foundations and Laravel backend foundation are initialized. The Angular application has not been created yet.
+
+## Backend
+
+Use Herd commands from the repository root or from `backend/`:
+
+```powershell
+herd php backend/artisan --version
+herd composer --working-dir=backend validate
+herd composer --working-dir=backend audit
+```
+
+Run backend tests from the backend directory so PHPUnit vendor paths resolve correctly:
+
+```powershell
+cd backend
+herd php artisan test
+```
 
 See `docs/TASKS.md` for the current task status and `docs/SESSION_LOG.md` for verification history.
-

@@ -76,3 +76,43 @@
   - `git status --short --untracked-files=all`: showed modified documentation files only after updates; foundation files are tracked in the repository.
 - Current blockers: Direct `node` in the Codex sandbox still resolves to `v22.13.0`; use the Herd Node 24 binary or prepend its directory for Angular commands. Herd PHP emits an OPcache API warning on startup; PHP and Composer commands still exit successfully.
 - Recommended next task: FND-003 - Initialize Laravel backend with Herd PHP 8.5 and Herd Composer.
+
+## 2026-09-18 - FND-003
+
+- Tasks attempted: FND-003 - Initialize Laravel backend.
+- Tasks completed: FND-003 - Initialize Laravel backend.
+- Files changed: `backend/`, `README.md`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/DATABASE_SCHEMA.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Removed only `backend/.gitkeep` to allow Laravel initialization.
+  - Initialized Laravel with `herd composer create-project laravel/laravel backend "^13.0"`.
+  - Installed Laravel Framework `13.32.0`.
+  - Updated `backend/composer.json` to require PHP `^8.5`, Laravel `^13.0`, and stable minimum stability.
+  - Set app name to `Portfolio Platform API`.
+  - Set backend timezone to UTC through `APP_TIMEZONE`.
+  - Kept default locale as `en` and documented supported locales as `en,ar`.
+  - Kept generated app key only in ignored `backend/.env`; `backend/.env.example` keeps `APP_KEY=` empty and contains no production secrets.
+  - Did not install Filament, Sanctum, Spatie Permission, media packages, business models, business migrations, Angular, Docker, or Git initialization.
+- Tests executed and results:
+  - `herd php -v`: passed, PHP `8.5.10`.
+  - `herd composer --version`: passed, Composer `2.10.2` through PHP `8.5.10`.
+  - `herd php --ini`: passed; CLI config loaded from `C:\Users\hamza\.config\herd\bin\php85\php.ini`.
+  - `herd php backend/artisan --version`: passed, Laravel Framework `13.32.0`.
+  - `herd composer --working-dir=backend validate`: passed, `./composer.json is valid`.
+  - `herd composer --working-dir=backend audit`: passed, no security vulnerability advisories found.
+  - `herd php backend/artisan about`: passed; app booted as `Portfolio Platform API` with Laravel `13.32.0`, PHP `8.5.10`, timezone `UTC`, locale `en`.
+  - `herd php backend/artisan test`: failed from repository root because PHPUnit vendor paths resolved relative to the root.
+  - `herd php artisan test` from `backend/`: passed, 2 tests and 2 assertions.
+  - `backend\vendor\bin\pint.bat --test`: passed.
+  - `git check-ignore -v backend/.env`: passed; `backend/.env` is ignored.
+  - `.env.example` secret check: passed; no generated `base64:` app key is present.
+  - `herd composer --working-dir=backend show --direct`: passed; direct packages are Laravel skeleton defaults only.
+- OPcache warning status:
+  - Exact warning: `Zend OPcache requires Zend Engine API version 420240925. The Zend Engine API version 420250925 which is installed, is newer. Contact Zend Technologies at http://www.zend.com/ for a later version of Zend OPcache.`
+  - Source: Herd CLI PHP configuration at `C:\Users\hamza\.config\herd\bin\php85\php.ini`.
+  - Impact: Composer, Artisan, Pint, and tests pass; document as a known environment warning, not resolved.
+- Database status:
+  - Laravel installer detected local MySQL and ran default skeleton migrations for local database `portfolio`.
+  - `backend/phpunit.xml` uses in-memory SQLite for automated tests.
+  - No portfolio business migrations were added.
+- Current blockers: No FND-003 blockers. Monitor the Herd OPcache warning during future Laravel work.
+- Recommended next task: FND-004 - Initialize Angular frontend, using Node.js 24 and project-local Angular CLI 22.

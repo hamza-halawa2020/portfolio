@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 4 | 0 | 18 | 0 |
+| 5 | 0 | 17 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -115,7 +115,7 @@
 
 ### FND-003 - Initialize Laravel backend
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: FND-001, FND-002
 - Files: `backend/`
 - Acceptance criteria:
@@ -128,7 +128,15 @@
   - `php artisan --version`
   - `php artisan test`
 - Notes:
-- Completed:
+  - Initialized Laravel skeleton `v13.0.0`; installed framework version is Laravel `13.32.0`.
+  - `backend/composer.json` requires PHP `^8.5` and Laravel framework `^13.0`.
+  - App name is `Portfolio Platform API`.
+  - Default locale is `en`; supported locales are documented as `en,ar`; timezone is UTC.
+  - `.env` contains the generated app key and is ignored by Git; `.env.example` contains no generated key or production secrets.
+  - No Filament, Sanctum, permissions, media packages, or business feature packages were installed.
+  - Laravel installer detected local MySQL and ran default skeleton migrations for a local `portfolio` database; automated tests use in-memory SQLite through `phpunit.xml`.
+  - Herd PHP emits an OPcache API warning from the CLI PHP configuration, but Composer, Artisan, Pint, and tests pass.
+- Completed: 2026-09-18
 
 ### FND-004 - Initialize Angular frontend
 

@@ -4,8 +4,8 @@
 
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
-- Application placeholders: `frontend/.gitkeep`, `backend/.gitkeep`.
-- Missing application code: Angular app, Laravel app, CI files.
+- Application state: Laravel backend initialized in `backend/`; Angular frontend still represented by `frontend/.gitkeep`.
+- Missing application code: Angular app, CI files, Filament dashboard, public API feature code.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -37,6 +37,8 @@ Updated verification after Herd runtime selection:
 | Herd-managed Node | `v24.21.0` by direct Herd NVM binary |
 | Herd-managed npm | `11.19.0` |
 | Angular CLI via `npx @angular/cli@22` | `22.1.8` with Node `24.21.0` |
+| Laravel backend | Laravel Framework `13.32.0` |
+| Backend PHP constraint | `^8.5` |
 
 ## Required Target Versions
 
@@ -143,7 +145,13 @@ npm --version
 
 ## Backend Architecture
 
-- Laravel application in `backend/`.
+- Laravel 13.32.0 application in `backend/`.
+- PHP requirement is constrained to `^8.5`.
+- Current installed backend packages are the Laravel skeleton defaults only: `laravel/framework`, `laravel/tinker`, and development tooling for Faker, Pail, Pint, Mockery, Collision, and PHPUnit.
+- Filament, Sanctum, Spatie Permission, media packages, and business feature packages are not installed yet.
+- Backend app name is `Portfolio Platform API`.
+- Backend timezone is UTC.
+- Default locale is English (`en`), and supported locales are documented as `en,ar`.
 - Versioned public API under `/api/v1`.
 - API Resources for all public responses.
 - Form Requests for validation.

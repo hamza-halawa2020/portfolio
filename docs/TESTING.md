@@ -27,6 +27,16 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - `npx @angular/cli@22 version` with Herd Node 24 on PATH: passed, Angular CLI `22.1.8`.
   - FND-002 foundation file existence check: passed for `.editorconfig`, `.gitignore`, `.nvmrc`, `README.md`, `frontend/.gitkeep`, and `backend/.gitkeep`.
   - FND-002 manual file review: passed for README app inventory, ignore rules, and editor settings.
+  - FND-003 Laravel creation: passed with `herd composer create-project laravel/laravel backend "^13.0"`.
+  - FND-003 `herd php backend/artisan --version` from repository root: passed, Laravel Framework `13.32.0`.
+  - FND-003 `herd composer --working-dir=backend validate`: passed, `./composer.json is valid`.
+  - FND-003 `herd composer --working-dir=backend audit`: passed, no security vulnerability advisories found.
+  - FND-003 `herd php backend/artisan about`: passed, app boots as `Portfolio Platform API`, Laravel `13.32.0`, PHP `8.5.10`, timezone `UTC`, locale `en`.
+  - FND-003 `herd php backend/artisan test` from repository root: failed because PHPUnit vendor paths resolved relative to the repository root.
+  - FND-003 `herd php artisan test` from `backend/`: passed, 2 tests and 2 assertions.
+  - FND-003 `backend\vendor\bin\pint.bat --test`: passed.
+  - FND-003 `.env` ignore check: passed through `backend/.gitignore`.
+  - FND-003 `.env.example` secret check: passed; `APP_KEY` is empty and no generated key is present.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -83,7 +93,10 @@ On this Windows/Herd setup, prefer:
 ```powershell
 herd php -v
 herd composer --version
-herd php artisan --version
+herd php backend/artisan --version
+herd composer --working-dir=backend validate
+herd composer --working-dir=backend audit
+cd backend
 herd php artisan test
 npx @angular/cli@22 ng version
 ```
@@ -97,4 +110,4 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - Docker must not be used for this project.
 - The globally installed Angular CLI is `19.0.7`, so Angular 22 CLI must be invoked through a project-local install or `npx`.
 - Direct `node` in the Codex sandbox still resolves to `v22.13.0`; use the Herd-managed Node `24.21.0` binary or prepend its directory for Angular commands.
-- Herd PHP prints an OPcache API warning on startup; monitor during Laravel initialization.
+- Herd PHP prints an OPcache API warning on startup. It comes from the CLI PHP configuration loaded at `C:\Users\hamza\.config\herd\bin\php85\php.ini`. Composer, Artisan, Pint, and tests still pass; keep monitoring it as an environment issue.

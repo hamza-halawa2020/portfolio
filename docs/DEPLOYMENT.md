@@ -4,7 +4,7 @@
 
 The repository will support native and Docker-based local development after foundation tasks are complete.
 
-Current state: no Laravel or Angular application has been initialized.
+Current state: the Laravel backend has been initialized in `backend/`; the Angular frontend has not been initialized.
 
 ### Selected Local Strategy After Herd Verification
 
@@ -19,7 +19,7 @@ Current user-shell verification:
 - Herd-managed npm: `11.19.0`.
 - Angular CLI through `npx @angular/cli@22`: `22.1.8`.
 
-Required before `FND-002` can begin:
+Local runtime rules:
 
 - Use Herd PHP 8.5 for Laravel.
 - Use `herd composer` for Composer.
@@ -44,29 +44,34 @@ Environment files must use safe placeholders only. Required categories will incl
 
 ## Build Commands
 
-To be finalized after app initialization. Planned commands:
+Backend commands:
 
-```bash
-cd backend && composer install
-cd backend && php artisan test
-cd frontend && npm install
-cd frontend && npm run build
-```
-
-Initial framework installation commands for later tasks, after runtimes are available:
-
-```bash
-# Backend, from repository root, after Herd PHP 8.5 and Herd Composer are verified:
-herd composer create-project laravel/laravel backend "^13.0"
+```powershell
+herd composer --working-dir=backend install
+herd composer --working-dir=backend validate
+herd composer --working-dir=backend audit
 cd backend
-herd composer require filament/filament:"^5.0" laravel/sanctum spatie/laravel-permission
-herd composer require pestphp/pest pestphp/pest-plugin-laravel --dev
-
-# Frontend, from repository root, after Node.js 24.21.0 LTS is active:
-npx @angular/cli@22 ng new frontend --standalone --routing --style=scss --ssr --strict
-cd frontend
-npm install @jsverse/transloco @jsverse/transloco-persist-lang @jsverse/transloco-locale @playwright/test
+herd php artisan --version
+herd php artisan about
+herd php artisan test
+vendor\bin\pint.bat --test
 ```
+
+Frontend commands will be finalized when Angular is initialized.
+
+Framework initialization command used for the backend:
+
+```powershell
+herd composer create-project laravel/laravel backend "^13.0"
+```
+
+Planned frontend initialization command for a later task:
+
+```powershell
+npx @angular/cli@22 ng new frontend --standalone --routing --style=scss --ssr --strict
+```
+
+Filament, Sanctum, permissions, and project feature packages were intentionally not installed during FND-003.
 
 Bootstrap 5.3.8 was verified but is not selected by default because the original project requirement specifies Tailwind CSS. Add Bootstrap only if a later decision explicitly changes the frontend styling stack.
 
@@ -86,7 +91,11 @@ Production must run Laravel scheduler every minute for aggregation, cleanup, sit
 
 ## MySQL
 
-Use MySQL 8.4 LTS. MySQL 8.0 reached EOL in April 2026, so it should not be used for this production-oriented project. Migrations must create all documented tables and indexes.
+Use MySQL 8.4 LTS for local/prod parity where available. MySQL 8.0 reached EOL in April 2026, so it should not be used for this production-oriented project.
+
+During backend initialization, the installer detected a local MySQL connection and created/migrated a local `portfolio` database using Laravel's default skeleton migrations. Automated tests use the default Laravel in-memory SQLite configuration from `backend/phpunit.xml`.
+
+`.env.example` keeps safe SQLite defaults plus commented MySQL placeholders. Production database credentials must be supplied only through `.env` or deployment secrets.
 
 ## Redis
 

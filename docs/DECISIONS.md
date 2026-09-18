@@ -64,3 +64,12 @@ Update on 2026-09-18: Herd PHP `8.5.10`, Herd Composer `2.10.2`, and Herd-manage
 - Selected option: MySQL 8.4 LTS.
 - Reason: It remains within the requested MySQL 8 family while using the supported production LTS line.
 - Consequences: Docker/native database setup should target MySQL 8.4 unless later hosting constraints require another supported MySQL 8 line.
+
+## DEC-008 - Laravel backend foundation scope
+
+- Date: 2026-09-18
+- Context: FND-003 required a fresh Laravel 13 backend without dashboard, authentication packages, permissions packages, media packages, or business feature models.
+- Options considered: install only Laravel skeleton; install Laravel plus Filament/Sanctum/permissions immediately.
+- Selected option: initialize only the Laravel 13 skeleton and default development tooling.
+- Reason: The task acceptance criteria only required the backend foundation, PHP `^8.5`, safe environment files, and passing default tests.
+- Consequences: Filament, Sanctum, Spatie Permission, API resources, project models, and business migrations remain for later backend/dashboard tasks.

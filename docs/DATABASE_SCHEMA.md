@@ -2,6 +2,16 @@
 
 This is the initial schema proposal. It must be synchronized with Laravel migrations once implementation begins.
 
+## Current Implemented Migrations
+
+FND-003 initialized the Laravel 13 skeleton. Only Laravel's default foundation migrations exist so far:
+
+- `0001_01_01_000000_create_users_table.php`
+- `0001_01_01_000001_create_cache_table.php`
+- `0001_01_01_000002_create_jobs_table.php`
+
+No portfolio business tables have been implemented yet. The broader schema below remains the proposal for later backend core tasks.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -159,4 +169,3 @@ This is the initial schema proposal. It must be synchronized with Laravel migrat
 - Purpose: aggregated dashboard reporting.
 - Columns: `id`, `date`, `metric`, `dimension` nullable, `value`, timestamps.
 - Unique constraints: `date`, `metric`, `dimension`.
-
