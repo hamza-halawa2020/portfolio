@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, Filament dashboard, public API feature code, public website pages, localization/theme implementation.
+- Missing application code: CI files, Eloquent business models, Filament dashboard, public API feature code, public website pages, localization/theme implementation.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -175,7 +175,8 @@ npm --version
 - Laravel 13.32.0 application in `backend/`.
 - PHP requirement is constrained to `^8.5`.
 - Current installed backend packages are the Laravel skeleton defaults only: `laravel/framework`, `laravel/tinker`, and development tooling for Faker, Pail, Pint, Mockery, Collision, and PHPUnit.
-- Filament, Sanctum, Spatie Permission, media packages, and business feature packages are not installed yet.
+- Portfolio business migrations are implemented for projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
+- Filament, Sanctum, Spatie Permission, media packages, Eloquent business models, and business feature packages are not installed yet.
 - Backend app name is `Portfolio Platform API`.
 - Backend timezone is UTC.
 - Default locale is English (`en`), and supported locales are documented as `en,ar`.
@@ -188,6 +189,7 @@ npm --version
 - Sanctum for dashboard/API authentication where required.
 - Laravel notifications, mail, queues, and scheduler for messages, cleanup, and analytics aggregation.
 - MySQL 8 as the primary database and Redis for queues/cache where beneficial.
+- Local MySQL `8.0.41` is accepted for initial development. Staging/production targets MySQL `8.4 LTS`, and migrations must remain compatible with both.
 
 ## Authentication Flow
 
@@ -218,14 +220,14 @@ npm --version
 
 - Track project views and likes through first-party visitor identifiers, hashed IP values using a server-side secret, user-agent hash where appropriate, project ID, and time windows.
 - Count one unique project view per project, visitor, and 24-hour period.
-- Do not store raw IP addresses.
+- Public analytics and visitor interaction tables do not store raw IP addresses.
 - Aggregate analytics through scheduled jobs where useful.
 - Document limitations from VPNs, shared networks, deleted cookies, and changing IPs in the privacy page.
 
 ## Translation Strategy
 
 - Use translation files for interface strings.
-- Use JSON translation columns for manageable dynamic content by default:
+- Use JSON translation columns for manageable dynamic content by default. BE-001 implements JSON columns for localized content and slug values; localized slug uniqueness remains an application validation concern until a future generated-column/index strategy is approved.
 
 ```json
 {

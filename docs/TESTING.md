@@ -63,6 +63,13 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - FND-005 `npm run build`: passed; Angular SSR build generated browser and server output.
   - FND-005 `npm test -- --watch=false`: passed; 1 test file and 2 tests.
   - FND-005 `npm audit`: initial sandboxed run failed due registry/cache access; escalated run passed with 0 vulnerabilities.
+  - BE-001 PHP syntax check for portfolio migration and schema test: passed.
+  - BE-001 focused `DatabaseSchemaTest`: passed, 4 tests and 67 assertions.
+  - BE-001 full backend test suite: passed, 6 tests and 69 assertions.
+  - BE-001 in-memory testing database `migrate:fresh --seed`: passed; default Laravel migrations plus portfolio business schema migration ran cleanly.
+  - BE-001 local MySQL `artisan migrate --force`: passed; portfolio business schema migration applied as batch 2 without destructive reset.
+  - BE-001 local MySQL `artisan migrate:status`: passed; portfolio business schema migration shows `[2] Ran`.
+  - BE-001 Pint check: passed.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -156,3 +163,4 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - `npm install --save-dev @playwright/test` emitted npm's install-scripts review warning for packages with install scripts. The install and audit completed successfully.
 - Playwright is configured, but browser binaries were not installed or tested during FND-004 because the task did not require running E2E tests.
 - FND-005 is complete using approved local fallbacks. Redis/Valkey, Mailpit/SMTP, and MySQL 8.4 staging/production verification remain pending infrastructure tasks.
+- BE-001 schema tests verify portfolio tables, JSON-capable translation columns, hash-based visitor privacy columns, and key unique constraints. SQLite reports Laravel JSON columns as `text`, so tests accept both `json` and SQLite `text` storage types.

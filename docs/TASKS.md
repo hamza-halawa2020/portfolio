@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 7 | 0 | 18 | 0 |
+| 8 | 0 | 17 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -252,7 +252,7 @@
 
 ### BE-001 - Design and implement database migrations
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: FND-003
 - Files: `backend/database/migrations/`, `docs/DATABASE_SCHEMA.md`
 - Acceptance criteria:
@@ -264,7 +264,14 @@
   - `php artisan migrate:fresh --seed`
   - Backend schema tests where useful.
 - Notes:
-- Completed:
+  - Added `2026_09_18_130000_create_portfolio_business_schema.php` for the documented portfolio business tables.
+  - Implemented JSON translation columns for bilingual content and slug fields.
+  - Implemented hash-based visitor/analytics fields (`visitor_id_hash`, `ip_hash`, `user_agent_hash`) without adding raw IP columns to business tables.
+  - Added schema tests for table existence, JSON-capable translation fields, privacy hash columns, and key unique constraints.
+  - Localized JSON slug uniqueness is deferred to application validation or a future documented generated-column/index strategy because portable JSON uniqueness differs between SQLite and MySQL.
+  - Ran `migrate:fresh --seed` only against an in-memory SQLite testing database; no destructive local MySQL reset was performed.
+  - Applied the new migration to local MySQL with non-destructive `artisan migrate --force`; migration status shows batch `[2] Ran`.
+- Completed: 2026-09-18
 
 ### BE-002 - Implement models, factories, seeders, enums, and policies
 

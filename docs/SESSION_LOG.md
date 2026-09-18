@@ -201,3 +201,26 @@
   - Docker file check: passed; no Docker files were added.
 - Current blockers: None for FND-005. Deferred infrastructure remains pending for Redis/Valkey, Mailpit/SMTP, and MySQL 8.4 staging/production verification.
 - Recommended next task: BE-001 - Design and implement database migrations, unless the deferred infrastructure tasks are prioritized first.
+
+## 2026-09-18 - BE-001
+
+- Tasks attempted: BE-001 - Design and implement database migrations.
+- Tasks completed: BE-001 - Design and implement database migrations.
+- Files changed: `backend/database/migrations/2026_09_18_130000_create_portfolio_business_schema.php`, `backend/tests/Feature/DatabaseSchemaTest.php`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DATABASE_SCHEMA.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Added the portfolio business schema for projects, technologies, media, project interactions, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, analytics events, and daily analytics summaries.
+  - Used JSON columns for bilingual user-facing fields and localized slugs.
+  - Added hash-based visitor and analytics fields without raw IP columns in business tables.
+  - Added schema tests for table creation, translation columns, privacy hash columns, and key unique constraints.
+  - Documented that localized JSON slug uniqueness is handled by future application validation unless a generated-column/index strategy is approved.
+  - Applied the new migration to local MySQL with `artisan migrate --force`; no destructive database command was run.
+- Tests executed and results:
+  - PHP syntax check for the new migration and schema test: passed.
+  - `artisan test --filter=DatabaseSchemaTest`: passed, 4 tests and 67 assertions.
+  - `artisan test`: passed, 6 tests and 69 assertions.
+  - In-memory SQLite `migrate:fresh --seed`: passed; default Laravel migrations plus the portfolio business schema ran cleanly.
+  - Local MySQL `artisan migrate --force`: passed; new migration applied as batch 2.
+  - Local MySQL `artisan migrate:status`: passed; new portfolio migration shows `[2] Ran`.
+  - `vendor\bin\pint --test` through Herd PHP: passed.
+- Current blockers: None for BE-001.
+- Recommended next task: BE-002 - Implement models, factories, seeders, enums, and policies.

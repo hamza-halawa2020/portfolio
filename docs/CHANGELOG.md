@@ -13,6 +13,8 @@
 - Angular 22 frontend foundation in `frontend/` with routing, strict TypeScript, SSR, hydration, Vitest unit tests, Playwright configuration, npm lockfile, and a minimal semantic shell.
 - Safe local backend environment placeholders for Herd backend URL, Angular origins, and CORS allowed origins.
 - Deferred infrastructure tasks for Redis/Valkey, local mail inbox or SMTP, and MySQL 8.4 staging/production compatibility verification.
+- Portfolio business database schema migration covering projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
+- Backend schema tests for table creation, translation columns, hash-based visitor privacy fields, and key unique constraints.
 
 ### Changed
 
@@ -21,6 +23,7 @@
 - Frontend documentation now uses Herd-managed Node.js 24, npm 11.19.0, and project-local Angular CLI 22 commands.
 - Replaced the obsolete FND-005 Docker scope with Laravel Herd local service and environment verification.
 - FND-005 now uses approved local development fallbacks: MySQL `8.0.41`, database cache/session/queue drivers, and Laravel `log` mailer.
+- Database schema documentation now reflects the implemented BE-001 migration and notes that localized JSON slug uniqueness is enforced at the application layer until a database-specific indexing strategy is approved.
 
 ### Fixed
 

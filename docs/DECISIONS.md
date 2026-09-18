@@ -78,6 +78,15 @@ Update on 2026-09-18: FND-005 accepts the currently running local MySQL `8.0.41`
 - Reason: This keeps initial development moving without installing system services, changing PATH, resetting databases, or pretending production infrastructure is complete.
 - Consequences: Redis-dependent features, Horizon if selected, distributed locks, production queue configuration, Mailpit/local SMTP, real SMTP delivery, and MySQL 8.4 staging/production verification remain separate pending tasks.
 
+## DEC-011 - Portfolio schema translation and slug indexing
+
+- Date: 2026-09-18
+- Context: Dynamic content must support Arabic and English, and local development currently verifies migrations against SQLite and MySQL 8.0.41 while staging/production targets MySQL 8.4 LTS.
+- Options considered: JSON translation columns only; separate translation tables; database-specific generated columns for localized slug uniqueness.
+- Selected option: implement JSON translation columns for BE-001 and enforce localized JSON slug uniqueness later through application validation unless a future task approves database-specific generated columns.
+- Reason: JSON columns match the documented initial translation strategy and remain portable across the current test database and MySQL target.
+- Consequences: Business migrations avoid MySQL 8.4-only features. Future API/admin tasks must validate localized slugs before writes, and any generated-column index strategy must document MySQL compatibility.
+
 ## DEC-008 - Laravel backend foundation scope
 
 - Date: 2026-09-18

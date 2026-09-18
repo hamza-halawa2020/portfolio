@@ -4,13 +4,37 @@ This is the initial schema proposal. It must be synchronized with Laravel migrat
 
 ## Current Implemented Migrations
 
-FND-003 initialized the Laravel 13 skeleton. Only Laravel's default foundation migrations exist so far:
+FND-003 initialized the Laravel 13 skeleton. BE-001 added the first portfolio business schema migration.
 
 - `0001_01_01_000000_create_users_table.php`
 - `0001_01_01_000001_create_cache_table.php`
 - `0001_01_01_000002_create_jobs_table.php`
+- `2026_09_18_130000_create_portfolio_business_schema.php`
 
-No portfolio business tables have been implemented yet. The broader schema below remains the proposal for later backend core tasks.
+Implemented portfolio business tables:
+
+- `project_categories`
+- `technologies`
+- `projects`
+- `project_technology`
+- `project_media`
+- `project_views`
+- `project_likes`
+- `testimonials`
+- `blog_categories`
+- `tags`
+- `blog_posts`
+- `blog_post_tag`
+- `services`
+- `experiences`
+- `skills`
+- `contact_messages`
+- `contact_attachments`
+- `site_settings`
+- `social_links`
+- `seo_metadata`
+- `analytics_events`
+- `analytics_daily_summaries`
 
 The existing Laravel infrastructure migrations already provide:
 
@@ -20,6 +44,8 @@ The existing Laravel infrastructure migrations already provide:
 
 FND-005 verified these migrations as already run against the local MySQL `8.0.41` database. No duplicate cache, session, or jobs migrations were generated.
 
+BE-001 verified the full migration set with an in-memory SQLite `migrate:fresh --seed` run and applied the portfolio business schema to the local MySQL database with `artisan migrate`. No destructive local MySQL reset was performed.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -27,6 +53,9 @@ FND-005 verified these migrations as already run against the local MySQL `8.0.41
 - Timestamps use Laravel `created_at` and `updated_at`.
 - Soft deletes are used for admin-managed content where accidental deletion risk is meaningful.
 - Raw IP addresses are not stored.
+- Visitor and analytics records use hashes such as `visitor_id_hash`, `ip_hash`, and `user_agent_hash`.
+- Laravel's default `sessions.ip_address` column predates the business schema and is framework session infrastructure. Public visitor analytics and interaction tables do not store raw IP addresses.
+- Localized slug uniqueness for JSON slug columns is enforced later at the validation/application layer unless a future database-specific generated-column strategy is approved for MySQL 8 compatibility.
 
 ## users
 
