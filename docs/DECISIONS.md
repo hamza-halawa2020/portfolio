@@ -5,9 +5,9 @@
 - Date: 2026-09-18
 - Context: The repository currently contains only `project.md`.
 - Options considered: initialize separate repositories; initialize requested monorepo.
-- Selected option: use the requested monorepo with `frontend/`, `backend/`, `docs/`, and `docker/`.
-- Reason: The brief explicitly requests two connected applications with shared documentation and Docker support.
-- Consequences: Future tasks must create the apps non-destructively and keep docs synchronized.
+- Selected option: use the requested monorepo with `frontend/`, `backend/`, and `docs/`.
+- Reason: The brief requires two connected applications with shared documentation. Docker was later superseded by DEC-007 after the user selected Laravel Herd.
+- Consequences: Future tasks must create the apps non-destructively and keep docs synchronized. Do not add Docker configuration unless a later explicit task reverses DEC-007.
 
 ## DEC-002 - Initial translation storage
 
@@ -47,6 +47,8 @@ Update on 2026-09-18: Herd PHP `8.5.10`, Herd Composer `2.10.2`, and Herd-manage
 - Reason: Herd is installed, supports PHP 8.5, and matches the user's active development setup.
 - Consequences: Deployment documentation may still describe production services conceptually, but local setup and foundation tasks must not rely on Docker.
 
+Update on 2026-09-18: FND-005 replaced the obsolete Docker development-services scope with a Herd-only local services scope.
+
 ## DEC-005 - Angular CLI execution strategy
 
 - Date: 2026-09-18
@@ -63,7 +65,9 @@ Update on 2026-09-18: Herd PHP `8.5.10`, Herd Composer `2.10.2`, and Herd-manage
 - Options considered: MySQL 8.0; MySQL 8.4 LTS; MySQL 9 Innovation.
 - Selected option: MySQL 8.4 LTS.
 - Reason: It remains within the requested MySQL 8 family while using the supported production LTS line.
-- Consequences: Docker/native database setup should target MySQL 8.4 unless later hosting constraints require another supported MySQL 8 line.
+- Consequences: Herd/local database setup should target MySQL 8.4 unless later hosting constraints require another supported MySQL 8 line.
+
+Update on 2026-09-18: FND-005 discovery found only a MySQL `8.0.41` client in this shell, so MySQL 8.4 LTS remains blocked for local parity verification.
 
 ## DEC-008 - Laravel backend foundation scope
 

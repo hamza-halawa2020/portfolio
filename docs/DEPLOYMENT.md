@@ -2,7 +2,7 @@
 
 ## Development Setup
 
-The repository will support native and Docker-based local development after foundation tasks are complete.
+The repository uses Laravel Herd on Windows for local PHP and Composer development. Docker is intentionally not part of the local setup.
 
 Current state: the Laravel backend has been initialized in `backend/`; the Angular frontend foundation has been initialized in `frontend/`.
 
@@ -26,7 +26,7 @@ Local runtime rules:
 - Use Node.js 24 LTS for Angular.
 - The global Angular CLI `19.0.7` must be ignored.
 
-The Codex sandbox cannot resolve `herd` or `nvm` from PATH, so automation should invoke Herd binaries by absolute path or run through the user's normal shell. Direct `node` still resolves to `v22.13.0` in the sandbox; Angular commands must run with the Herd Node 24 directory first on PATH.
+The current Codex shell can find the installed Herd application under `C:/Program Files/Herd`, but the packaged `herd.bat` cannot resolve a usable PHP runtime and reports `No usable PHP version found`. Run Herd commands from the user's normal Herd-enabled shell, or make the Herd PHP runtime available to this task shell without modifying PATH from Codex. Angular commands must use Node.js 24 and the project-local Angular CLI 22; the global Angular CLI must be ignored.
 
 ## Environment Variables
 
@@ -41,6 +41,29 @@ Environment files must use safe placeholders only. Required categories will incl
 - Visitor hash secret.
 - Angular API base URL.
 - Public site URL.
+
+Current safe local placeholders:
+
+```text
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=https://backend.test
+FRONTEND_URL=http://localhost:4200
+CORS_ALLOWED_ORIGINS=http://localhost:4200,http://127.0.0.1:4200,http://localhost:4000,http://127.0.0.1:4000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=portfolio
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+SESSION_DRIVER=database
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+MAIL_MAILER=log
+```
+
+Secrets such as database usernames, database passwords, mail passwords, app keys, and production service credentials must exist only in ignored `.env` files or deployment secret stores.
 
 ## Build Commands
 
@@ -114,9 +137,17 @@ During backend initialization, the installer detected a local MySQL connection a
 
 `.env.example` keeps safe SQLite defaults plus commented MySQL placeholders. Production database credentials must be supplied only through `.env` or deployment secrets.
 
+FND-005 discovery found MySQL client `8.0.41` and an open TCP listener on `127.0.0.1:3306`. This is not the selected MySQL `8.4 LTS` target, and the Laravel database connection could not be re-verified because Herd PHP was unavailable in the current shell.
+
 ## Redis
 
 Use Redis for cache, queues, and rate limiting where beneficial. Redis 8.10.1 is the latest verified GA release; Redis 8.2 is the current extended support line if a longer support window is preferred.
+
+FND-005 discovery did not find `redis-cli` or `valkey-cli`, and TCP `127.0.0.1:6379` was not reachable. Required non-destructive user action: install and start Redis or Valkey through Herd Pro Services if available, or approve another local Redis/Valkey service; then re-run the FND-005 checks. Do not install or start a permanent service from Codex without explicit approval.
+
+## Mail Testing
+
+Local mail currently uses `MAIL_MAILER=log`, which requires no background mail service and avoids leaking credentials. TCP `127.0.0.1:2525` was not reachable during FND-005 discovery, so Mailpit or another SMTP test service is not currently verified.
 
 ## Required PHP Extensions
 

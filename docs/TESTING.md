@@ -46,6 +46,13 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - FND-004 `npx playwright --version`: passed, Playwright `1.63.0`.
   - FND-004 SSR HTML inspection: passed; prerendered HTML includes `lang="en"`, title `Portfolio Platform`, semantic `<main>`, hydration markers/state, and no `noindex`.
   - FND-004 nested Git check: passed; no `frontend/.git` exists.
+  - FND-005 obsolete Docker scope review: passed; active task scope was replaced with Laravel Herd local services and environment configuration.
+  - FND-005 packaged Herd CLI discovery: blocked; `C:/Program Files/Herd/resources/app.asar.unpacked/resources/bin/herd.bat` exists but reports `No usable PHP version found` from this shell.
+  - FND-005 `herd php backend/artisan about`, `migrate:status`, and backend tests: blocked because Herd PHP cannot be resolved from this shell.
+  - FND-005 Node check: `node --version` passed with `v24.19.0`; `cmd /c npx @angular/cli@22 version` passed with Angular CLI `22.1.8` and Angular `22.1.7`, but this Node path is not verified as Herd-managed NVM.
+  - FND-005 MySQL discovery: `mysql --version` reports MySQL client `8.0.41`; TCP `127.0.0.1:3306` is reachable.
+  - FND-005 Redis/Valkey discovery: `redis-cli` and `valkey-cli` are not on PATH; TCP `127.0.0.1:6379` is not reachable.
+  - FND-005 mail discovery: TCP `127.0.0.1:2525` is not reachable; current mail testing strategy remains `MAIL_MAILER=log`.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -127,3 +134,4 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - PowerShell blocks the Herd Node `npm.ps1` and `npx.ps1` shims; use `npm.cmd` and `npx.cmd` or prepend the Herd Node path in a command-scoped environment.
 - `npm install --save-dev @playwright/test` emitted npm's install-scripts review warning for packages with install scripts. The install and audit completed successfully.
 - Playwright is configured, but browser binaries were not installed or tested during FND-004 because the task did not require running E2E tests.
+- FND-005 is blocked until Herd PHP/Composer commands run from the active shell, MySQL 8.4 LTS or an approved supported alternative is verified, and Redis or Valkey is installed and reachable.

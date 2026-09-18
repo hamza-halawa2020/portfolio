@@ -145,3 +145,31 @@
   - `npm install --save-dev @playwright/test` emitted npm's install-scripts review warning for packages with install scripts; install and audit completed successfully.
 - Current blockers: No FND-004 blockers.
 - Recommended next task: FND-005 should be reviewed because it still describes Docker, but the user explicitly selected Laravel Herd and no Docker. Update or replace that task before executing any environment-service setup.
+
+## 2026-09-18 - FND-005
+
+- Tasks attempted: FND-005 - Configure local services and environment with Laravel Herd.
+- Tasks completed: None; FND-005 is blocked.
+- Files changed: `README.md`, `backend/.env.example`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Replaced the obsolete active Docker task scope with a Laravel Herd local services and environment scope.
+  - Preserved historical decisions explaining that Docker was rejected for this local setup.
+  - Added safe, non-secret local placeholders for `APP_URL`, `FRONTEND_URL`, and `CORS_ALLOWED_ORIGINS` in `backend/.env.example`.
+  - Did not add Docker configuration, install services, start permanent services, modify PATH, run destructive database commands, or begin another task.
+- Tests and checks executed:
+  - `C:/Program Files/Herd/resources/app.asar.unpacked/resources/bin/herd.bat --version`: blocked because the packaged Herd CLI cannot resolve PHP and reports `No usable PHP version found`.
+  - `herd php -v`, `herd composer --version`, `herd php backend/artisan about`, `herd php backend/artisan migrate:status`, and backend tests: blocked for the same Herd PHP resolution issue in this shell.
+  - `node --version`: passed with `v24.19.0`.
+  - `cmd /c npx @angular/cli@22 version`: passed with Angular CLI `22.1.8`, Angular `22.1.7`, Node `24.19.0`, and npm reported by Angular as `11.19.0`.
+  - `mysql --version`: passed with MySQL client `8.0.41`.
+  - `Test-NetConnection 127.0.0.1 -Port 3306`: passed; MySQL TCP listener is reachable.
+  - `Test-NetConnection 127.0.0.1 -Port 6379`: failed; Redis/Valkey listener is not reachable.
+  - `Test-NetConnection 127.0.0.1 -Port 2525`: failed; local SMTP test service is not reachable.
+  - `.env` inspection was redacted; no secrets were documented or reported.
+- Current blockers:
+  - Herd PHP and Herd Composer cannot run from this Codex shell, so Laravel database and test verification cannot be completed here.
+  - MySQL `8.0.41` is reachable, but the selected local/prod parity target is MySQL `8.4 LTS`.
+  - Redis or Valkey is not installed/reachable on `127.0.0.1:6379`.
+  - Mailpit or another SMTP test service is not reachable on `127.0.0.1:2525`; current approved local fallback is `MAIL_MAILER=log`.
+- Required user action: run the Herd checks from a normal Herd-enabled shell or make Herd PHP visible to this task shell without Codex changing PATH; install/start Redis or Valkey through Herd Pro Services or another explicitly approved local service; provide/approve MySQL 8.4 LTS if local parity must be enforced.
+- Recommended next task: unblock and re-run FND-005 verification. Do not start FND-006 or any later task until FND-005 is completed or explicitly waived.

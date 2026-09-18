@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 6 | 0 | 16 | 0 |
+| 6 | 0 | 15 | 1 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -162,19 +162,44 @@
   - Tailwind, Transloco, public pages, API integration, final design system, and E2E browser installation/runs are deferred to later tasks.
 - Completed: 2026-09-18
 
-### FND-005 - Configure Docker and development services
+### FND-005 - Configure local services and environment with Laravel Herd
 
-- Status: [ ] Not started
+- Status: [!] Blocked
 - Dependencies: FND-003, FND-004
-- Files: `docker/`, `docker-compose.yml`, backend/frontend environment docs
+- Files: `README.md`, `backend/.env.example`, Angular environment files, backend CORS/environment config, `docs/*.md`
 - Acceptance criteria:
-  - Docker services exist for PHP, MySQL, Redis, Mailpit, and Node tooling.
-  - Native and Docker setup paths are documented.
-  - PHP 8.5 is used consistently.
+  - Laravel Herd is documented as the selected local development environment and Docker is not required by this task.
+  - PHP 8.5 is used through Herd, and Composer is used through Herd.
+  - Node.js 24 is used for frontend work and Angular CLI 22 is invoked through the project-local CLI or `npx @angular/cli@22`.
+  - MySQL 8.4 LTS availability and non-destructive Laravel database connection are verified.
+  - Redis or Valkey availability and connection are verified for future cache/queue usage, or the missing service is recorded.
+  - Mail testing strategy is documented without requiring a new permanent background service.
+  - Laravel environment settings document `APP_ENV`, local-only `APP_DEBUG`, `APP_URL`, database variables, Redis variables, queue/cache/session drivers, and safe `.env.example` values.
+  - CORS requirements allow only Angular development and SSR origins; production wildcard CORS is not allowed.
+  - Angular environment strategy documents development API URL, production placeholder URL, SSR compatibility, and no hardcoded API URLs inside components.
+  - Verification commands and current blockers are documented.
 - Tests:
-  - Docker config validation.
-  - Documented startup smoke test.
+  - `herd --version`
+  - `herd php -v`
+  - `herd composer --version`
+  - `herd services:list`
+  - `herd services:available`
+  - `herd services:versions`
+  - `herd php backend/artisan about`
+  - `herd php backend/artisan migrate:status`
+  - `herd php backend/artisan test`
+  - `npm run build`
+  - `npm test -- --watch=false`
 - Notes:
+  - Docker scope was removed from the active task because the confirmed local strategy is Laravel Herd on Windows.
+  - Current Codex shell can find the installed Herd package at `C:/Program Files/Herd`, but `herd.bat` cannot resolve a usable PHP runtime from this shell and reports `No usable PHP version found`.
+  - Direct `php` is unavailable on PATH; direct Composer exists under `C:/ProgramData/ComposerSetup/bin`, but must not be used for Laravel work because this project requires Herd Composer.
+  - System Node is currently `v24.19.0`; `cmd /c npx @angular/cli@22 version` uses Angular CLI `22.1.8` and Angular `22.1.7`, but this is not verified as Herd-managed Node from this shell.
+  - MySQL client is `8.0.41` and TCP port `127.0.0.1:3306` is reachable; this does not satisfy the documented MySQL `8.4 LTS` target and Laravel DB verification could not run without Herd PHP.
+  - Redis/Valkey is missing from PATH and TCP port `127.0.0.1:6379` is not reachable.
+  - Mail service on TCP port `127.0.0.1:2525` is not reachable; current safe local strategy remains `MAIL_MAILER=log`.
+  - Required user action: run the Herd commands in a normal Herd-enabled shell or make Herd PHP visible to this task shell without modifying PATH here; install/start a Redis or Valkey service through Herd Pro Services or another explicitly approved local service; upgrade/provide MySQL 8.4 LTS if local/prod parity is required.
+  - No Docker files were added and no service was installed or started.
 - Completed:
 
 ## Phase 2 - Backend Core

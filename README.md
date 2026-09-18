@@ -17,6 +17,9 @@ Required runtime commands:
 ```powershell
 herd php -v
 herd composer --version
+herd services:list
+herd services:available
+herd services:versions
 node --version
 npm --version
 npx @angular/cli@22 version
@@ -39,6 +42,17 @@ npm run test:e2e
 ```
 
 Do not use the globally installed Angular CLI 19.
+
+Current local service target:
+
+- Backend Herd URL: `https://backend.test`
+- Angular dev URL: `http://localhost:4200`
+- Angular SSR dev URL: `http://localhost:4000`
+- Database target: MySQL 8.4 LTS for local/prod parity.
+- Cache/queue target: Redis or Valkey once a local service is installed and verified.
+- Mail testing: Laravel `log` mailer until a local mail service is explicitly configured.
+
+FND-005 is currently blocked in the Codex shell because Herd PHP cannot be resolved by the packaged Herd CLI, Redis/Valkey is not reachable on `127.0.0.1:6379`, and the reachable MySQL client is `8.0.41` rather than the selected MySQL `8.4 LTS` target.
 
 ## Current State
 
