@@ -146,10 +146,10 @@
 - Current blockers: No FND-004 blockers.
 - Recommended next task: FND-005 should be reviewed because it still describes Docker, but the user explicitly selected Laravel Herd and no Docker. Update or replace that task before executing any environment-service setup.
 
-## 2026-09-18 - FND-005
+## 2026-09-18 - FND-005 initial service discovery
 
 - Tasks attempted: FND-005 - Configure local services and environment with Laravel Herd.
-- Tasks completed: None; FND-005 is blocked.
+- Tasks completed: None during this initial service discovery pass; later FND-005 verification used the absolute Herd PHP fallback.
 - Files changed: `README.md`, `backend/.env.example`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
 - Implementation notes:
   - Replaced the obsolete active Docker task scope with a Laravel Herd local services and environment scope.
@@ -173,3 +173,31 @@
   - Mailpit or another SMTP test service is not reachable on `127.0.0.1:2525`; current approved local fallback is `MAIL_MAILER=log`.
 - Required user action: run the Herd checks from a normal Herd-enabled shell or make Herd PHP visible to this task shell without Codex changing PATH; install/start Redis or Valkey through Herd Pro Services or another explicitly approved local service; provide/approve MySQL 8.4 LTS if local parity must be enforced.
 - Recommended next task: unblock and re-run FND-005 verification. Do not start FND-006 or any later task until FND-005 is completed or explicitly waived.
+
+## 2026-09-18 - FND-005 completed with approved fallbacks
+
+- Tasks attempted: FND-005 - Configure local services and environment with Laravel Herd.
+- Tasks completed: FND-005 - Configure local services and environment with Laravel Herd.
+- Files changed: `README.md`, `backend/.env.example`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/DATABASE_SCHEMA.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Used existing Herd PHP directly at `C:\Users\hamza\.config\herd\bin\php85\php.exe` because the packaged `herd.bat` wrapper is unavailable in this automation shell.
+  - Accepted local MySQL `8.0.41` for initial development while keeping MySQL `8.4 LTS` as the staging/production target.
+  - Kept local `CACHE_STORE=database`, `SESSION_DRIVER=database`, and `QUEUE_CONNECTION=database`.
+  - Kept local `MAIL_MAILER=log`.
+  - Added deferred tasks for Redis/Valkey, local mail inbox or production SMTP, and MySQL 8.4 staging/production compatibility verification.
+  - Did not install services, start permanent services, modify PATH, add Docker files, or run destructive database commands.
+- Tests executed and results:
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe -v`: passed, PHP `8.5.10`; existing OPcache warning still appears and remains non-blocking.
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version`: passed, Laravel Framework `13.32.0`.
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan about`: passed; app boots with database `mysql`, cache/session/queue `database`, and mail `log`.
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan migrate:status`: passed; default users, cache, and jobs migrations are marked ran.
+  - Laravel database version query through Artisan/Tinker: passed, MySQL `8.0.41`.
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe artisan test` from `backend/`: passed, 2 tests and 2 assertions.
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe vendor\bin\pint --test` from `backend/`: passed.
+  - `cmd /c npm run build` from `frontend/`: passed; Angular SSR browser/server output generated.
+  - `cmd /c npm test -- --watch=false` from `frontend/`: passed; 1 test file and 2 tests.
+  - `cmd /c npm audit` from `frontend/`: passed after escalation for registry/cache access; found 0 vulnerabilities.
+  - `.env.example` secret check: passed; no generated app key or real credentials were documented.
+  - Docker file check: passed; no Docker files were added.
+- Current blockers: None for FND-005. Deferred infrastructure remains pending for Redis/Valkey, Mailpit/SMTP, and MySQL 8.4 staging/production verification.
+- Recommended next task: BE-001 - Design and implement database migrations, unless the deferred infrastructure tasks are prioritized first.

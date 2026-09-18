@@ -67,7 +67,16 @@ Update on 2026-09-18: FND-005 replaced the obsolete Docker development-services 
 - Reason: It remains within the requested MySQL 8 family while using the supported production LTS line.
 - Consequences: Herd/local database setup should target MySQL 8.4 unless later hosting constraints require another supported MySQL 8 line.
 
-Update on 2026-09-18: FND-005 discovery found only a MySQL `8.0.41` client in this shell, so MySQL 8.4 LTS remains blocked for local parity verification.
+Update on 2026-09-18: FND-005 accepts the currently running local MySQL `8.0.41` instance for initial development. Staging and production still target MySQL `8.4 LTS`; migrations and SQL must remain compatible with both, and MySQL 8.4-only features must not be used without documentation.
+
+## DEC-010 - Local infrastructure fallbacks for FND-005
+
+- Date: 2026-09-18
+- Context: Redis/Valkey, Mailpit/local SMTP, and local MySQL 8.4 are not required by the currently implemented foundation features.
+- Options considered: block FND-005 until all services are installed; complete FND-005 with safe local fallbacks and track future infrastructure tasks.
+- Selected option: complete FND-005 with database-backed Laravel cache/session/queue drivers, Laravel `log` mailer, and local MySQL `8.0.41`.
+- Reason: This keeps initial development moving without installing system services, changing PATH, resetting databases, or pretending production infrastructure is complete.
+- Consequences: Redis-dependent features, Horizon if selected, distributed locks, production queue configuration, Mailpit/local SMTP, real SMTP delivery, and MySQL 8.4 staging/production verification remain separate pending tasks.
 
 ## DEC-008 - Laravel backend foundation scope
 

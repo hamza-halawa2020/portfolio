@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 6 | 0 | 15 | 1 |
+| 7 | 0 | 18 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -164,42 +164,88 @@
 
 ### FND-005 - Configure local services and environment with Laravel Herd
 
-- Status: [!] Blocked
+- Status: [x] Completed
 - Dependencies: FND-003, FND-004
 - Files: `README.md`, `backend/.env.example`, Angular environment files, backend CORS/environment config, `docs/*.md`
 - Acceptance criteria:
   - Laravel Herd is documented as the selected local development environment and Docker is not required by this task.
-  - PHP 8.5 is used through Herd, and Composer is used through Herd.
-  - Node.js 24 is used for frontend work and Angular CLI 22 is invoked through the project-local CLI or `npx @angular/cli@22`.
-  - MySQL 8.4 LTS availability and non-destructive Laravel database connection are verified.
-  - Redis or Valkey availability and connection are verified for future cache/queue usage, or the missing service is recorded.
-  - Mail testing strategy is documented without requiring a new permanent background service.
+  - PHP 8.5 is used through Herd; when the `herd` wrapper is unavailable in automation, the verified absolute Herd PHP executable may be used.
+  - Node.js 24 is used for frontend work and Angular CLI 22 is invoked through the project-local CLI or `npx @angular/cli@22`; global Angular CLI 19 is ignored.
+  - Local MySQL `8.0.41` is accepted for initial development, staging/production target MySQL `8.4 LTS` is documented, and Laravel database connection is verified non-destructively.
+  - Redis or Valkey is deferred for production/future optimization; local cache, session, and queue use database drivers.
+  - Mail testing uses the Laravel `log` mailer locally; Mailpit/local SMTP and production SMTP are deferred.
   - Laravel environment settings document `APP_ENV`, local-only `APP_DEBUG`, `APP_URL`, database variables, Redis variables, queue/cache/session drivers, and safe `.env.example` values.
   - CORS requirements allow only Angular development and SSR origins; production wildcard CORS is not allowed.
   - Angular environment strategy documents development API URL, production placeholder URL, SSR compatibility, and no hardcoded API URLs inside components.
-  - Verification commands and current blockers are documented.
+  - Verification commands pass and current deferred infrastructure tasks are documented.
 - Tests:
-  - `herd --version`
-  - `herd php -v`
-  - `herd composer --version`
-  - `herd services:list`
-  - `herd services:available`
-  - `herd services:versions`
-  - `herd php backend/artisan about`
-  - `herd php backend/artisan migrate:status`
-  - `herd php backend/artisan test`
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe -v`
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version`
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan about`
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan migrate:status`
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe artisan test`
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe vendor\bin\pint --test`
   - `npm run build`
   - `npm test -- --watch=false`
+  - `npm audit`
 - Notes:
   - Docker scope was removed from the active task because the confirmed local strategy is Laravel Herd on Windows.
-  - Current Codex shell can find the installed Herd package at `C:/Program Files/Herd`, but `herd.bat` cannot resolve a usable PHP runtime from this shell and reports `No usable PHP version found`.
-  - Direct `php` is unavailable on PATH; direct Composer exists under `C:/ProgramData/ComposerSetup/bin`, but must not be used for Laravel work because this project requires Herd Composer.
-  - System Node is currently `v24.19.0`; `cmd /c npx @angular/cli@22 version` uses Angular CLI `22.1.8` and Angular `22.1.7`, but this is not verified as Herd-managed Node from this shell.
-  - MySQL client is `8.0.41` and TCP port `127.0.0.1:3306` is reachable; this does not satisfy the documented MySQL `8.4 LTS` target and Laravel DB verification could not run without Herd PHP.
-  - Redis/Valkey is missing from PATH and TCP port `127.0.0.1:6379` is not reachable.
-  - Mail service on TCP port `127.0.0.1:2525` is not reachable; current safe local strategy remains `MAIL_MAILER=log`.
-  - Required user action: run the Herd commands in a normal Herd-enabled shell or make Herd PHP visible to this task shell without modifying PATH here; install/start a Redis or Valkey service through Herd Pro Services or another explicitly approved local service; upgrade/provide MySQL 8.4 LTS if local/prod parity is required.
-  - No Docker files were added and no service was installed or started.
+  - Absolute Herd PHP `C:/Users/hamza/.config/herd/bin/php85/php.exe` exists and reports PHP `8.5.10`.
+  - Laravel boots as `Portfolio Platform API` on Laravel `13.32.0`, PHP `8.5.10`, database driver `mysql`, cache/session/queue drivers `database`, and mail driver `log`.
+  - Laravel database connection reports MySQL `8.0.41`; this is accepted for initial local development only.
+  - Staging/production target remains MySQL `8.4 LTS`; SQL and migrations must stay compatible with both and must not use MySQL 8.4-only features without documentation.
+  - Default Laravel `cache` and `jobs` table migrations already exist and are marked ran; no duplicate migrations were generated.
+  - Redis/Valkey and Mailpit/local SMTP remain deferred infrastructure tasks, not current blockers.
+  - OPcache startup warning still appears but is non-blocking.
+  - No Docker files were added, no service was installed or started, no PATH changes were made, and no destructive database command was run.
+- Completed: 2026-09-18
+
+### INF-001 - Configure and verify Redis or Valkey
+
+- Status: [ ] Not started
+- Dependencies: FND-005
+- Files: deployment docs, backend environment docs, queue/cache configuration
+- Acceptance criteria:
+  - Redis or Valkey service is installed or provisioned in an approved environment.
+  - Laravel cache, queue, rate limiting, and any distributed-lock usage are configured and verified.
+  - Redis-dependent features, Horizon if selected, workers, and production queue configuration are documented.
+- Tests:
+  - Redis/Valkey connectivity check.
+  - Laravel cache and queue smoke tests.
+- Notes:
+  - Deferred from FND-005 because current implemented features do not require Redis locally.
+- Completed:
+
+### INF-002 - Configure local mail inbox or production SMTP
+
+- Status: [ ] Not started
+- Dependencies: FND-005
+- Files: deployment docs, backend mail configuration, notification tests
+- Acceptance criteria:
+  - Mailpit/local SMTP or production SMTP is configured in an approved environment.
+  - Contact-form and notification delivery are verified before any email workflow is marked production-ready.
+  - Secrets remain outside committed files.
+- Tests:
+  - Laravel mail notification tests.
+  - Local inbox or SMTP delivery smoke test.
+- Notes:
+  - Deferred from FND-005 because local development uses `MAIL_MAILER=log`.
+- Completed:
+
+### INF-003 - Verify MySQL 8.4 staging and production compatibility
+
+- Status: [ ] Not started
+- Dependencies: FND-005, BE-001
+- Files: deployment docs, database schema docs, migrations
+- Acceptance criteria:
+  - Staging/production MySQL `8.4 LTS` is available and verified.
+  - Migrations and SQL remain compatible with both local MySQL `8.0.41` and target MySQL `8.4 LTS`.
+  - Any MySQL 8.4-only feature use is explicitly documented and justified.
+- Tests:
+  - Non-destructive version check in staging/production-like environment.
+  - Migration verification against MySQL 8.4.
+- Notes:
+  - Local MySQL `8.0.41` is accepted only for initial development.
 - Completed:
 
 ## Phase 2 - Backend Core

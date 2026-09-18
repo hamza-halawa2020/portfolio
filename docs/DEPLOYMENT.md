@@ -26,7 +26,7 @@ Local runtime rules:
 - Use Node.js 24 LTS for Angular.
 - The global Angular CLI `19.0.7` must be ignored.
 
-The current Codex shell can find the installed Herd application under `C:/Program Files/Herd`, but the packaged `herd.bat` cannot resolve a usable PHP runtime and reports `No usable PHP version found`. Run Herd commands from the user's normal Herd-enabled shell, or make the Herd PHP runtime available to this task shell without modifying PATH from Codex. Angular commands must use Node.js 24 and the project-local Angular CLI 22; the global Angular CLI must be ignored.
+The current Codex shell can find the installed Herd application under `C:/Program Files/Herd`, but the packaged `herd.bat` cannot resolve a usable PHP runtime and reports `No usable PHP version found`. Automation may use the existing absolute Herd PHP executable `C:/Users/hamza/.config/herd/bin/php85/php.exe` for Artisan and test commands without modifying PATH. Angular commands must use Node.js 24 and the project-local Angular CLI 22; the global Angular CLI must be ignored.
 
 ## Environment Variables
 
@@ -50,10 +50,12 @@ APP_DEBUG=true
 APP_URL=https://backend.test
 FRONTEND_URL=http://localhost:4200
 CORS_ALLOWED_ORIGINS=http://localhost:4200,http://127.0.0.1:4200,http://localhost:4000,http://127.0.0.1:4000
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=portfolio
+DB_CONNECTION=sqlite
+# Local .env may use MySQL 8.0.41 for initial development.
+# Staging/production target: MySQL 8.4 LTS.
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=portfolio
 REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
@@ -131,23 +133,23 @@ Production must run Laravel scheduler every minute for aggregation, cleanup, sit
 
 ## MySQL
 
-Use MySQL 8.4 LTS for local/prod parity where available. MySQL 8.0 reached EOL in April 2026, so it should not be used for this production-oriented project.
+Use MySQL `8.0.41` for initial local development because it is already running and verified. Use MySQL `8.4 LTS` as the staging and production target. SQL and migrations must remain compatible with both; do not use MySQL 8.4-only features without documenting the requirement.
 
 During backend initialization, the installer detected a local MySQL connection and created/migrated a local `portfolio` database using Laravel's default skeleton migrations. Automated tests use the default Laravel in-memory SQLite configuration from `backend/phpunit.xml`.
 
 `.env.example` keeps safe SQLite defaults plus commented MySQL placeholders. Production database credentials must be supplied only through `.env` or deployment secrets.
 
-FND-005 discovery found MySQL client `8.0.41` and an open TCP listener on `127.0.0.1:3306`. This is not the selected MySQL `8.4 LTS` target, and the Laravel database connection could not be re-verified because Herd PHP was unavailable in the current shell.
+FND-005 verified Laravel's existing database connection non-destructively with MySQL `8.0.41`; Laravel default users, cache, and jobs migrations are marked as run. Do not run destructive commands such as `migrate:fresh`, `db:wipe`, schema drops, or database recreation without explicit approval.
 
 ## Redis
 
-Use Redis for cache, queues, and rate limiting where beneficial. Redis 8.10.1 is the latest verified GA release; Redis 8.2 is the current extended support line if a longer support window is preferred.
+Use database-backed cache, session, and queue drivers for local development.
 
-FND-005 discovery did not find `redis-cli` or `valkey-cli`, and TCP `127.0.0.1:6379` was not reachable. Required non-destructive user action: install and start Redis or Valkey through Herd Pro Services if available, or approve another local Redis/Valkey service; then re-run the FND-005 checks. Do not install or start a permanent service from Codex without explicit approval.
+Redis or Valkey remains the staging/production target and future optimization for cache, queues, rate limiting, Horizon if selected, and distributed locks. Redis-dependent features and production queue configuration must not be marked complete until Redis or Valkey is configured and tested.
 
 ## Mail Testing
 
-Local mail currently uses `MAIL_MAILER=log`, which requires no background mail service and avoids leaking credentials. TCP `127.0.0.1:2525` was not reachable during FND-005 discovery, so Mailpit or another SMTP test service is not currently verified.
+Local mail uses `MAIL_MAILER=log`, which requires no background mail service and avoids leaking credentials. Mailpit or another local SMTP inbox is deferred, and real SMTP configuration must be completed before contact-form email delivery is considered production-ready.
 
 ## Required PHP Extensions
 

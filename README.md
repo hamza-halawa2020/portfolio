@@ -48,11 +48,17 @@ Current local service target:
 - Backend Herd URL: `https://backend.test`
 - Angular dev URL: `http://localhost:4200`
 - Angular SSR dev URL: `http://localhost:4000`
-- Database target: MySQL 8.4 LTS for local/prod parity.
-- Cache/queue target: Redis or Valkey once a local service is installed and verified.
-- Mail testing: Laravel `log` mailer until a local mail service is explicitly configured.
+- Local database: MySQL `8.0.41` is accepted for initial development.
+- Staging/production database target: MySQL `8.4 LTS`.
+- Cache, session, and queue drivers: Laravel database drivers for local development.
+- Future cache/queue target: Redis or Valkey before Redis-dependent features, Horizon, distributed locks, or production queue configuration are marked complete.
+- Mail testing: Laravel `log` mailer locally; Mailpit/local SMTP and production SMTP are deferred.
 
-FND-005 is currently blocked in the Codex shell because Herd PHP cannot be resolved by the packaged Herd CLI, Redis/Valkey is not reachable on `127.0.0.1:6379`, and the reachable MySQL client is `8.0.41` rather than the selected MySQL `8.4 LTS` target.
+When the `herd` wrapper is unavailable in automation, use the existing Herd PHP executable directly:
+
+```powershell
+C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version
+```
 
 ## Current State
 

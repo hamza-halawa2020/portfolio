@@ -51,15 +51,17 @@ FND-005 local service discovery on 2026-09-18:
 | `herd --version` through packaged CLI | Blocked; packaged CLI cannot resolve PHP and reports `No usable PHP version found` |
 | `herd php -v` through packaged CLI | Blocked; packaged CLI cannot resolve PHP from this shell |
 | `herd composer --version` through packaged CLI | Blocked; packaged CLI cannot resolve PHP from this shell |
+| Absolute Herd PHP | `C:/Users/hamza/.config/herd/bin/php85/php.exe`, PHP `8.5.10`, verified usable for Artisan and tests |
 | `herd services:list` / `services:available` / `services:versions` | Previously reported `Herd Pro is required to use services`; current packaged CLI is blocked before service discovery because PHP is not resolved |
 | Direct `php` | Not available on PATH |
 | Direct Composer | Present at `C:/ProgramData/ComposerSetup/bin`, but not used for this project because Laravel work must use Herd Composer |
 | Node.js | `v24.19.0` on PATH; supported by Angular 22, but not verified as Herd-managed Node from this shell |
 | Angular CLI 22 | `cmd /c npx @angular/cli@22 version` passed with Angular CLI `22.1.8`, Angular `22.1.7`, Node `24.19.0`, npm reported by Angular as `11.19.0` |
-| MySQL client | `8.0.41`; TCP `127.0.0.1:3306` reachable |
-| MySQL target | Blocked for FND-005 because DEC-006 selected MySQL `8.4 LTS` |
-| Redis/Valkey | Blocked; no CLI found and TCP `127.0.0.1:6379` is not reachable |
-| Local mail service | Not reachable on TCP `127.0.0.1:2525`; local mail strategy remains Laravel `log` mailer |
+| Laravel backend | Boots on PHP `8.5.10`; Laravel `13.32.0`; database driver `mysql`; cache/session/queue drivers `database`; mail driver `log` |
+| MySQL local development | MySQL `8.0.41`, verified through Laravel `select version()` and non-destructive migration status |
+| MySQL staging/production target | MySQL `8.4 LTS`; migrations and SQL must remain compatible with both local 8.0.41 and target 8.4 |
+| Redis/Valkey | Deferred; no local service required for current implemented features |
+| Local mail service | Deferred; local development uses Laravel `log` mailer |
 
 ## Required Target Versions
 
@@ -121,7 +123,7 @@ Minimum required from package metadata and planned project features:
 - Herd PHP startup prints an OPcache API warning. PHP, Composer, extension listing, and version checks still exit successfully; monitor this during Laravel initialization.
 - Docker CLI and Docker Compose are not selected and should not be used.
 - Global Angular CLI is `19.0.7` and must not be used for this Angular 22 project.
-- FND-005 is blocked until Herd PHP/Composer commands can run in the active shell, MySQL 8.4 LTS is available or an approved supported MySQL 8 alternative is documented, and Redis or Valkey is installed and reachable.
+- FND-005 was completed using the absolute Herd PHP executable, local MySQL `8.0.41`, database-backed cache/session/queue drivers, and the Laravel log mailer. Redis/Valkey, Mailpit/SMTP, and MySQL 8.4 staging/production verification are tracked as deferred infrastructure tasks.
 
 ## Herd Runtime Commands Required Before FND-002
 
@@ -239,14 +241,16 @@ npm --version
 ## Caching Strategy
 
 - Cache public site settings, navigation, featured content, and stable lists.
-- Use Redis or Valkey when available and verified. Until FND-005 is unblocked, local Laravel defaults may continue using database-backed cache, queue, and session drivers.
+- Use database-backed cache/session/queue drivers for local development until Redis or Valkey is configured and verified.
+- Use Redis or Valkey for Redis-dependent features, Horizon if selected, distributed locks, and production queue configuration only after the deferred infrastructure task is complete.
 - Invalidate caches from dashboard content mutations.
 - Avoid caching private dashboard responses.
 
 ## Queue Strategy
 
 - Queue email notifications, media processing, analytics aggregation, and slow cleanup operations.
-- Use Redis or Valkey queue drivers in production where available. Local development remains database-backed until the service is installed and verified.
+- Local development uses the database queue driver.
+- Production should use Redis or Valkey queue drivers once the deferred infrastructure task is complete.
 - Document worker and scheduler commands in deployment docs.
 
 ## Deployment Topology

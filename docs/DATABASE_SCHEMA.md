@@ -12,6 +12,14 @@ FND-003 initialized the Laravel 13 skeleton. Only Laravel's default foundation m
 
 No portfolio business tables have been implemented yet. The broader schema below remains the proposal for later backend core tasks.
 
+The existing Laravel infrastructure migrations already provide:
+
+- `users`, `password_reset_tokens`, and `sessions` support from the default users migration.
+- `cache` and `cache_locks` for the local database cache driver.
+- `jobs`, `job_batches`, and `failed_jobs` for the local database queue driver.
+
+FND-005 verified these migrations as already run against the local MySQL `8.0.41` database. No duplicate cache, session, or jobs migrations were generated.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
