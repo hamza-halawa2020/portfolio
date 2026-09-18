@@ -29,6 +29,9 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'is_admin' => false,
+            'admin_granted_at' => null,
+            'admin_granted_by' => null,
             'remember_token' => Str::random(10),
         ];
     }
@@ -40,6 +43,15 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function administrator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_admin' => true,
+            'admin_granted_at' => now(),
+            'admin_granted_by' => null,
         ]);
     }
 }

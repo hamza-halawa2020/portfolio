@@ -4,13 +4,13 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 11 | 1 | 13 | 0 |
+| 12 | 1 | 12 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
 ### P0-001 - Create initial project documentation
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: None
 - Files: `AGENTS.md`, `docs/*.md`
 - Acceptance criteria:
@@ -348,7 +348,7 @@
 
 ### ADM-001 - Configure Filament dashboard and authentication
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: BE-002
 - Files: `backend/app/Providers/Filament/`, `backend/app/Filament/`
 - Acceptance criteria:
