@@ -47,16 +47,14 @@
 </header>
 
 <main id="main-content" tabindex="-1">
-  <router-outlet (activate)="onRouteActivate()" />
+  <router-outlet />
 
-  @if (currentLocale() === 'en' || !routeActive()) {
-    <section class="page-shell-fallback">
-      <p class="eyebrow">{{ copy().placeholderEyebrow }}</p>
-      <h1>{{ fallbackPage().title }}</h1>
-      <p class="lede">{{ fallbackPage().description }}</p>
-      <p class="page-note">{{ copy().placeholderNote }}</p>
-    </section>
-  }
+  <section class="page-shell-fallback">
+    <p class="eyebrow">{{ copy().placeholderEyebrow }}</p>
+    <h1>{{ fallbackPage().title }}</h1>
+    <p class="lede">{{ fallbackPage().description }}</p>
+    <p class="page-note">{{ copy().placeholderNote }}</p>
+  </section>
 </main>
 
 <footer class="site-footer">

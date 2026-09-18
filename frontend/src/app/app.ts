@@ -22,17 +22,18 @@ export class App {
   protected readonly currentLocale = this.localeService.locale;
   protected readonly copy = this.localeService.copy;
   protected readonly navItems = this.navigation.items;
+  protected readonly currentUrl = signal(this.router.url);
   protected readonly isMenuOpen = signal(false);
-  protected readonly routeActive = signal(false);
   protected readonly isRtl = computed(() => this.currentLocale() === 'ar');
   protected readonly themeOptions: readonly ThemePreference[] = ['light', 'dark', 'system'];
-  protected readonly fallbackPage = computed(() => this.englishFallbackForUrl(this.router.url));
+  protected readonly fallbackPage = computed(() => this.fallbackForUrl(this.currentUrl()));
 
   constructor() {
     this.localeService.activateLocaleFromUrl(this.router.url);
     this.applyFallbackSeo(this.router.url);
 
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event) => {
+      this.currentUrl.set(event.urlAfterRedirects);
       this.localeService.activateLocaleFromUrl(event.urlAfterRedirects);
       this.applyFallbackSeo(event.urlAfterRedirects);
       this.isMenuOpen.set(false);
@@ -59,50 +60,61 @@ export class App {
     this.isMenuOpen.update((isOpen) => !isOpen);
   }
 
-  protected onRouteActivate(): void {
-    this.routeActive.set(true);
-  }
-
   private applyFallbackSeo(url: string): void {
-    const page = this.englishFallbackForUrl(url);
+    const page = this.fallbackForUrl(url);
 
     this.seo.apply({
       description: page.description,
-      locale: 'en',
+      locale: this.currentLocale(),
       noindex: true,
       path: page.path,
       title: `${page.title} | ${this.copy().brand}`,
     });
   }
 
-  private englishFallbackForUrl(url: string): { description: string; path: string; title: string } {
+  private fallbackForUrl(url: string): { description: string; path: string; title: string } {
     const path = url.split('?')[0].split('#')[0] || '/en';
     const normalizedPath = path === '/' ? '/en' : path;
     const segments = normalizedPath.split('/').filter(Boolean);
     const section = segments[1] ?? 'home';
     const isDetail = segments.length > 2;
-    const titles: Record<string, string> = {
-      about: 'About',
-      blog: isDetail ? 'Blog detail' : 'Blog',
-      contact: 'Contact',
-      home: 'Home',
-      privacy: 'Privacy',
-      projects: isDetail ? 'Project detail' : 'Projects',
-      services: 'Services',
+    const locale = this.currentLocale();
+    const titles: Record<'en' | 'ar', Record<string, string>> = {
+      ar: {
+        about: 'نبذة',
+        blog: isDetail ? 'تفاصيل المقال' : 'المدونة',
+        contact: 'تواصل',
+        home: 'الرئيسية',
+        privacy: 'الخصوصية',
+        projects: isDetail ? 'تفاصيل العمل' : 'الأعمال',
+        services: 'الخدمات',
+      },
+      en: {
+        about: 'About',
+        blog: isDetail ? 'Blog detail' : 'Blog',
+        contact: 'Contact',
+        home: 'Home',
+        privacy: 'Privacy',
+        projects: isDetail ? 'Project detail' : 'Projects',
+        services: 'Services',
+      },
     };
 
-    if (segments[0] !== 'en' || !(section in titles)) {
+    if ((segments[0] !== 'en' && segments[0] !== 'ar') || !(section in titles[locale])) {
       return {
         description: this.copy().notFoundDescription,
-        path: normalizedPath.startsWith('/en') ? normalizedPath : '/en/not-found',
+        path: normalizedPath.startsWith(`/${locale}`) ? normalizedPath : `/${locale}/not-found`,
         title: this.copy().notFoundTitle,
       };
     }
 
     return {
-      description: 'This server-rendered route placeholder is intentionally noindexed until full page content is implemented.',
+      description:
+        locale === 'ar'
+          ? 'هذا المسار المعروض من الخادم مؤقت وغير مفهرس حتى يكتمل محتوى الصفحة.'
+          : 'This server-rendered route placeholder is intentionally noindexed until full page content is implemented.',
       path: normalizedPath,
-      title: titles[section],
+      title: titles[locale][section],
     };
   }
 }
