@@ -359,3 +359,28 @@
 - Current blockers: No ADM-001 implementation blocker. Herd PHP still prints the known OPcache startup warning. Playwright passes the browser assertion but may require manual interruption during Angular dev-server cleanup on Windows.
 - Remaining tasks: ADM-002, ADM-003, FE-001 and later frontend/content/deployment tasks, plus deferred infrastructure tasks INF-001, INF-002, and INF-003.
 - Recommended next task: ADM-002 - Implement content management resources, unless deferred infrastructure is prioritized first.
+
+## 2026-09-18 - ADM-002
+
+- Tasks attempted: ADM-002 - Implement content management resources.
+- Tasks completed: ADM-002 - Implement content management resources.
+- Implemented:
+  - Registered Filament resource discovery and added owner dashboard resources for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, public site settings, social links, and parent-owned SEO metadata.
+  - Kept Filament resources focused on forms, tables, filters, uploads, and action wiring. Create/update/delete workflows delegate to focused services under `App\Services\Admin\Content`.
+  - Added bilingual English/Arabic editing fields and tabs for supported content, independent localized slugs, translation-preserving updates, explicit English fallback behavior, SEO editing, publication/status controls, sort order, featured flags, taxonomy/technology/tag relationships, read-only public view/like counts, and ordered media.
+  - Added server-side rich-text sanitization with an explicit HTML allowlist for admin-submitted project/blog/service/profile content.
+  - Added MySQL generated-column unique indexes for English and Arabic localized slugs on routed content tables to guard concurrent duplicate writes.
+  - Added secure local media handling through Laravel storage with generated filenames, image/video MIME allowlists, configurable size limits, bilingual captions and alt text, poster images, previews, replacement-safe cleanup, and shared-reference checks before deletion.
+  - Intentionally did not implement testimonial moderation, contact inbox, analytics widgets, image transcoding, video conversion, S3 testing, or public frontend upload flows.
+- Documentation updated: `README.md`, `backend/.env.example`, `docs/ARCHITECTURE.md`, `docs/DATABASE_SCHEMA.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, and `docs/SESSION_LOG.md`.
+- Verification:
+  - `herd php artisan test`: passed, 58 tests and 580 assertions. Herd PHP printed the known OPcache startup warning but exited successfully.
+  - `herd php vendor\bin\pint --test`: passed.
+  - `herd composer validate --strict`: passed.
+  - `herd composer audit`: passed, no security vulnerability advisories found.
+  - `herd php artisan route:list --path=admin`: passed, 15 admin routes registered.
+  - `herd php artisan migrate:status`: passed, including `2026_09_18_200000_add_localized_slug_unique_indexes`.
+  - `cmd /c npm run build`: passed for the Angular SSR frontend.
+- Current blockers: No ADM-002 implementation blocker. Herd PHP still prints the known OPcache startup warning. Redis/Valkey, Mailpit/SMTP, MySQL 8.4 environment verification, testimonial moderation, contact inbox, analytics widgets, and frontend public pages remain future work.
+- Remaining tasks: ADM-003, FE-001 and later frontend/content/deployment tasks, plus deferred infrastructure tasks INF-001, INF-002, and INF-003.
+- Recommended next task: ADM-003 - Implement analytics dashboard, unless deferred infrastructure is prioritized first.

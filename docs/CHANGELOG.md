@@ -28,6 +28,11 @@
 - Filament `5.8.2` owner dashboard at `/admin` with login, logout, disabled registration, light/dark mode, neutral monochrome styling, and English/Arabic LTR/RTL rendering.
 - Explicit dashboard administrator authorization through `users.is_admin`, admin grant metadata, strict policies, and an interactive `portfolio:provision-owner-admin` command with hidden password input.
 - Dashboard noindex/private-cache middleware and focused admin authentication/authorization tests.
+- Filament content resources for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and parent-owned SEO metadata.
+- Admin content service layer for bilingual translation preservation, localized slug normalization, SEO persistence, rich-text sanitization, media lifecycle handling, reading-time calculation, and focused create/update/delete workflows.
+- MySQL generated-column unique indexes for English and Arabic localized slugs on routed content tables.
+- Configurable portfolio media disk, upload MIME allowlists, and image/video size limits.
+- Admin content feature tests covering policy-protected resources, translation preservation, sanitization, slug validation, SEO persistence, reading-time calculation, and media file replacement cleanup.
 
 ### Changed
 
@@ -36,13 +41,14 @@
 - Frontend documentation now uses Herd-managed Node.js 24, npm 11.19.0, and project-local Angular CLI 22 commands.
 - Replaced the obsolete FND-005 Docker scope with Laravel Herd local service and environment verification.
 - FND-005 now uses approved local development fallbacks: MySQL `8.0.41`, database cache/session/queue drivers, and Laravel `log` mailer.
-- Database schema documentation now reflects the implemented BE-001 migration and notes that localized JSON slug uniqueness is enforced at the application layer until a database-specific indexing strategy is approved.
+- Database schema documentation now reflects the implemented BE-001 migration and ADM-002 localized slug generated-column indexes for routed content tables.
 - Architecture and decisions now document the explicit model localization helper, administrator-only dashboard policy, and fictional development seed strategy.
 - API contract now reflects implemented BE-003 read endpoints; sitemap and robots endpoints remain deferred.
 - BE-003 public API controllers were refactored to remove Eloquent query construction, filtering, visibility rules, relationship loading, and business orchestration.
 - API contract now reflects implemented BE-004 write endpoints and keeps sitemap/robots deferred.
 - Contact attachments are explicitly rejected by public writes until private storage and upload security are configured.
 - Dashboard model policies now require explicit administrator access instead of any authenticated user.
+- Localized JSON slug uniqueness is now protected by admin validation plus MySQL generated-column unique indexes for routed content tables.
 
 ### Fixed
 
@@ -55,6 +61,8 @@
 - Public testimonial/contact endpoints reject dashboard-only fields and avoid returning private records or submitter contact data.
 - Filament dashboard access requires an explicitly authorized admin user; public visitor cookies cannot authenticate dashboard access.
 - Dashboard responses send `X-Robots-Tag: noindex, nofollow, noarchive` and private no-store cache headers.
+- Admin rich text is sanitized server-side before persistence with an explicit HTML allowlist.
+- Project and cover media uploads reject unsafe MIME types, use server-generated filenames, and clean up replaced files only when they are no longer referenced.
 
 ### Removed
 

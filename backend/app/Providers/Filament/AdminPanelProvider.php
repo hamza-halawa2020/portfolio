@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\AnalyticsOverview;
+use App\Filament\Widgets\DailyTrafficChart;
+use App\Filament\Widgets\DeviceBreakdownChart;
+use App\Filament\Widgets\TopProjectsChart;
 use App\Http\Middleware\AdminNoIndexHeaders;
 use App\Http\Middleware\ResolveAdminLocale;
 use Filament\Http\Middleware\Authenticate;
@@ -45,6 +49,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 AccountWidget::class,
+                AnalyticsOverview::class,
+                DailyTrafficChart::class,
+                TopProjectsChart::class,
+                DeviceBreakdownChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

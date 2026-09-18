@@ -58,6 +58,9 @@ RATE_LIMIT_PROJECT_VIEWS_PER_MINUTE=60
 RATE_LIMIT_PROJECT_LIKES_PER_MINUTE=30
 RATE_LIMIT_TESTIMONIALS_PER_HOUR=5
 RATE_LIMIT_CONTACT_PER_HOUR=5
+PORTFOLIO_MEDIA_DISK=public
+PORTFOLIO_MAX_IMAGE_KB=5120
+PORTFOLIO_MAX_VIDEO_KB=51200
 DB_CONNECTION=sqlite
 # Local .env may use MySQL 8.0.41 for initial development.
 # Staging/production target: MySQL 8.4 LTS.
@@ -123,6 +126,8 @@ Angular SSR output:
 
 Filament `5.8.2` was installed during ADM-001. Sanctum, Spatie Permission, and media packages are still deferred.
 
+ADM-002 content resources are registered under `/admin` for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and parent-owned SEO metadata. Testimonial moderation, contact inbox, and analytics widgets remain future dashboard tasks.
+
 Dashboard setup commands:
 
 ```powershell
@@ -152,6 +157,17 @@ Production must run Laravel scheduler every minute for aggregation, cleanup, sit
 - Development: local public storage.
 - Production: S3-compatible storage where available.
 - Uploaded files must be validated and stored through Laravel filesystem abstraction.
+- Portfolio media configuration:
+  - `PORTFOLIO_MEDIA_DISK=public` for local development.
+  - `PORTFOLIO_MAX_IMAGE_KB=5120`.
+  - `PORTFOLIO_MAX_VIDEO_KB=51200`.
+  - Allowed image MIME types: JPEG, PNG, WebP, AVIF.
+  - Allowed video MIME types: MP4, WebM.
+- Run `herd php artisan storage:link` before relying on public local media URLs in a browser.
+- Admin uploads use server-generated filenames. Replaced files are deleted only after the database update succeeds and only when no other project, blog post, project media, or SEO metadata record references the same path.
+- Deleting project media removes unreferenced file/poster paths. Other content record deletion currently relies on model/database deletion behavior and does not claim asynchronous media retention cleanup.
+- Unsafe SVG/HTML-style uploads and executable files are rejected by the configured MIME allowlists unless a future task adds explicit sanitization.
+- Image transcoding and video conversion are not implemented.
 - Contact form attachments are rejected by the public API until private storage, validation limits, malware-scanning expectations, and dashboard-only access controls are configured.
 
 ## MySQL
@@ -163,6 +179,8 @@ During backend initialization, the installer detected a local MySQL connection a
 `.env.example` keeps safe SQLite defaults plus commented MySQL placeholders. Production database credentials must be supplied only through `.env` or deployment secrets.
 
 FND-005 verified Laravel's existing database connection non-destructively with MySQL `8.0.41`; Laravel default users, cache, and jobs migrations are marked as run. Do not run destructive commands such as `migrate:fresh`, `db:wipe`, schema drops, or database recreation without explicit approval.
+
+ADM-002 adds MySQL generated stored columns and unique indexes for localized slugs on routed content tables. This is compatible with local MySQL `8.0.41` and target MySQL `8.4 LTS`; SQLite testing skips the MySQL-specific generated-column SQL.
 
 ## Redis
 
@@ -256,6 +274,7 @@ Production backup strategy must include MySQL backups, uploaded media backups, a
 - Sitemap and robots responses.
 - Dashboard authentication.
 - Dashboard authorization denies ordinary authenticated users.
+- Dashboard content routes for projects, taxonomies, media, blog, services, profile content, site settings, social links, and SEO metadata.
 - Storage upload and public media access.
 
 Current BE-004 API deployment note: public read/write endpoints are registered under `/api/v1`. Reads return short public cache headers; writes return `no-store`, use endpoint-specific rate limits, and require the visitor hash secret/cookie configuration. Redis is not required locally because the current rate limiter uses the configured Laravel cache store.

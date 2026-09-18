@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, dashboard content resources, public website pages, localization/theme implementation, sitemap/robots, and frontend API consumption.
+- Missing application code: CI files, testimonial moderation dashboard, contact inbox dashboard, analytics dashboard, public website pages, localization/theme implementation, sitemap/robots, and frontend API consumption.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -177,6 +177,7 @@ npm --version
 - Current installed backend packages are the Laravel skeleton defaults only: `laravel/framework`, `laravel/tinker`, and development tooling for Faker, Pail, Pint, Mockery, Collision, and PHPUnit.
 - Portfolio business migrations and Eloquent model layer are implemented for projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
 - Filament `5.8.2` is installed for the owner dashboard. Sanctum, Spatie Permission, and media packages are not installed yet.
+- Filament content resources are implemented for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and SEO metadata through parent resource forms.
 - Backend app name is `Portfolio Platform API`.
 - Backend timezone is UTC.
 - Default locale is English (`en`), and supported locales are documented as `en,ar`.
@@ -211,6 +212,7 @@ npm --version
 - Filament uses a monochrome neutral color palette with light/dark mode enabled.
 - Public visitor cookies are not admin authentication credentials.
 - Filament resources enforce policies.
+- Filament content resources keep presentation concerns in resources/pages and delegate create/update/delete workflows to focused services under `App\Services\Admin\Content`.
 - Public APIs never expose dashboard-only fields or visitor identifiers.
 - Model serialization hides visitor hashes, user-agent hashes, contact emails, contact phone numbers, and admin notes by default.
 
@@ -224,7 +226,17 @@ npm --version
 - Public cache headers are applied to safe read endpoints with a 60-second TTL.
 - Write endpoints return authoritative state after optimistic UI attempts.
 - Public write endpoints return `no-store` responses.
-- BE-003 detail endpoints currently resolve localized JSON slugs in query services through application-level lookup over published records for SQLite/MySQL portability. Revisit database-specific generated-column indexing if content volume requires it.
+- BE-003 detail endpoints resolve localized JSON slugs in query services. ADM-002 added MySQL generated columns and unique indexes for admin-managed localized slugs while preserving SQLite test portability.
+
+## Admin Content Workflow Architecture
+
+- Filament resources define forms, bilingual tabs, table columns, filters, uploads, and action wiring only.
+- Persistence orchestration lives in focused services under `App\Services\Admin\Content`, including project content, blog content, localized taxonomy/service records, profile content, site settings, catalog technologies, SEO metadata, localized slugs, rich-text sanitization, and media files.
+- Content update services preserve existing translations when only one language is edited.
+- English and Arabic slug values are normalized independently. Application validation checks duplicates before persistence, and MySQL generated-column unique indexes protect concurrent writes.
+- Rich content is sanitized server-side before persistence. The current allowlist includes paragraphs, headings, lists, blockquotes, pre/code, strong/emphasis, line breaks, and safe links.
+- Public API query/services remain the source of public visibility and localization behavior; admin resources do not duplicate public response business rules.
+- No persistent application cache entries are currently populated for public content, so there is no cache store invalidation to perform yet. Future stored cache use must add invalidation inside these admin services.
 
 ## Public Write Workflow Architecture
 
@@ -241,6 +253,12 @@ npm --version
 - Local public storage during development.
 - S3-compatible storage support in production through Laravel filesystem abstraction.
 - Store original file metadata, MIME type, size, alt text, captions, sort order, and video poster.
+- Admin uploads use `PORTFOLIO_MEDIA_DISK` and configurable image/video MIME and size allowlists.
+- Uploaded project and cover media are stored with server-generated filenames. Executable and unsafe SVG/HTML-style uploads are rejected by MIME allowlists.
+- Replacement deletes the previous file only after the new path is persisted, and shared referenced files are retained.
+- Project media deletion removes unreferenced stored files and poster files through the filesystem abstraction.
+- Image previews are available in Filament forms/tables for images and poster-backed videos.
+- Image transcoding and video conversion are not implemented.
 - Prefer WebP/AVIF images where supported and WebM/MP4 for walkthroughs.
 - Responsive image variants and lazy loading are frontend requirements.
 
@@ -255,7 +273,7 @@ npm --version
 ## Translation Strategy
 
 - Use translation files for interface strings.
-- Use JSON translation columns for manageable dynamic content by default. BE-001 implements JSON columns for localized content and slug values; localized slug uniqueness remains an application validation concern until a future generated-column/index strategy is approved.
+- Use JSON translation columns for manageable dynamic content by default. BE-001 implements JSON columns for localized content and slug values. ADM-002 adds MySQL generated-column unique indexes for localized slug uniqueness on routed content tables and keeps application validation for clear editor feedback.
 - BE-002 adds `HasLocalizedAttributes::localized($attribute, $locale, $fallback)` for explicit locale reads without coupling models to HTTP request state or the global app locale. English and Arabic arrays remain directly accessible through casts.
 
 ## Authorization Strategy

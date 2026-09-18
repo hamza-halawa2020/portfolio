@@ -62,7 +62,7 @@ C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version
 
 ## Current State
 
-The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, public read/write API, and Filament dashboard authentication are initialized.
+The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, public read/write API, Filament dashboard authentication, and dashboard content management resources are initialized.
 
 ## Backend
 
@@ -101,6 +101,8 @@ herd php artisan portfolio:provision-owner-admin
 ```
 
 The dashboard is available at `/admin`. Registration is disabled, access requires a user with `is_admin=true`, and dashboard responses send `noindex` plus private no-store cache headers. The provisioning command prompts interactively for owner details and hides the password input.
+
+Implemented content resources cover projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, site settings, social links, and parent-owned SEO metadata. Testimonial moderation, contact inbox, and analytics widgets remain later dashboard tasks.
 
 Seed small fictional local development content only after migrations are applied:
 

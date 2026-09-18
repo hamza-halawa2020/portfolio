@@ -22,4 +22,10 @@ return [
         'max_image_kb' => (int) env('PORTFOLIO_MAX_IMAGE_KB', 5120),
         'max_video_kb' => (int) env('PORTFOLIO_MAX_VIDEO_KB', 51200),
     ],
+
+    'local_admin' => [
+        'name' => env('LOCAL_DEV_ADMIN_NAME'),
+        'email' => env('LOCAL_DEV_ADMIN_EMAIL'),
+        'password' => env('LOCAL_DEV_ADMIN_PASSWORD'),
+    ],
 ];

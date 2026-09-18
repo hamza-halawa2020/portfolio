@@ -7,6 +7,7 @@ enum TestimonialStatus: string
     case Pending = 'pending';
     case Approved = 'approved';
     case Rejected = 'rejected';
+    case Archived = 'archived';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum TestimonialStatus: string
             self::Pending => 'Pending',
             self::Approved => 'Approved',
             self::Rejected => 'Rejected',
+            self::Archived => 'Archived',
         };
     }
 }

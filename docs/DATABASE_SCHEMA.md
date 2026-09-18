@@ -11,6 +11,7 @@ FND-003 initialized the Laravel 13 skeleton. BE-001 added the first portfolio bu
 - `0001_01_01_000002_create_jobs_table.php`
 - `2026_09_18_130000_create_portfolio_business_schema.php`
 - `2026_09_18_190000_add_admin_authorization_fields_to_users_table.php`
+- `2026_09_18_200000_add_localized_slug_unique_indexes.php`
 
 Implemented portfolio business tables:
 
@@ -53,6 +54,8 @@ BE-004 implemented public write workflows against the existing schema. Project v
 
 ADM-001 added explicit dashboard administrator fields to `users` for the initial Filament authorization strategy.
 
+ADM-002 added MySQL generated stored columns and unique indexes for localized JSON slugs on `project_categories`, `projects`, `blog_categories`, `tags`, `blog_posts`, and `services`. The migration is MySQL-specific and safely no-ops for SQLite test databases.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -62,7 +65,7 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 - Raw IP addresses are not stored.
 - Visitor and analytics records use hashes such as `visitor_id_hash`, `ip_hash`, and `user_agent_hash`.
 - Laravel's default `sessions.ip_address` column predates the business schema and is framework session infrastructure. Public visitor analytics and interaction tables do not store raw IP addresses.
-- Localized slug uniqueness for JSON slug columns is enforced later at the validation/application layer unless a future database-specific generated-column strategy is approved for MySQL 8 compatibility.
+- Localized slug uniqueness for routed JSON slug columns is enforced by admin application validation and MySQL generated-column unique indexes for English and Arabic slug values.
 - Models expose explicit localized reads through `localized($attribute, $locale, $fallback)` while preserving the full English/Arabic arrays for API resources and dashboard forms.
 
 ## users
@@ -79,7 +82,7 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 - Purpose: classify projects.
 - Columns: `id`, `name` JSON, `slug` JSON, `description` JSON nullable, `sort_order`, `is_active`, timestamps, soft deletes.
 - Indexes: `is_active`, `sort_order`.
-- Unique constraints: localized slug uniqueness should be enforced where practical.
+- Unique constraints: MySQL generated unique indexes on `slug_en` and `slug_ar`.
 
 ## technologies
 
@@ -92,6 +95,7 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 - Purpose: portfolio projects and case studies.
 - Columns: `id`, `project_category_id` nullable, `title` JSON, `slug` JSON, `summary` JSON, `body` JSON, `role` JSON nullable, `duration` JSON nullable, `industry` JSON nullable, `challenge` JSON nullable, `solution` JSON nullable, `features` JSON nullable, `development_challenges` JSON nullable, `results` JSON nullable, `metrics` JSON nullable, `cover_image_path` nullable, `status`, `is_featured`, `sort_order`, `published_at` nullable, timestamps, soft deletes.
 - Indexes: `project_category_id`, `status`, `is_featured`, `sort_order`, `published_at`.
+- Unique constraints: MySQL generated unique indexes on `slug_en` and `slug_ar`.
 - Foreign keys: `project_category_id` references `project_categories.id` with null-on-delete.
 
 ## project_technology
@@ -107,6 +111,7 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 - Columns: `id`, `project_id`, `type`, `path`, `poster_path` nullable, `caption` JSON nullable, `alt_text` JSON nullable, `mime_type`, `file_size`, `sort_order`, timestamps.
 - Indexes: `project_id`, `type`, `sort_order`.
 - Foreign keys: `project_id` references `projects.id` cascade delete.
+- Admin media behavior: image and video uploads use Laravel filesystem abstraction, generated filenames, configured MIME/size allowlists, bilingual captions and alt text, optional video posters, replacement-safe cleanup, and reference checks before file deletion. Image transcoding and video conversion are not implemented.
 
 ## project_views
 
@@ -141,18 +146,20 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 - Purpose: organize blog posts.
 - Columns: `id`, `name` JSON, `slug` JSON, `description` JSON nullable, `sort_order`, `is_active`, timestamps, soft deletes.
 - Indexes: `is_active`, `sort_order`.
+- Unique constraints: MySQL generated unique indexes on `slug_en` and `slug_ar`.
 
 ## tags
 
 - Purpose: reusable blog tags.
 - Columns: `id`, `name` JSON, `slug` JSON, timestamps.
-- Unique constraints: localized slugs where practical.
+- Unique constraints: MySQL generated unique indexes on `slug_en` and `slug_ar`.
 
 ## blog_posts
 
 - Purpose: articles.
 - Columns: `id`, `blog_category_id` nullable, `title` JSON, `slug` JSON, `excerpt` JSON nullable, `body` JSON, `cover_image_path` nullable, `status`, `is_featured`, `reading_time_minutes`, `published_at` nullable, timestamps, soft deletes.
 - Indexes: `blog_category_id`, `status`, `is_featured`, `published_at`.
+- Unique constraints: MySQL generated unique indexes on `slug_en` and `slug_ar`.
 
 ## blog_post_tag
 
@@ -165,6 +172,7 @@ ADM-001 added explicit dashboard administrator fields to `users` for the initial
 - Purpose: dashboard-managed services.
 - Columns: `id`, `title` JSON, `slug` JSON, `description` JSON, `icon` nullable, `sort_order`, `is_active`, timestamps, soft deletes.
 - Indexes: `is_active`, `sort_order`.
+- Unique constraints: MySQL generated unique indexes on `slug_en` and `slug_ar`.
 
 ## experiences
 

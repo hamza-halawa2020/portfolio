@@ -89,6 +89,8 @@ Update on 2026-09-18: FND-005 accepts the currently running local MySQL `8.0.41`
 
 Update on 2026-09-18: BE-002 added a lightweight `HasLocalizedAttributes` model trait. Models do not resolve locale from the HTTP request or global app state; callers pass the requested locale explicitly and may fall back to English.
 
+Update on 2026-09-18: ADM-002 approved the smallest MySQL-specific slug index strategy needed for concurrent writes. English and Arabic generated stored columns now index JSON slug paths on routed content tables. SQLite test databases skip the generated-column SQL while admin services still validate duplicates before persistence.
+
 ## DEC-012 - Initial dashboard model authorization
 
 - Date: 2026-09-18
@@ -146,6 +148,24 @@ Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Fo
 - Selected option: resolve admin locale from `?locale=`, session, or `Accept-Language`, and apply noindex/private-cache headers in the Filament middleware stack.
 - Reason: This verifies locale direction inside the dashboard itself and protects private dashboard screens regardless of public robots configuration.
 - Consequences: Dashboard routes send `X-Robots-Tag` and private no-store headers. Public SEO robots/sitemap work remains separate.
+
+## DEC-018 - Admin content service layer
+
+- Date: 2026-09-18
+- Context: ADM-002 requires Filament content management without putting business workflows in resources or pages.
+- Options considered: place save logic directly in Filament actions; create one generic admin content service; use focused services per workflow area.
+- Selected option: keep Filament resources focused on forms, tables, filters, uploads, and action wiring, and delegate persistence to focused services under `App\Services\Admin\Content`.
+- Reason: This follows the repository rule against business logic in dashboard resources and avoids a single broad service with mixed responsibilities.
+- Consequences: New dashboard resources should use the same pattern. Cache invalidation must be added inside these services when stored public content caches are introduced.
+
+## DEC-019 - Admin rich text and media safety
+
+- Date: 2026-09-18
+- Context: Administrators can submit rich bilingual content and upload project/cover media, but admin input must still be treated as untrusted.
+- Options considered: trust Filament rich editor output; store raw HTML and sanitize in the frontend; sanitize server-side before persistence.
+- Selected option: sanitize rich text server-side before persistence with an explicit allowlist, and validate media using configured MIME and size allowlists through Laravel filesystem storage.
+- Reason: Server-side sanitization protects both current API consumers and future rendering paths. Filesystem abstraction supports local storage now and S3-compatible storage later.
+- Consequences: SVG/HTML-style unsafe uploads remain rejected unless a future task adds explicit sanitization. Image transcoding and video conversion are not claimed or implemented.
 
 ## DEC-008 - Laravel backend foundation scope
 

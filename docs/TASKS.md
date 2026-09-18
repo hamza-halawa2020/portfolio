@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 13 | 0 | 12 | 0 |
+| 14 | 3 | 10 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -269,6 +269,7 @@
   - Implemented hash-based visitor/analytics fields (`visitor_id_hash`, `ip_hash`, `user_agent_hash`) without adding raw IP columns to business tables.
   - Added schema tests for table existence, JSON-capable translation fields, privacy hash columns, and key unique constraints.
   - Localized JSON slug uniqueness is deferred to application validation or a future documented generated-column/index strategy because portable JSON uniqueness differs between SQLite and MySQL.
+  - ADM-002 later implemented the documented MySQL generated-column/index strategy for routed content slugs while preserving SQLite test portability.
   - Ran `migrate:fresh --seed` only against an in-memory SQLite testing database; no destructive local MySQL reset was performed.
   - Applied the new migration to local MySQL with non-destructive `artisan migrate --force`; migration status shows batch `[2] Ran`.
 - Completed: 2026-09-18
@@ -372,7 +373,7 @@
 
 ### ADM-002 - Implement content management resources
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: ADM-001
 - Files: Filament resources for projects, media, blog, services, skills, experience, testimonials, messages, settings, SEO
 - Acceptance criteria:
@@ -382,11 +383,20 @@
 - Tests:
   - Filament/resource tests where practical.
 - Notes:
-- Completed:
+  - Implemented Filament resources for projects, project categories, technologies, project media, blog posts, blog categories, tags, services, skills, experience, public site settings, social links, and parent-owned SEO metadata.
+  - Testimonial moderation, contact inbox, and analytics widgets were intentionally not implemented because the active ADM-002 scope excluded later ADM-003/later workflows.
+  - Added focused admin content services for localized slug normalization, bilingual translation preservation, project/blog/category/service/profile/site workflows, SEO upserts, rich-text sanitization, media lifecycle handling, and project media persistence.
+  - Added server-side rich-text sanitization with an explicit HTML allowlist. Administrator-submitted rich content is sanitized before persistence.
+  - Added MySQL-only generated columns and unique indexes for English and Arabic localized slugs on project categories, projects, blog categories, tags, blog posts, and services. SQLite test runs skip this MySQL-specific migration logic.
+  - Added configurable media disk, MIME allowlists, and upload limits through `config/portfolio.php` and safe `.env.example` placeholders.
+  - Media writes use Laravel filesystem abstraction, generated stored filenames, MIME verification, replacement-safe cleanup, and reference checks before deleting old files. Image transcoding and video conversion are not implemented.
+  - Verification passed: `herd php artisan test` (58 tests, 580 assertions), `herd php vendor\bin\pint --test`, `herd composer validate --strict`, `herd composer audit`, `herd php artisan route:list --path=admin`, `herd php artisan migrate:status`, and frontend `cmd /c npm run build`.
+  - Herd PHP continues to print the known OPcache startup warning, but all verification commands exited successfully.
+- Completed: 2026-09-18
 
 ### ADM-003 - Implement analytics dashboard
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: BE-004, ADM-001
 - Files: Filament widgets, analytics services, aggregation jobs
 - Acceptance criteria:
@@ -395,6 +405,37 @@
   - No invasive fingerprinting is introduced.
 - Tests:
   - Backend tests for aggregation logic.
+- Notes:
+- Completed:
+
+### ADM-003A - Expand comprehensive local development seed data
+
+- Status: [~] In Progress
+- Dependencies: BE-002, ADM-003
+- Files: `backend/database/seeders/DevelopmentPortfolioSeeder.php`, development fixture files, seeder tests, documentation
+- Acceptance criteria:
+  - Development seed data covers application-owned business tables where safe.
+  - Fictional bilingual content includes enough records to exercise public pages and dashboard filters.
+  - Seeders are idempotent, preserve user-created data, avoid destructive database operations, and refuse production.
+  - Analytics fixtures are clearly development-only and contain no raw IP addresses.
+- Tests:
+  - Seeder coverage, repeatability, preservation, production denial, and privacy tests.
+- Notes:
+- Completed:
+
+### ADM-003B - Provision local development administrator
+
+- Status: [~] In Progress
+- Dependencies: ADM-001, ADM-003A
+- Files: `backend/.env.example`, provisioning service or seeder integration, tests, documentation
+- Acceptance criteria:
+  - Local administrator credentials are read from ignored environment variables.
+  - Password is hashed and never committed or printed.
+  - Provisioning is idempotent and does not reset existing administrator passwords.
+  - Existing non-fixture account conflicts are not overwritten or elevated automatically.
+  - Provisioning is denied outside local/testing environments.
+- Tests:
+  - Local administrator provisioning tests.
 - Notes:
 - Completed:
 
