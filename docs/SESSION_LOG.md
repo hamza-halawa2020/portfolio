@@ -247,3 +247,27 @@
   - Local MySQL `artisan db:seed --force`: passed; ran `DevelopmentPortfolioSeeder` without truncation.
 - Current blockers: None for BE-002.
 - Recommended next task: BE-003 - Implement public API resources and read endpoints.
+
+## 2026-09-18 - BE-003
+
+- Tasks attempted: BE-003 - Implement public API resources and read endpoints.
+- Tasks completed: BE-003 - Implement public API resources and read endpoints.
+- Files changed: `backend/bootstrap/app.php`, `backend/routes/api.php`, `backend/app/Http/Controllers/Api/V1/`, `backend/app/Http/Requests/Api/V1/`, `backend/app/Http/Resources/Api/V1/`, `backend/tests/Feature/PublicReadApiTest.php`, `README.md`, `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/SEO.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Registered API routing and added 13 public read routes under `/api/v1`.
+  - Added public API controllers, resources, and read-query Form Requests for site, about, projects, project categories, technologies, testimonials, blog posts, blog categories, tags, services, and social links.
+  - Implemented locale resolution through `locale=en|ar` or `Accept-Language`, with English fallback for missing translated fields.
+  - Enforced published-only project and blog responses, approved-only testimonial responses, visible-only taxonomy/service/social responses, and safe 404 behavior for unavailable detail resources.
+  - Added pagination, short public cache headers, localized slug lookup, filter validation, aggregate project view/like counts, related public records, and public SEO metadata for project and blog details.
+  - Kept private fields out of public payloads, including visitor hashes, raw IP-related fields, contact messages, testimonial verification emails, admin notes, media filesystem paths, MIME types, and file sizes.
+  - Did not implement public writes, authentication, rate limiting for writes, sitemap, robots, Filament resources, uploads, notifications, or Angular API integration.
+- Tests executed and results:
+  - PHP syntax checks for BE-003 controllers, requests, resources, and `PublicReadApiTest`: passed.
+  - `artisan route:list --path=api/v1`: passed; 13 routes registered.
+  - `artisan test --filter=PublicReadApiTest`: passed, 10 tests and 72 assertions.
+  - `artisan test`: passed, 23 tests and 177 assertions.
+  - `vendor\bin\pint --test`: passed after Pint formatted two API files.
+  - In-memory SQLite `migrate:fresh --seed --force`: passed.
+  - Local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
+- Current blockers: None for BE-003. Herd PHP still prints the known OPcache startup warning, but Artisan, tests, migrations, and Pint pass.
+- Recommended next task: BE-004 - Implement public write workflows.

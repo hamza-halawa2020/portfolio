@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 9 | 0 | 16 | 0 |
+| 10 | 0 | 15 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -297,7 +297,7 @@
 
 ### BE-003 - Implement public API resources and read endpoints
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: BE-002
 - Files: `backend/routes/api.php`, `backend/app/Http/Controllers/Api/V1/`, `backend/app/Http/Resources/`, `docs/API_CONTRACT.md`
 - Acceptance criteria:
@@ -307,7 +307,13 @@
 - Tests:
   - Backend feature tests for public read endpoints.
 - Notes:
-- Completed:
+  - Added 13 versioned public read routes under `/api/v1`.
+  - Added public API controllers, Form Requests, Resources, localized response handling, pagination, cache headers, published-only filtering, and privacy-safe payloads.
+  - Implemented read endpoints for site, about, projects, project categories, technologies, testimonials, blog posts, blog categories, tags, services, and social links.
+  - Detail endpoints resolve localized slugs with English fallback and return 404 for unpublished, future, draft, archived, or missing content.
+  - Public write endpoints, sitemap, robots, Filament/admin flows, and Angular API consumption remain deferred.
+  - Tests passed: `artisan test --filter=PublicReadApiTest` (10 tests, 72 assertions), `artisan test` (23 tests, 177 assertions), `vendor\bin\pint --test`, syntax checks, route list, in-memory `migrate:fresh --seed`, and local MySQL `migrate:status`.
+- Completed: 2026-09-18
 
 ### BE-004 - Implement public write workflows
 

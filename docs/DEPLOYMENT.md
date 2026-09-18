@@ -218,7 +218,10 @@ Production backup strategy must include MySQL backups, uploaded media backups, a
 - Laravel health and migrations.
 - Queue worker and scheduler status.
 - Angular SSR page responses.
-- API read/write smoke tests.
+- API read smoke tests for `/api/v1/site`, `/api/v1/projects`, `/api/v1/projects/{slug}`, `/api/v1/posts`, `/api/v1/posts/{slug}`, `/api/v1/testimonials`, `/api/v1/services`, and taxonomy endpoints.
+- API write smoke tests after BE-004 implements public writes.
 - Sitemap and robots responses.
 - Dashboard authentication.
 - Storage upload and public media access.
+
+Current BE-003 API deployment note: public read endpoints are registered under `/api/v1`, return short public cache headers, and require only the existing database-backed local services. Redis is not required for the implemented read API.

@@ -17,6 +17,9 @@
 - Backend schema tests for table creation, translation columns, hash-based visitor privacy fields, and key unique constraints.
 - Eloquent models, relationships, casts, scopes, enums, factories, policies, and a production-guarded fictional development seeder for the portfolio business schema.
 - Backend model-layer tests covering localization, relationships, enum casts, sensitive serialization, dashboard policy behavior, and seeder idempotency.
+- Versioned public read API under `/api/v1` for site, about, projects, project categories, technologies, testimonials, blog posts, blog categories, tags, services, and social links.
+- Public API Form Requests, Resources, localized response handling, pagination, cache headers, published-only filtering, and privacy-safe payloads.
+- Backend public API feature tests covering localization, validation, filters, slug lookup, 404 behavior, privacy exclusions, pagination metadata, cache headers, and a basic query-count guard.
 
 ### Changed
 
@@ -27,6 +30,7 @@
 - FND-005 now uses approved local development fallbacks: MySQL `8.0.41`, database cache/session/queue drivers, and Laravel `log` mailer.
 - Database schema documentation now reflects the implemented BE-001 migration and notes that localized JSON slug uniqueness is enforced at the application layer until a database-specific indexing strategy is approved.
 - Architecture and decisions now document the explicit model localization helper, broad initial dashboard policy, and fictional development seed strategy.
+- API contract now reflects implemented BE-003 read endpoints and marks public write, sitemap, and robots endpoints as deferred.
 
 ### Fixed
 

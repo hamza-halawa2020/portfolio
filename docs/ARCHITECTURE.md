@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, Filament dashboard, public API feature code, public website pages, localization/theme implementation.
+- Missing application code: CI files, Filament dashboard, public write workflows, public website pages, localization/theme implementation.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -176,13 +176,13 @@ npm --version
 - PHP requirement is constrained to `^8.5`.
 - Current installed backend packages are the Laravel skeleton defaults only: `laravel/framework`, `laravel/tinker`, and development tooling for Faker, Pail, Pint, Mockery, Collision, and PHPUnit.
 - Portfolio business migrations and Eloquent model layer are implemented for projects, media, testimonials, blog, services, experience, skills, contact messages, site settings, social links, SEO metadata, and privacy-conscious analytics.
-- Filament, Sanctum, Spatie Permission, media packages, API controllers/resources, and business workflow actions are not installed yet.
+- Filament, Sanctum, Spatie Permission, media packages, and public write workflow actions are not installed yet.
 - Backend app name is `Portfolio Platform API`.
 - Backend timezone is UTC.
 - Default locale is English (`en`), and supported locales are documented as `en,ar`.
-- Versioned public API under `/api/v1`.
-- API Resources for all public responses.
-- Form Requests for validation.
+- Versioned public read API under `/api/v1` is implemented for site, about, projects, project taxonomies, testimonials, blog posts, blog taxonomies, services, and social links.
+- API Resources shape all implemented public read responses.
+- Form Requests validate public read query parameters and locale values.
 - Actions/services for business workflows.
 - Policies/Gates for dashboard authorization.
 - Filament for dashboard resources and analytics widgets.
@@ -204,10 +204,11 @@ npm --version
 
 - Angular communicates with Laravel through environment-configured base URLs.
 - Local development origins are `http://localhost:4200`, `http://127.0.0.1:4200`, `http://localhost:4000`, and `http://127.0.0.1:4000`; production CORS must not use wildcard origins.
-- Locale is conveyed through localized routes and/or an `Accept-Language` header.
-- Responses use consistent success, error, and pagination shapes.
-- Public cache headers are applied to safe read endpoints.
+- Locale is conveyed through a `locale=en|ar` query parameter or an `Accept-Language` header; unsupported locales return validation errors.
+- Responses use consistent success, error, and pagination shapes. Paginated lists use Laravel pagination `links` and `meta` with an added `meta.locale`.
+- Public cache headers are applied to safe read endpoints with a 60-second TTL.
 - Write endpoints return authoritative state after optimistic UI attempts.
+- BE-003 detail endpoints currently resolve localized JSON slugs through application-level lookup over published records for SQLite/MySQL portability. Revisit database-specific generated-column indexing if content volume requires it.
 
 ## Media Storage Strategy
 
@@ -258,6 +259,7 @@ npm --version
 ## Caching Strategy
 
 - Cache public site settings, navigation, featured content, and stable lists.
+- BE-003 read endpoints return short public cache headers but do not yet use Redis or application cache storage.
 - Use database-backed cache/session/queue drivers for local development until Redis or Valkey is configured and verified.
 - Use Redis or Valkey for Redis-dependent features, Horizon if selected, distributed locks, and production queue configuration only after the deferred infrastructure task is complete.
 - Invalidate caches from dashboard content mutations.

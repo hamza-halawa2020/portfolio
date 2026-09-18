@@ -1,129 +1,90 @@
 # API_CONTRACT.md
 
-This is the initial API proposal. It must be synchronized with Laravel routes, Form Requests, Resources, and tests.
+The public read API is implemented in Laravel under `/api/v1`. Public write endpoints, authentication, sitemap, and robots responses are deferred to later tasks.
 
 ## Global Rules
 
-- Base path: `/api/v1`
-- Authentication: public endpoints are unauthenticated unless explicitly stated.
-- Locale: use localized URLs and/or `Accept-Language: ar|en`.
-- Responses: public responses must not expose private fields, visitor identifiers, raw hashes, admin notes, or testimonial verification emails.
-- Errors: validation uses HTTP 422 with field errors; rate limits use HTTP 429; missing resources use HTTP 404.
-- Pagination: list endpoints use Laravel-style pagination metadata.
-- Rate limits: public write endpoints must be rate-limited.
+- Base path: `/api/v1`.
+- Authentication: all BE-003 read endpoints are public and unauthenticated.
+- Locale: pass `locale=en|ar` or `Accept-Language: en|ar`; invalid locales return HTTP 422. English is the fallback locale.
+- Response shape: successful responses use top-level `data`; list responses include Laravel pagination `links` and `meta`, plus `meta.locale`.
+- Cache headers: safe public read responses include `Cache-Control` directives for `public` and `max-age=60`.
+- Errors: validation returns HTTP 422 with field errors; missing or unpublished resources return HTTP 404.
+- Privacy: public resources do not expose contact messages, verification emails, admin notes, visitor identifiers, raw IPs, hash fields, media filesystem paths, MIME types, or file sizes.
 
-## GET /api/v1/site
+## Implemented Read Endpoints
 
-- Purpose: fetch site settings, navigation, social links, featured homepage content, and global SEO defaults.
-- Auth: none.
-- Parameters: optional `locale`.
-- Response: settings and localized content blocks.
-- Errors: 400 for invalid locale.
+| Method | Path | Purpose | Parameters |
+| --- | --- | --- | --- |
+| GET | `/api/v1/site` | Public settings allowlist, navigation, services, skills, social links | `locale`, `page`, `per_page` |
+| GET | `/api/v1/about` | Public about payload with experience, skills, technologies, social links | `locale`, `page`, `per_page` |
+| GET | `/api/v1/projects` | Published project cards | `locale`, `page`, `per_page`, `search`, `category`, `technology`, `featured`, `sort` |
+| GET | `/api/v1/projects/{slug}` | Published project case study detail | `locale`; `{slug}` may be localized with English fallback |
+| GET | `/api/v1/project-categories` | Visible project categories used by published projects | `locale`, `page`, `per_page` |
+| GET | `/api/v1/technologies` | Visible technologies used by published projects | `locale`, `page`, `per_page` |
+| GET | `/api/v1/testimonials` | Approved testimonials only | `locale`, `page`, `per_page`, `featured`, `project` |
+| GET | `/api/v1/posts` | Published blog post cards | `locale`, `page`, `per_page`, `search`, `category`, `tag`, `featured`, `sort` |
+| GET | `/api/v1/posts/{slug}` | Published blog post detail | `locale`; `{slug}` may be localized with English fallback |
+| GET | `/api/v1/blog-categories` | Visible blog categories used by published posts | `locale`, `page`, `per_page` |
+| GET | `/api/v1/tags` | Tags used by published posts | `locale`, `page`, `per_page` |
+| GET | `/api/v1/services` | Visible services | `locale`, `page`, `per_page` |
+| GET | `/api/v1/social-links` | Visible social links | `locale`, `page`, `per_page` |
 
-## GET /api/v1/projects
+## Parameter Rules
 
-- Purpose: list published projects.
-- Auth: none.
-- Parameters: `page`, `per_page`, `search`, `category`, `technology`, `featured`, `locale`.
-- Validation: pagination limits and known filters.
-- Response: paginated project cards with title, slug, summary, cover image, category, technologies, view count, like count, and featured flag.
-- Errors: 422 for invalid filters.
+- `page`: integer, minimum `1`.
+- `per_page`: integer, minimum `1`, maximum `24`.
+- `locale`: one of `en`, `ar`.
+- `featured`: boolean-compatible query value.
+- `search`: string with at least 2 characters and at most 100 characters.
+- Project `sort`: `ordered`, `latest`, `oldest`, `featured`.
+- Blog post `sort`: `latest`, `oldest`, `featured`.
+- Project `category`, testimonial `project`, blog `category`, and blog `tag` filters resolve localized slugs.
+- Project `technology` filter resolves the stable technology slug.
 
-## GET /api/v1/projects/{slug}
+## Project Responses
 
-- Purpose: project case study details.
-- Auth: none.
-- Parameters: localized `slug`.
-- Response: full localized case study, media, related projects, SEO metadata, like count, and view count.
-- Errors: 404 when unpublished or missing.
+Project list cards include localized `title`, `slug`, `summary`, `cover_image_url`, category, technologies, featured flag, publication timestamp, and aggregate `view_count` and `like_count`.
 
-## POST /api/v1/projects/{project}/views
+Project details additionally include localized `body`, ordered public media URLs with localized alt/caption, related published projects, and SEO metadata.
 
-- Purpose: record a unique view for a project.
-- Auth: none.
-- Validation: valid project identifier; visitor cookie/header handled privately.
-- Response: authoritative view count.
-- Errors: 404, 429.
-- Privacy: no raw IP storage and no visitor identifiers returned.
+Published-only rules:
 
-## POST /api/v1/projects/{project}/likes
+- `status` must be `published`.
+- `published_at` must be null or in the past.
+- Draft, archived, future, or unknown slugs return HTTP 404.
 
-- Purpose: like a project.
-- Auth: none.
-- Validation: valid project identifier and visitor strategy.
-- Response: authoritative like count and `liked: true`.
-- Errors: 404, 429.
+## Blog Responses
 
-## DELETE /api/v1/projects/{project}/likes
+Blog list cards include localized `title`, `slug`, `excerpt`, category, tags, featured flag, reading time, cover image URL, and publication timestamp.
 
-- Purpose: remove a project like.
-- Auth: none.
-- Response: authoritative like count and `liked: false`.
-- Errors: 404, 429.
+Blog details additionally include localized `body`, related published posts, and SEO metadata.
 
-## GET /api/v1/testimonials
+Published-only rules:
 
-- Purpose: list approved testimonials.
-- Auth: none.
-- Parameters: `page`, `per_page`, `featured`, `project`.
-- Response: approved testimonial cards only.
-- Privacy: contact email is never included.
+- `status` must be `published`.
+- `published_at` must be null or in the past.
+- Draft, archived, future, or unknown slugs return HTTP 404.
 
-## POST /api/v1/testimonials
+## Site And About Responses
 
-- Purpose: submit a testimonial for moderation.
-- Auth: none.
-- Validation: name, content, rating, optional company/position/project, verification email, consent, optional safe image/logo.
-- Response: success message and pending status.
-- Errors: 422, 429.
+`GET /api/v1/site` exposes only these site setting keys:
 
-## GET /api/v1/posts
+- `site.profile_headline`
+- `site.public_email`
+- `site.whatsapp_url`
+- `site.default_seo`
 
-- Purpose: list published blog posts.
-- Auth: none.
-- Parameters: `page`, `per_page`, `search`, `category`, `tag`, `featured`, `locale`.
-- Response: paginated post cards with localized metadata and reading time.
+`GET /api/v1/about` returns public profile data composed from visible experience, skills, technologies, and social links. Private contact messages and dashboard-only settings are not exposed.
 
-## GET /api/v1/posts/{slug}
+## Deferred Endpoints
 
-- Purpose: fetch a blog article.
-- Auth: none.
-- Parameters: localized `slug`.
-- Response: localized article, category, tags, related posts, SEO metadata, and structured-data fields.
-- Errors: 404.
+The following endpoints remain planned for later tasks and are not implemented in BE-003:
 
-## GET /api/v1/services
-
-- Purpose: list active services.
-- Auth: none.
-- Parameters: optional `locale`.
-- Response: ordered localized services.
-
-## GET /api/v1/about
-
-- Purpose: fetch biography, experience, skills, technologies, certifications, education, CV link, and availability.
-- Auth: none.
-- Parameters: optional `locale`.
-- Response: localized profile data.
-
-## POST /api/v1/contact
-
-- Purpose: submit a private contact message.
-- Auth: none.
-- Validation: name, email, phone, company, project type, budget range, message, optional attachment, privacy consent, spam protection token.
-- Response: success message and reference ID safe for user display.
-- Errors: 422, 429.
-- Side effects: store message, queue owner notification, store validated attachment.
-
-## GET /api/v1/sitemap.xml
-
-- Purpose: generated XML sitemap for indexable localized public URLs.
-- Auth: none.
-- Response: XML.
-
-## GET /robots.txt
-
-- Purpose: robots policy for public and private paths.
-- Auth: none.
-- Response: text disallowing dashboard/private paths and referencing sitemap.
-
+- `POST /api/v1/projects/{project}/views`
+- `POST /api/v1/projects/{project}/likes`
+- `DELETE /api/v1/projects/{project}/likes`
+- `POST /api/v1/testimonials`
+- `POST /api/v1/contact`
+- `GET /api/v1/sitemap.xml`
+- `GET /robots.txt`

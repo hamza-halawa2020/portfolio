@@ -5,7 +5,7 @@ Production-ready bilingual portfolio platform for a Laravel developer.
 ## Applications
 
 - `frontend/` - Angular 22 public website foundation with SSR and hydration.
-- `backend/` - Laravel 13 API foundation. Filament dashboard is not installed yet.
+- `backend/` - Laravel 13 API with implemented public read endpoints. Filament dashboard is not installed yet.
 - `docs/` - Project requirements, architecture, task tracking, testing, deployment, and session logs.
 
 ## Local Environment
@@ -62,7 +62,7 @@ C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version
 
 ## Current State
 
-The repository foundations, Laravel backend foundation, and Angular frontend foundation are initialized.
+The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, and public read API are initialized.
 
 ## Backend
 
@@ -80,6 +80,15 @@ Run backend tests from the backend directory so PHPUnit vendor paths resolve cor
 cd backend
 herd php artisan test
 ```
+
+List the implemented public API routes:
+
+```powershell
+cd backend
+herd php artisan route:list --path=api/v1
+```
+
+Implemented public read endpoints include `/api/v1/site`, `/api/v1/about`, `/api/v1/projects`, `/api/v1/projects/{slug}`, `/api/v1/posts`, `/api/v1/posts/{slug}`, `/api/v1/testimonials`, `/api/v1/services`, taxonomies, and social links. Public write endpoints are deferred to BE-004.
 
 Seed small fictional local development content only after migrations are applied:
 

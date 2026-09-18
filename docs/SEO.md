@@ -22,6 +22,13 @@ FND-004 foundation status:
 
 Detailed metadata, canonical URLs, `hreflang`, Open Graph, Twitter/X cards, JSON-LD, sitemap, robots, redirects, and localized URLs remain for the dedicated SEO implementation tasks.
 
+BE-003 backend API status:
+
+- Project and blog detail endpoints expose dashboard-managed SEO metadata through public API resources.
+- Published-only filtering is enforced before project and blog detail payloads are returned.
+- Draft, future, archived, or missing project/post slugs return HTTP 404.
+- Sitemap, robots, canonical URL rendering, `hreflang`, Open Graph, Twitter/X card rendering, JSON-LD rendering, and redirects remain deferred to the dedicated SEO milestone and Angular SSR page work.
+
 ## URL and Localization Strategy
 
 - Arabic and English pages use separate URLs.
@@ -35,6 +42,7 @@ Detailed metadata, canonical URLs, `hreflang`, Open Graph, Twitter/X cards, JSON
 - Dashboard-managed SEO metadata exists for pages, projects, posts, categories, and services.
 - Editable fields include localized title, localized meta description, canonical override, Open Graph title/description/image, robots index/follow, structured-data fields, and redirect URL.
 - Defaults come from site settings when a specific page lacks metadata.
+- BE-003 exposes project and blog SEO metadata in read API detail responses; Angular SSR still needs to consume it and render tags into raw HTML.
 
 ## Structured Data Strategy
 
