@@ -5,7 +5,7 @@ Production-ready bilingual portfolio platform for a Laravel developer.
 ## Applications
 
 - `frontend/` - Angular 22 public website foundation with SSR and hydration.
-- `backend/` - Laravel 13 API with implemented public read endpoints. Filament dashboard is not installed yet.
+- `backend/` - Laravel 13 API with implemented public read/write endpoints. Filament dashboard is not installed yet.
 - `docs/` - Project requirements, architecture, task tracking, testing, deployment, and session logs.
 
 ## Local Environment
@@ -62,7 +62,7 @@ C:\Users\hamza\.config\herd\bin\php85\php.exe backend\artisan --version
 
 ## Current State
 
-The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, and public read API are initialized.
+The repository foundations, Laravel backend foundation, Angular frontend foundation, portfolio schema/model layer, and public read/write API are initialized.
 
 ## Backend
 
@@ -88,7 +88,9 @@ cd backend
 herd php artisan route:list --path=api/v1
 ```
 
-Implemented public read endpoints include `/api/v1/site`, `/api/v1/about`, `/api/v1/projects`, `/api/v1/projects/{slug}`, `/api/v1/posts`, `/api/v1/posts/{slug}`, `/api/v1/testimonials`, `/api/v1/services`, taxonomies, and social links. Public write endpoints are deferred to BE-004.
+Implemented public read endpoints include `/api/v1/site`, `/api/v1/about`, `/api/v1/projects`, `/api/v1/projects/{slug}`, `/api/v1/posts`, `/api/v1/posts/{slug}`, `/api/v1/testimonials`, `/api/v1/services`, taxonomies, and social links.
+
+Implemented public write endpoints include `POST /api/v1/projects/{slug}/views`, `POST /api/v1/projects/{slug}/likes`, `DELETE /api/v1/projects/{slug}/likes`, `POST /api/v1/testimonials`, and `POST /api/v1/contact`.
 
 Seed small fictional local development content only after migrations are applied:
 

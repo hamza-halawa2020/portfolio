@@ -50,6 +50,14 @@ APP_DEBUG=true
 APP_URL=https://backend.test
 FRONTEND_URL=http://localhost:4200
 CORS_ALLOWED_ORIGINS=http://localhost:4200,http://127.0.0.1:4200,http://localhost:4000,http://127.0.0.1:4000
+PUBLIC_VISITOR_COOKIE=portfolio_visitor
+PUBLIC_VISITOR_COOKIE_LIFETIME=525600
+PUBLIC_VISITOR_COOKIE_DOMAIN=null
+VISITOR_HASH_SECRET=
+RATE_LIMIT_PROJECT_VIEWS_PER_MINUTE=60
+RATE_LIMIT_PROJECT_LIKES_PER_MINUTE=30
+RATE_LIMIT_TESTIMONIALS_PER_HOUR=5
+RATE_LIMIT_CONTACT_PER_HOUR=5
 DB_CONNECTION=sqlite
 # Local .env may use MySQL 8.0.41 for initial development.
 # Staging/production target: MySQL 8.4 LTS.
@@ -65,7 +73,7 @@ CACHE_STORE=database
 MAIL_MAILER=log
 ```
 
-Secrets such as database usernames, database passwords, mail passwords, app keys, and production service credentials must exist only in ignored `.env` files or deployment secret stores.
+Secrets such as database usernames, database passwords, mail passwords, app keys, visitor hash secrets, and production service credentials must exist only in ignored `.env` files or deployment secret stores.
 
 ## Build Commands
 
@@ -121,6 +129,8 @@ Bootstrap 5.3.8 was verified but is not selected by default because the original
 
 Production must run Laravel queue workers for notifications, media processing, analytics, and cleanup jobs.
 
+BE-004 currently dispatches public testimonial/contact submission events after database commit. Notification listeners, mail delivery, and database queue worker verification remain future work until SMTP/local inbox configuration is completed.
+
 ## Scheduler
 
 Production must run Laravel scheduler every minute for aggregation, cleanup, sitemap generation where applicable, and maintenance jobs.
@@ -130,6 +140,7 @@ Production must run Laravel scheduler every minute for aggregation, cleanup, sit
 - Development: local public storage.
 - Production: S3-compatible storage where available.
 - Uploaded files must be validated and stored through Laravel filesystem abstraction.
+- Contact form attachments are rejected by the public API until private storage, validation limits, malware-scanning expectations, and dashboard-only access controls are configured.
 
 ## MySQL
 
@@ -219,9 +230,10 @@ Production backup strategy must include MySQL backups, uploaded media backups, a
 - Queue worker and scheduler status.
 - Angular SSR page responses.
 - API read smoke tests for `/api/v1/site`, `/api/v1/projects`, `/api/v1/projects/{slug}`, `/api/v1/posts`, `/api/v1/posts/{slug}`, `/api/v1/testimonials`, `/api/v1/services`, and taxonomy endpoints.
-- API write smoke tests after BE-004 implements public writes.
+- API write smoke tests for `POST /api/v1/projects/{slug}/views`, `POST /api/v1/projects/{slug}/likes`, `DELETE /api/v1/projects/{slug}/likes`, `POST /api/v1/testimonials`, and `POST /api/v1/contact`.
+- Credentialed CORS verification for the Angular origin and the encrypted `PUBLIC_VISITOR_COOKIE`.
 - Sitemap and robots responses.
 - Dashboard authentication.
 - Storage upload and public media access.
 
-Current BE-003 API deployment note: public read endpoints are registered under `/api/v1`, return short public cache headers, and require only the existing database-backed local services. Redis is not required for the implemented read API.
+Current BE-004 API deployment note: public read/write endpoints are registered under `/api/v1`. Reads return short public cache headers; writes return `no-store`, use endpoint-specific rate limits, and require the visitor hash secret/cookie configuration. Redis is not required locally because the current rate limiter uses the configured Laravel cache store.

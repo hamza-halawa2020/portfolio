@@ -116,6 +116,17 @@ Update on 2026-09-18: BE-002 added a lightweight `HasLocalizedAttributes` model 
 - Reason: This keeps public responses stable, localized, privacy-filtered, suitable for SSR frontend consumption, and aligned with the permanent thin-controller rule.
 - Consequences: Public read endpoints use a short 60-second public cache header. Detail endpoints currently resolve localized JSON slugs in query services at the application layer for portability; revisit database-specific generated-column indexes if content volume requires faster slug lookup.
 
+## DEC-015 - Anonymous public write workflow strategy
+
+- Date: 2026-09-18
+- Context: BE-004 requires project views, likes, testimonial submissions, and contact submissions without exposing raw IP addresses, visitor identifiers, private emails, moderation fields, or dashboard-only data.
+- Options considered: accept visitor IDs from request bodies; require Sanctum sessions for all writes; issue a first-party visitor cookie and store only HMAC hashes.
+- Selected option: use a server-issued first-party encrypted HTTP-only visitor cookie, derive HMAC hashes with the configured visitor hash secret, and keep public writes anonymous and stateless.
+- Reason: This supports public interactions from the Angular website without forcing accounts or dashboard authentication, while keeping identifiers out of public payloads and avoiding raw IP storage.
+- Consequences: CORS must allow credentials only for explicit trusted origins. Public write rate limiters use privacy-safe visitor/IP hash keys. Project view uniqueness currently follows the schema's UTC date window, not a rolling 24-hour interval. Contact attachments are rejected until private storage and upload security are implemented.
+
+Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Form Requests, DTOs, application services, API Resources, named rate limiters, encrypted visitor cookies, HMAC-only interaction storage, pending testimonials, private contact messages, and after-commit submission events.
+
 ## DEC-008 - Laravel backend foundation scope
 
 - Date: 2026-09-18

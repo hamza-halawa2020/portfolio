@@ -84,6 +84,16 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - BE-003 in-memory SQLite `migrate:fresh --seed`: passed; migrations and the development seeder ran cleanly.
   - BE-003 local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
   - BE-003 `vendor\bin\pint --test` through Herd PHP: passed after Pint formatted service-layer files.
+  - BE-004 focused `PublicWriteApiTest`: passed, 11 tests and 88 assertions.
+  - BE-004 focused `PublicApiArchitectureTest|PublicWriteApiTest`: passed, 19 tests and 323 assertions.
+  - BE-004 tests cover project view idempotency, daily view uniqueness, like/unlike idempotency, published-only project writes, pending private testimonial submissions, private contact submissions, honeypot validation, consent validation, attachment rejection, endpoint-specific rate limiting, and direct service use without HTTP request state.
+  - BE-004 PHP syntax checks for new/changed data objects, events, controllers, middleware, requests, resources, services, providers, config, routes, and tests: passed.
+  - BE-004 `artisan route:list --path=api/v1`: passed; 18 API routes registered, including 5 public write routes.
+  - BE-004 full backend `artisan test`: passed, 42 tests and 500 assertions.
+  - BE-004 `vendor\bin\pint --test`: passed after Pint fixed import ordering and line endings in two files.
+  - BE-004 local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
+  - BE-004 `git diff --check`: passed with line-ending normalization warnings only.
+  - BE-004 `migrate:fresh --seed --env=testing` was not executed because the sandbox rejected it as a destructive database command; BE-004 verification used the full test suite's safe database refresh behavior instead.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -181,4 +191,5 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - BE-002 model tests verify relationships, casts, enum values, localized access, hidden sensitive fields, and authenticated dashboard policy behavior.
 - BE-003 public API tests verify published-only read behavior, localized responses, filter validation, localized slug lookup, pagination metadata, public cache headers, privacy exclusions, and a basic project-list query-count guard.
 - BE-003 architecture tests verify public API controllers do not contain Eloquent query calls, controllers delegate to services, services apply visibility rules independently from HTTP, query services apply filters/eager loading, invalid transport input is rejected before query filters run, and Resources do not trigger unexpected lazy-loading queries in the covered project-detail path.
-- Public write endpoints, API rate limiting, sitemap/robots, Filament dashboard authorization flows, Redis-backed cache/queues, frontend API integration, and Playwright browser execution are still untested because their implementation tasks have not started.
+- BE-004 public write tests verify anonymous project views, likes/unlikes, testimonial submissions, contact submissions, validation/spam controls, privacy exclusions, event dispatch, direct service usage, endpoint-specific rate limiting, transaction usage, query-free Resources, and thin controller boundaries.
+- Sitemap/robots, Filament dashboard authorization flows, Redis-backed cache/queues, frontend API integration, notification listener delivery, contact attachments, and Playwright browser execution are still untested because their implementation tasks have not started.

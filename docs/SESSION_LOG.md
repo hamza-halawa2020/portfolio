@@ -298,3 +298,30 @@
   - In-memory SQLite `migrate:fresh --seed --force`: passed.
 - Current blockers: None for BE-003. Herd PHP still prints the known OPcache startup warning, but verification passes.
 - Recommended next task: BE-004 - Implement public write workflows.
+
+## 2026-09-18 - BE-004
+
+- Tasks attempted: BE-004 - Implement public write workflows.
+- Tasks completed: BE-004 - Implement public write workflows.
+- Files changed: `backend/.env.example`, `backend/config/cors.php`, `backend/config/portfolio.php`, `backend/routes/api.php`, `backend/app/Data/PublicApi/`, `backend/app/Events/PublicApi/`, `backend/app/Http/Controllers/Api/V1/`, `backend/app/Http/Middleware/ResolvePublicVisitor.php`, `backend/app/Http/Requests/Api/V1/`, `backend/app/Http/Resources/Api/V1/`, `backend/app/Providers/AppServiceProvider.php`, `backend/app/Services/PublicApi/`, `backend/tests/Feature/PublicApiArchitectureTest.php`, `backend/tests/Feature/PublicWriteApiTest.php`, `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/DATABASE_SCHEMA.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Added public write routes for project views, project likes, project unlikes, testimonial submissions, and contact submissions.
+  - Kept controllers thin by routing validated Form Requests through DTOs and `App\Services\PublicApi` application services.
+  - Added `ResolvePublicVisitor` and `VisitorIdentity` for server-issued encrypted HTTP-only visitor cookies and HMAC-only visitor/IP/user-agent hashes.
+  - Added named rate limiters for project views, likes, testimonials, and contact messages.
+  - Implemented UTC-date project view uniqueness to match the existing `project_views` unique constraint.
+  - Implemented idempotent project likes/unlikes with authoritative counts.
+  - Implemented pending testimonial submissions and private contact message submissions with consent validation, honeypot rejection, dashboard-field rejection, and after-commit events.
+  - Rejected public contact attachments until safe private storage and upload security are implemented.
+- Tests executed and results:
+  - PHP syntax checks for new/changed BE-004 files: passed.
+  - `artisan route:list --path=api/v1`: passed; 18 API routes registered.
+  - `artisan test --filter=PublicWriteApiTest`: passed, 11 tests and 88 assertions.
+  - `artisan test --filter=PublicApiArchitectureTest|PublicWriteApiTest`: passed, 19 tests and 323 assertions.
+  - `artisan test`: passed, 42 tests and 500 assertions.
+  - `vendor\bin\pint --test`: passed after Pint fixed import ordering and line endings in two files.
+  - Local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
+  - `git diff --check`: passed with line-ending normalization warnings only.
+  - `migrate:fresh --seed --env=testing`: not executed because the sandbox rejected it as a destructive database command; full tests exercised Laravel's safe test database refresh path.
+- Current blockers: None for BE-004. Herd PHP still prints the known OPcache startup warning, but syntax checks, Artisan, tests, routes, migrations, and Pint pass.
+- Recommended next task: ADM-001 - Configure Filament dashboard and authentication, unless the deferred infrastructure tasks INF-001, INF-002, or INF-003 are prioritized first.

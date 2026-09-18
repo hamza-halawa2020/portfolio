@@ -23,7 +23,11 @@ use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\Testimonial;
 use App\Policies\DashboardPolicy;
+use App\Services\PublicApi\VisitorIdentity;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -44,6 +48,28 @@ class AppServiceProvider extends ServiceProvider
         foreach ($this->dashboardPolicyModels() as $model) {
             Gate::policy($model, DashboardPolicy::class);
         }
+
+        $this->configurePublicWriteRateLimiters();
+    }
+
+    private function configurePublicWriteRateLimiters(): void
+    {
+        RateLimiter::for('public-project-views', fn (Request $request): Limit => Limit::perMinute((int) config('portfolio.rate_limits.project_views', 60))
+            ->by('project-views:'.$this->visitorRateLimitKey($request)));
+
+        RateLimiter::for('public-project-likes', fn (Request $request): Limit => Limit::perMinute((int) config('portfolio.rate_limits.project_likes', 30))
+            ->by('project-likes:'.$this->visitorRateLimitKey($request)));
+
+        RateLimiter::for('public-testimonials', fn (Request $request): Limit => Limit::perMinutes(60, (int) config('portfolio.rate_limits.testimonials', 5))
+            ->by('testimonials:'.$this->visitorRateLimitKey($request)));
+
+        RateLimiter::for('public-contact', fn (Request $request): Limit => Limit::perMinutes(60, (int) config('portfolio.rate_limits.contact', 5))
+            ->by('contact:'.$this->visitorRateLimitKey($request)));
+    }
+
+    private function visitorRateLimitKey(Request $request): string
+    {
+        return app(VisitorIdentity::class)->rateLimitKey($request);
     }
 
     /**

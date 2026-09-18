@@ -46,6 +46,28 @@ class PublicApiArchitectureTest extends TestCase
         }
     }
 
+    public function test_public_api_resources_do_not_build_eloquent_queries(): void
+    {
+        foreach ($this->publicApiResourceFiles() as $file) {
+            $source = file_get_contents($file);
+
+            $this->assertStringNotContainsString('::query(', $source, $file);
+            $this->assertStringNotContainsString('->where(', $source, $file);
+            $this->assertStringNotContainsString('->with(', $source, $file);
+            $this->assertStringNotContainsString('->load(', $source, $file);
+            $this->assertStringNotContainsString('App\\Models\\', $source, $file);
+        }
+    }
+
+    public function test_public_write_services_use_database_transactions(): void
+    {
+        foreach ($this->publicWriteServiceFiles() as $file) {
+            $source = file_get_contents($file);
+
+            $this->assertStringContainsString('DB::transaction(', $source, $file);
+        }
+    }
+
     public function test_project_service_applies_published_visibility_independently_from_http(): void
     {
         Project::factory()->published()->create(['slug' => ['en' => 'public-project']]);
@@ -123,5 +145,27 @@ class PublicApiArchitectureTest extends TestCase
     private function publicApiControllerFiles(): array
     {
         return array_values(array_filter(glob(app_path('Http/Controllers/Api/V1/*.php'))));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function publicApiResourceFiles(): array
+    {
+        return array_values(array_filter(glob(app_path('Http/Resources/Api/V1/*.php'))));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function publicWriteServiceFiles(): array
+    {
+        return [
+            app_path('Services/PublicApi/RegisterProjectView.php'),
+            app_path('Services/PublicApi/LikeProject.php'),
+            app_path('Services/PublicApi/UnlikeProject.php'),
+            app_path('Services/PublicApi/SubmitTestimonial.php'),
+            app_path('Services/PublicApi/SubmitContactMessage.php'),
+        ];
     }
 }

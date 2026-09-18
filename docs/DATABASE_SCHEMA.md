@@ -48,6 +48,8 @@ BE-001 verified the full migration set with an in-memory SQLite `migrate:fresh -
 
 BE-002 added Eloquent models, factories, policies, and a development seeder for the implemented tables. The seeder writes a small fictional bilingual dataset with `updateOrCreate` and is guarded from production.
 
+BE-004 implemented public write workflows against the existing schema. Project views use the existing `project_id`, `visitor_id_hash`, and `viewed_on` unique constraint, so uniqueness is enforced per UTC calendar date rather than as a rolling 24-hour interval. Project likes use the existing `project_id` and `visitor_id_hash` unique constraint for idempotent likes. Contact attachment records remain unused by public writes until safe private storage is configured.
+
 ## Conventions
 
 - Primary keys use unsigned big integers unless Laravel conventions provide UUIDs where needed.
@@ -108,6 +110,7 @@ BE-002 added Eloquent models, factories, policies, and a development seeder for 
 - Indexes: `project_id`, `viewed_on`, `visitor_id_hash`.
 - Unique constraints: `project_id`, `visitor_id_hash`, `viewed_on`.
 - Privacy-sensitive fields: hashes; no raw IP.
+- BE-004 write behavior: stores HMAC hashes only and treats `viewed_on` as the UTC date window for unique view counting.
 - Delete behavior: cascade when project is deleted.
 
 ## project_likes
@@ -117,6 +120,7 @@ BE-002 added Eloquent models, factories, policies, and a development seeder for 
 - Indexes: `project_id`, `visitor_id_hash`.
 - Unique constraints: `project_id`, `visitor_id_hash`.
 - Privacy-sensitive fields: hashes; no raw IP.
+- BE-004 write behavior: stores HMAC hashes only; POST like and DELETE unlike are idempotent.
 
 ## testimonials
 
@@ -125,6 +129,7 @@ BE-002 added Eloquent models, factories, policies, and a development seeder for 
 - Indexes: `project_id`, `status`, `is_featured`.
 - Privacy-sensitive fields: `contact_email`, review workflow fields.
 - Public API exclusion: never expose `contact_email`.
+- BE-004 write behavior: public submissions are created with `pending` status, `is_featured=false`, and a consent timestamp. Public requests cannot set moderation or review fields.
 
 ## blog_categories
 
@@ -172,6 +177,7 @@ BE-002 added Eloquent models, factories, policies, and a development seeder for 
 - Columns: `id`, `name`, `email`, `phone` nullable, `company` nullable, `project_type` nullable, `budget_range` nullable, `message`, `status`, `admin_notes` nullable, `consented_at`, timestamps, soft deletes.
 - Indexes: `status`, `created_at`.
 - Privacy-sensitive fields: all submitter contact data.
+- BE-004 write behavior: public submissions are created with `new` status and a consent timestamp. Public APIs never return contact message records.
 
 ## contact_attachments
 
@@ -179,6 +185,7 @@ BE-002 added Eloquent models, factories, policies, and a development seeder for 
 - Columns: `id`, `contact_message_id`, `path`, `original_name`, `mime_type`, `file_size`, timestamps.
 - Foreign keys: `contact_message_id` references `contact_messages.id` cascade delete.
 - Privacy-sensitive fields: uploaded file metadata and content.
+- BE-004 status: public attachment uploads are explicitly rejected until a private disk, validation limits, malware-scanning expectations, and dashboard access controls are configured.
 
 ## site_settings
 

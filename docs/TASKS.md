@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 10 | 0 | 15 | 0 |
+| 11 | 1 | 13 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -312,7 +312,7 @@
   - Refactored public API controllers to the required service-layer architecture: controllers are thin, application services live under `App\Services\PublicApi`, query services live under `App\Queries\PublicApi`, and typed data objects live under `App\Data\PublicApi`.
   - Implemented read endpoints for site, about, projects, project categories, technologies, testimonials, blog posts, blog categories, tags, services, and social links.
   - Detail endpoints resolve localized slugs with English fallback and return 404 for unpublished, future, draft, archived, or missing content.
-  - Public write endpoints, sitemap, robots, Filament/admin flows, and Angular API consumption remain deferred.
+  - At BE-003 completion, public write endpoints, sitemap, robots, Filament/admin flows, and Angular API consumption remained deferred.
   - Architecture tests passed: `artisan test --filter=PublicApiArchitectureTest` (6 tests, 108 assertions).
   - Behavior tests passed: `artisan test --filter=PublicReadApiTest` (10 tests, 72 assertions).
   - Full verification passed: `artisan test` (29 tests, 285 assertions), `vendor\bin\pint --test`, syntax checks, route list, in-memory `migrate:fresh --seed`, and local MySQL `migrate:status`.
@@ -320,9 +320,9 @@
 
 ### BE-004 - Implement public write workflows
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: BE-003
-- Files: backend requests, actions, controllers, resources, notifications, tests
+- Files: backend requests, services, controllers, resources, events, tests, configuration, documentation
 - Acceptance criteria:
   - Contact, testimonial, project view, and project like workflows are implemented.
   - Form Requests validate payloads.
@@ -332,7 +332,17 @@
   - Backend feature tests for write endpoints.
   - Privacy-sensitive tests for hidden fields and visitor identifiers.
 - Notes:
-- Completed:
+  - Added anonymous public write routes for project views, project likes, project unlikes, testimonial submissions, and contact submissions.
+  - Implemented thin controllers, Form Requests, DTOs, application services, API Resources, after-commit submission events, named rate limiters, CORS credentials support, and `no-store` write responses.
+  - Visitor identity is server-issued through a first-party encrypted HTTP-only cookie and stored only as HMAC hashes for visitor ID, IP, and user agent. Public request bodies cannot provide visitor identity.
+  - Project view uniqueness follows the implemented schema: one view per project, visitor hash, and UTC calendar date. A true rolling 24-hour window would require a future schema/service change.
+  - Project likes/unlikes are idempotent and return authoritative counts.
+  - Testimonials are stored as pending, consented, private records and public requests cannot set moderation fields.
+  - Contact messages are stored as private `new` records; public APIs never return contact message records.
+  - Contact attachments are explicitly rejected until safe private storage and upload security are configured.
+  - Verification passed: syntax checks, route list showing 18 API routes, focused `PublicWriteApiTest` (11 tests, 88 assertions), focused architecture/write tests (19 tests, 323 assertions), full backend suite (42 tests, 500 assertions), `vendor\bin\pint --test`, local MySQL `migrate:status`, and `git diff --check` with line-ending warnings only.
+  - `migrate:fresh --seed --env=testing` was not executed during BE-004 because the sandbox rejected it as a destructive database command; the full test suite exercised test database refreshes safely.
+- Completed: 2026-09-18
 
 ## Phase 3 - Filament Dashboard
 

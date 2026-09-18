@@ -21,6 +21,10 @@
 - Public API Form Requests, Resources, localized response handling, pagination, cache headers, published-only filtering, and privacy-safe payloads.
 - Backend public API feature tests covering localization, validation, filters, slug lookup, 404 behavior, privacy exclusions, pagination metadata, cache headers, and a basic query-count guard.
 - Public API service-layer architecture with thin controllers, typed filter/data objects, application services, query services, typed not-found exceptions, and architecture tests.
+- Public write workflows for project views, project likes/unlikes, testimonial submissions, and contact submissions.
+- Privacy-conscious visitor identity middleware and service using an encrypted first-party HTTP-only cookie with HMAC-only interaction storage.
+- Named public write rate limiters, honeypot fields, consent validation, after-commit testimonial/contact submission events, and no-store write responses.
+- Backend write workflow and architecture tests covering idempotency, privacy exclusions, validation, rate limiting, transactions, direct service use without HTTP, and query-free Resources.
 
 ### Changed
 
@@ -31,8 +35,10 @@
 - FND-005 now uses approved local development fallbacks: MySQL `8.0.41`, database cache/session/queue drivers, and Laravel `log` mailer.
 - Database schema documentation now reflects the implemented BE-001 migration and notes that localized JSON slug uniqueness is enforced at the application layer until a database-specific indexing strategy is approved.
 - Architecture and decisions now document the explicit model localization helper, broad initial dashboard policy, and fictional development seed strategy.
-- API contract now reflects implemented BE-003 read endpoints and marks public write, sitemap, and robots endpoints as deferred.
+- API contract now reflects implemented BE-003 read endpoints; sitemap and robots endpoints remain deferred.
 - BE-003 public API controllers were refactored to remove Eloquent query construction, filtering, visibility rules, relationship loading, and business orchestration.
+- API contract now reflects implemented BE-004 write endpoints and keeps sitemap/robots deferred.
+- Contact attachments are explicitly rejected by public writes until private storage and upload security are configured.
 
 ### Fixed
 
@@ -41,6 +47,8 @@
 ### Security
 
 - Documented no raw IP storage, no committed secrets, safe upload validation, and private dashboard requirements.
+- Public interaction tables store visitor, IP, and user-agent HMAC hashes only; raw IP addresses are not stored.
+- Public testimonial/contact endpoints reject dashboard-only fields and avoid returning private records or submitter contact data.
 
 ### Removed
 

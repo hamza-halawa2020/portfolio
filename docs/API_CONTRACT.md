@@ -1,6 +1,6 @@
 # API_CONTRACT.md
 
-The public read API is implemented in Laravel under `/api/v1`. Public write endpoints, authentication, sitemap, and robots responses are deferred to later tasks.
+The public API is implemented in Laravel under `/api/v1`. Public read endpoints and anonymous public write workflows are available. Authentication, sitemap, and robots responses are deferred to later tasks.
 
 Implementation architecture:
 
@@ -8,16 +8,18 @@ Implementation architecture:
 - Application services live under `App\Services\PublicApi`.
 - Eloquent query construction and filtering live under `App\Queries\PublicApi`.
 - Typed filter/result data lives under `App\Data\PublicApi`.
+- Public write workflows use Form Requests, DTOs, services, transactions, API Resources, privacy-conscious visitor identity resolution, and endpoint-specific rate limiting.
 
 ## Global Rules
 
 - Base path: `/api/v1`.
-- Authentication: all BE-003 read endpoints are public and unauthenticated.
+- Authentication: implemented public endpoints are public and unauthenticated. Public writes use an encrypted HTTP-only first-party visitor cookie, validation, rate limiting, and spam controls.
 - Locale: pass `locale=en|ar` or `Accept-Language: en|ar`; invalid locales return HTTP 422. English is the fallback locale.
 - Response shape: successful responses use top-level `data`; list responses include Laravel pagination `links` and `meta`, plus `meta.locale`.
-- Cache headers: safe public read responses include `Cache-Control` directives for `public` and `max-age=60`.
+- Cache headers: safe public read responses include `Cache-Control` directives for `public` and `max-age=60`. Public write responses use `Cache-Control: no-store`.
 - Errors: validation returns HTTP 422 with field errors; missing or unpublished resources return HTTP 404.
 - Privacy: public resources do not expose contact messages, verification emails, admin notes, visitor identifiers, raw IPs, hash fields, media filesystem paths, MIME types, or file sizes.
+- CORS: configured for explicit local Angular/browser origins with credentials enabled. Production wildcard origins are not allowed.
 
 ## Implemented Read Endpoints
 
@@ -36,6 +38,29 @@ Implementation architecture:
 | GET | `/api/v1/tags` | Tags used by published posts | `locale`, `page`, `per_page` |
 | GET | `/api/v1/services` | Visible services | `locale`, `page`, `per_page` |
 | GET | `/api/v1/social-links` | Visible social links | `locale`, `page`, `per_page` |
+
+## Implemented Write Endpoints
+
+| Method | Path | Purpose | Request body | Response |
+| --- | --- | --- | --- | --- |
+| POST | `/api/v1/projects/{slug}/views` | Register a unique public project view | Optional `locale`; optional honeypot `website` must be absent | `201` when counted, `200` when already counted for the visitor/day |
+| POST | `/api/v1/projects/{slug}/likes` | Add the current visitor's like | Optional `locale`; optional honeypot `website` must be absent | `201` when created, `200` when already liked |
+| DELETE | `/api/v1/projects/{slug}/likes` | Remove the current visitor's like | Optional `locale`; optional honeypot `website` must be absent | `200` with authoritative like count |
+| POST | `/api/v1/testimonials` | Submit a private testimonial for moderation | `name`, `content`, `contact_email`, `publication_consent`; optional `company`, `position`, `rating`, `project`, `locale`; honeypot `website` must be absent | `202` acknowledgement only |
+| POST | `/api/v1/contact` | Submit a private contact message | `name`, `email`, `message`, `privacy_consent`; optional `phone`, `company`, `project_type`, `budget_range`, `locale`; honeypot `website` must be absent | `202` acknowledgement only |
+
+Write workflow rules:
+
+- `{slug}` resolves only published projects and accepts localized slugs with English fallback.
+- Visitor identifiers are generated server-side only. Request bodies cannot provide visitor IDs.
+- The visitor cookie is first-party, encrypted by the application service, HTTP-only, `SameSite=Lax`, and secure in production.
+- Stored interaction data uses HMAC hashes for visitor ID, IP, and user agent. Raw IP addresses and user agents are not stored.
+- Project views are unique by project, visitor hash, and UTC calendar date, matching the existing `project_views` schema unique constraint.
+- Project likes are idempotent and unique by project and visitor hash.
+- Testimonial submissions are pending by default, never expose `contact_email`, and reject public moderation fields such as `status`, `is_featured`, and review/admin fields.
+- Contact submissions are private dashboard records, never returned by public APIs, and reject `status`, `admin_notes`, and `attachment` until safe private attachment storage is configured.
+- Duplicate testimonial/contact submissions receive generic validation feedback to avoid exposing moderation internals.
+- `TestimonialSubmitted` and `ContactMessageSubmitted` events dispatch after database commit for future queued notification listeners.
 
 ## Parameter Rules
 
@@ -86,12 +111,7 @@ Published-only rules:
 
 ## Deferred Endpoints
 
-The following endpoints remain planned for later tasks and are not implemented in BE-003:
+The following endpoints remain planned for later tasks:
 
-- `POST /api/v1/projects/{project}/views`
-- `POST /api/v1/projects/{project}/likes`
-- `DELETE /api/v1/projects/{project}/likes`
-- `POST /api/v1/testimonials`
-- `POST /api/v1/contact`
 - `GET /api/v1/sitemap.xml`
 - `GET /robots.txt`
