@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects;
 
+use App\Enums\PublicationStatus;
 use App\Filament\Resources\Projects\Pages\ManageProjects;
 use App\Filament\Resources\Support\ContentActions;
 use App\Filament\Resources\Support\ContentForms;
@@ -103,7 +104,7 @@ class ProjectResource extends Resource
                 TextColumn::make('published_at')->dateTime()->sortable(),
             ])
             ->filters([
-                SelectFilter::make('status')->options(\App\Enums\PublicationStatus::class),
+                SelectFilter::make('status')->options(PublicationStatus::class),
                 TrashedFilter::make(),
             ])
             ->recordActions([

@@ -3,11 +3,9 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\Projects\ProjectResource;
-use App\Models\BlogPost;
 use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\ProjectMedia;
-use App\Models\SeoMetadata;
 use App\Models\Technology;
 use App\Models\User;
 use App\Services\Admin\Content\BlogPostContentService;

@@ -5,7 +5,6 @@ namespace App\Services\Admin\Content;
 use App\Models\BlogPost;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class BlogPostContentService
 {

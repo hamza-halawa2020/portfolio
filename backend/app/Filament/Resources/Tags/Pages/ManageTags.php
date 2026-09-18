@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\Tags\Pages;
 
-use App\Filament\Resources\Tags\TagResource;
 use App\Filament\Resources\Support\ContentActions;
+use App\Filament\Resources\Tags\TagResource;
 use App\Models\Tag;
 use App\Services\Admin\Content\LocalizedRecordService;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
 
 class ManageTags extends ManageRecords

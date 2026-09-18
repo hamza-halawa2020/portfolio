@@ -4,7 +4,6 @@ namespace App\Services\Admin\Content;
 
 use App\Models\SiteSetting;
 use App\Models\SocialLink;
-use Illuminate\Database\Eloquent\Model;
 
 class SiteContentService
 {

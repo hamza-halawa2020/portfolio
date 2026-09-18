@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources\Support;
 
+use App\Enums\PublicationStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -92,7 +93,7 @@ class ContentForms
         return Section::make('Publication')
             ->schema([
                 Select::make('status')
-                    ->options(\App\Enums\PublicationStatus::class)
+                    ->options(PublicationStatus::class)
                     ->default('draft')
                     ->required(),
                 DateTimePicker::make('published_at'),

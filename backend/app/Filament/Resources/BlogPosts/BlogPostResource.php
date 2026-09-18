@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogPosts;
 
+use App\Enums\PublicationStatus;
 use App\Filament\Resources\BlogPosts\Pages\ManageBlogPosts;
 use App\Filament\Resources\Support\ContentActions;
 use App\Filament\Resources\Support\ContentForms;
@@ -88,7 +89,7 @@ class BlogPostResource extends Resource
                 TextColumn::make('published_at')->dateTime()->sortable(),
             ])
             ->filters([
-                SelectFilter::make('status')->options(\App\Enums\PublicationStatus::class),
+                SelectFilter::make('status')->options(PublicationStatus::class),
                 TrashedFilter::make(),
             ])
             ->recordActions([
