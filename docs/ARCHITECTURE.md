@@ -183,6 +183,9 @@ npm --version
 - Versioned public read API under `/api/v1` is implemented for site, about, projects, project taxonomies, testimonials, blog posts, blog taxonomies, services, and social links.
 - API Resources shape all implemented public read responses.
 - Form Requests validate public read query parameters and locale values.
+- Public API controllers are intentionally thin. They convert validated requests into DTOs where needed, call one `App\Services\PublicApi` application service, and return an API Resource response.
+- Public API orchestration lives in `App\Services\PublicApi`; reusable Eloquent query construction, filtering, visibility rules, relationship loading, aggregate counts, pagination, related-content selection, and localized slug lookup live in `App\Queries\PublicApi`.
+- Public API filter/value objects live in `App\Data\PublicApi`.
 - Actions/services for business workflows.
 - Policies/Gates for dashboard authorization.
 - Filament for dashboard resources and analytics widgets.
@@ -208,7 +211,7 @@ npm --version
 - Responses use consistent success, error, and pagination shapes. Paginated lists use Laravel pagination `links` and `meta` with an added `meta.locale`.
 - Public cache headers are applied to safe read endpoints with a 60-second TTL.
 - Write endpoints return authoritative state after optimistic UI attempts.
-- BE-003 detail endpoints currently resolve localized JSON slugs through application-level lookup over published records for SQLite/MySQL portability. Revisit database-specific generated-column indexing if content volume requires it.
+- BE-003 detail endpoints currently resolve localized JSON slugs in query services through application-level lookup over published records for SQLite/MySQL portability. Revisit database-specific generated-column indexing if content volume requires it.
 
 ## Media Storage Strategy
 

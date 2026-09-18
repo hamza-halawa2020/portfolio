@@ -111,10 +111,10 @@ Update on 2026-09-18: BE-002 added a lightweight `HasLocalizedAttributes` model 
 
 - Date: 2026-09-18
 - Context: BE-003 required public `/api/v1` read endpoints for bilingual Angular consumption without exposing private dashboard or analytics fields.
-- Options considered: expose Eloquent models directly; create dedicated public API Resources and Form Requests; defer localization until frontend integration.
-- Selected option: use dedicated public API Resources and read-query Form Requests, with locale from `locale=en|ar` or `Accept-Language` and English fallback for missing localized content.
-- Reason: This keeps public responses stable, localized, privacy-filtered, and suitable for SSR frontend consumption.
-- Consequences: Public read endpoints use a short 60-second public cache header. Detail endpoints currently resolve localized JSON slugs at the application layer for portability; revisit database-specific generated-column indexes if content volume requires faster slug lookup.
+- Options considered: expose Eloquent models directly from controllers; keep query/filter logic in controllers; use dedicated public API Resources, Form Requests, application services, query services, and typed filter DTOs.
+- Selected option: use thin controllers backed by `App\Services\PublicApi`, `App\Queries\PublicApi`, and `App\Data\PublicApi`, with locale from `locale=en|ar` or `Accept-Language` and English fallback for missing localized content.
+- Reason: This keeps public responses stable, localized, privacy-filtered, suitable for SSR frontend consumption, and aligned with the permanent thin-controller rule.
+- Consequences: Public read endpoints use a short 60-second public cache header. Detail endpoints currently resolve localized JSON slugs in query services at the application layer for portability; revisit database-specific generated-column indexes if content volume requires faster slug lookup.
 
 ## DEC-008 - Laravel backend foundation scope
 

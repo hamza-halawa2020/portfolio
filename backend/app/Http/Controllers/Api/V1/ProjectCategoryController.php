@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Api\V1\Concerns\RespondsWithPublicApi;
+use App\Http\Controllers\Api\V1\Concerns\ReturnsPublicApiResponses;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexRequest;
 use App\Http\Resources\Api\V1\ProjectCategoryResource;
-use App\Models\ProjectCategory;
+use App\Services\PublicApi\ListProjectCategories;
 use Illuminate\Http\JsonResponse;
 
 class ProjectCategoryController extends Controller
 {
-    use RespondsWithPublicApi;
+    use ReturnsPublicApiResponses;
 
-    public function __invoke(IndexRequest $request): JsonResponse
+    public function __invoke(IndexRequest $request, ListProjectCategories $service): JsonResponse
     {
-        $locale = $request->locale();
-        $this->prepareLocale($request, $locale);
+        $categories = $service->handle();
 
-        return $this->collection(
-            ProjectCategoryResource::collection(ProjectCategory::query()->visible()->ordered()->get()),
-            $locale,
-        );
+        return $this->publicResource(ProjectCategoryResource::collection($categories), $request->locale());
     }
 }

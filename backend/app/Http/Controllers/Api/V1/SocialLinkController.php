@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Api\V1\Concerns\RespondsWithPublicApi;
+use App\Http\Controllers\Api\V1\Concerns\ReturnsPublicApiResponses;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexRequest;
 use App\Http\Resources\Api\V1\SocialLinkResource;
-use App\Models\SocialLink;
+use App\Services\PublicApi\ListPublicSocialLinks;
 use Illuminate\Http\JsonResponse;
 
 class SocialLinkController extends Controller
 {
-    use RespondsWithPublicApi;
+    use ReturnsPublicApiResponses;
 
-    public function __invoke(IndexRequest $request): JsonResponse
+    public function __invoke(IndexRequest $request, ListPublicSocialLinks $service): JsonResponse
     {
-        $locale = $request->locale();
-        $this->prepareLocale($request, $locale);
+        $links = $service->handle();
 
-        return $this->collection(SocialLinkResource::collection(SocialLink::query()->visible()->ordered()->get()), $locale);
+        return $this->publicResource(SocialLinkResource::collection($links), $request->locale());
     }
 }

@@ -2,6 +2,13 @@
 
 The public read API is implemented in Laravel under `/api/v1`. Public write endpoints, authentication, sitemap, and robots responses are deferred to later tasks.
 
+Implementation architecture:
+
+- Controllers accept validated Form Requests, call one public API application service, and return API Resources.
+- Application services live under `App\Services\PublicApi`.
+- Eloquent query construction and filtering live under `App\Queries\PublicApi`.
+- Typed filter/result data lives under `App\Data\PublicApi`.
+
 ## Global Rules
 
 - Base path: `/api/v1`.

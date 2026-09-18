@@ -20,6 +20,7 @@
 - Versioned public read API under `/api/v1` for site, about, projects, project categories, technologies, testimonials, blog posts, blog categories, tags, services, and social links.
 - Public API Form Requests, Resources, localized response handling, pagination, cache headers, published-only filtering, and privacy-safe payloads.
 - Backend public API feature tests covering localization, validation, filters, slug lookup, 404 behavior, privacy exclusions, pagination metadata, cache headers, and a basic query-count guard.
+- Public API service-layer architecture with thin controllers, typed filter/data objects, application services, query services, typed not-found exceptions, and architecture tests.
 
 ### Changed
 
@@ -31,6 +32,7 @@
 - Database schema documentation now reflects the implemented BE-001 migration and notes that localized JSON slug uniqueness is enforced at the application layer until a database-specific indexing strategy is approved.
 - Architecture and decisions now document the explicit model localization helper, broad initial dashboard policy, and fictional development seed strategy.
 - API contract now reflects implemented BE-003 read endpoints and marks public write, sitemap, and robots endpoints as deferred.
+- BE-003 public API controllers were refactored to remove Eloquent query construction, filtering, visibility rules, relationship loading, and business orchestration.
 
 ### Fixed
 

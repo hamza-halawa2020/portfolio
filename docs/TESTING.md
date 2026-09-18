@@ -79,10 +79,11 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - BE-003 PHP syntax checks for public API controllers, requests, resources, and `PublicReadApiTest`: passed.
   - BE-003 `artisan route:list --path=api/v1`: passed; 13 public read routes are registered.
   - BE-003 focused `PublicReadApiTest`: passed, 10 tests and 72 assertions.
-  - BE-003 full backend test suite: passed, 23 tests and 177 assertions.
+  - BE-003 service-layer architecture remediation `PublicApiArchitectureTest`: passed, 6 tests and 108 assertions.
+  - BE-003 full backend test suite after service-layer remediation: passed, 29 tests and 285 assertions.
   - BE-003 in-memory SQLite `migrate:fresh --seed`: passed; migrations and the development seeder ran cleanly.
   - BE-003 local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
-  - BE-003 `vendor\bin\pint --test` through Herd PHP: passed after Pint formatted two API files.
+  - BE-003 `vendor\bin\pint --test` through Herd PHP: passed after Pint formatted service-layer files.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -179,4 +180,5 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - BE-001 schema tests verify portfolio tables, JSON-capable translation columns, hash-based visitor privacy columns, and key unique constraints. SQLite reports Laravel JSON columns as `text`, so tests accept both `json` and SQLite `text` storage types.
 - BE-002 model tests verify relationships, casts, enum values, localized access, hidden sensitive fields, and authenticated dashboard policy behavior.
 - BE-003 public API tests verify published-only read behavior, localized responses, filter validation, localized slug lookup, pagination metadata, public cache headers, privacy exclusions, and a basic project-list query-count guard.
+- BE-003 architecture tests verify public API controllers do not contain Eloquent query calls, controllers delegate to services, services apply visibility rules independently from HTTP, query services apply filters/eager loading, invalid transport input is rejected before query filters run, and Resources do not trigger unexpected lazy-loading queries in the covered project-detail path.
 - Public write endpoints, API rate limiting, sitemap/robots, Filament dashboard authorization flows, Redis-backed cache/queues, frontend API integration, and Playwright browser execution are still untested because their implementation tasks have not started.

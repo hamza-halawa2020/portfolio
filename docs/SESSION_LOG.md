@@ -271,3 +271,30 @@
   - Local MySQL `artisan migrate:status`: passed; default and portfolio business migrations are marked ran.
 - Current blockers: None for BE-003. Herd PHP still prints the known OPcache startup warning, but Artisan, tests, migrations, and Pint pass.
 - Recommended next task: BE-004 - Implement public write workflows.
+
+## 2026-09-18 - BE-003 service-layer remediation
+
+- Tasks attempted: BE-003 - Implement public API resources and read endpoints, mandatory service-layer architecture remediation.
+- Tasks completed: BE-003 - Implement public API resources and read endpoints.
+- Files changed: `AGENTS.md`, `backend/bootstrap/app.php`, `backend/app/Data/PublicApi/`, `backend/app/Exceptions/PublicApi/`, `backend/app/Queries/PublicApi/`, `backend/app/Services/PublicApi/`, `backend/app/Http/Controllers/Api/V1/`, `backend/app/Http/Resources/Api/V1/AboutResource.php`, `backend/app/Http/Resources/Api/V1/SiteResource.php`, `backend/tests/Feature/PublicApiArchitectureTest.php`, `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/DECISIONS.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Implementation notes:
+  - Added the permanent thin-controller rule to `AGENTS.md`.
+  - Refactored public API controllers so they no longer contain Eloquent query construction, filtering, visibility rules, relationship loading, localized slug lookup, or business orchestration.
+  - Added typed filter/data objects under `App\Data\PublicApi`.
+  - Added application services under `App\Services\PublicApi`.
+  - Added query services under `App\Queries\PublicApi`.
+  - Added typed public API not-found exceptions and centralized HTTP 404 rendering in Laravel exception configuration.
+  - Added `AboutResource` and updated `SiteResource` to serialize service result objects instead of controller-built arrays.
+  - Removed the old `RespondsWithPublicApi` controller trait and replaced it with transport-only response metadata/header handling.
+- Tests executed and results:
+  - PHP syntax checks for public API data, exceptions, queries, services, controllers, resources, and architecture test: passed.
+  - Static controller grep for Eloquent query calls in `backend/app/Http/Controllers/Api/V1`: passed with no matches.
+  - `artisan test --filter=PublicApiArchitectureTest`: passed, 6 tests and 108 assertions.
+  - `artisan test --filter=PublicReadApiTest`: passed, 10 tests and 72 assertions.
+  - `artisan test`: passed, 29 tests and 285 assertions.
+  - `vendor\bin\pint --test`: passed after formatting.
+  - `artisan route:list --path=api/v1`: passed; 13 routes registered.
+  - Local MySQL `artisan migrate:status`: passed.
+  - In-memory SQLite `migrate:fresh --seed --force`: passed.
+- Current blockers: None for BE-003. Herd PHP still prints the known OPcache startup warning, but verification passes.
+- Recommended next task: BE-004 - Implement public write workflows.

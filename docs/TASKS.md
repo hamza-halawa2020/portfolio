@@ -10,7 +10,7 @@
 
 ### P0-001 - Create initial project documentation
 
-- Status: [x] Completed
+- Status: [~] In Progress
 - Dependencies: None
 - Files: `AGENTS.md`, `docs/*.md`
 - Acceptance criteria:
@@ -309,10 +309,13 @@
 - Notes:
   - Added 13 versioned public read routes under `/api/v1`.
   - Added public API controllers, Form Requests, Resources, localized response handling, pagination, cache headers, published-only filtering, and privacy-safe payloads.
+  - Refactored public API controllers to the required service-layer architecture: controllers are thin, application services live under `App\Services\PublicApi`, query services live under `App\Queries\PublicApi`, and typed data objects live under `App\Data\PublicApi`.
   - Implemented read endpoints for site, about, projects, project categories, technologies, testimonials, blog posts, blog categories, tags, services, and social links.
   - Detail endpoints resolve localized slugs with English fallback and return 404 for unpublished, future, draft, archived, or missing content.
   - Public write endpoints, sitemap, robots, Filament/admin flows, and Angular API consumption remain deferred.
-  - Tests passed: `artisan test --filter=PublicReadApiTest` (10 tests, 72 assertions), `artisan test` (23 tests, 177 assertions), `vendor\bin\pint --test`, syntax checks, route list, in-memory `migrate:fresh --seed`, and local MySQL `migrate:status`.
+  - Architecture tests passed: `artisan test --filter=PublicApiArchitectureTest` (6 tests, 108 assertions).
+  - Behavior tests passed: `artisan test --filter=PublicReadApiTest` (10 tests, 72 assertions).
+  - Full verification passed: `artisan test` (29 tests, 285 assertions), `vendor\bin\pint --test`, syntax checks, route list, in-memory `migrate:fresh --seed`, and local MySQL `migrate:status`.
 - Completed: 2026-09-18
 
 ### BE-004 - Implement public write workflows
