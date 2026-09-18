@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 2 | 0 | 19 | 0 |
+| 2 | 0 | 19 | 1 |
 
 ## Phase 0 - Discovery and Documentation
 
