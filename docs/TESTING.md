@@ -16,12 +16,17 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - `cmd /c ng version`: passed, global Angular CLI `19.0.7`.
   - `docker --version`: failed, Docker is not available on PATH.
   - `docker compose version`: failed, Docker is not available on PATH.
-  - `herd --version`: failed in Codex sandbox because `herd` is not visible on PATH.
-  - `herd php -v`: failed in Codex sandbox, but user shell verified PHP `8.4.25`.
-  - `herd composer --version`: failed in Codex sandbox, but user shell verified Composer `2.10.2` through Herd PHP `8.4.25`.
-  - `herd php:list`: failed in Codex sandbox; user-shell output still required.
-  - `herd which-php`: failed in Codex sandbox; user-shell output still required.
-  - `nvm list`: failed in Codex sandbox; user-shell output still required.
+  - Herd absolute binary `herd --version`: passed, `Herd 1.30.0`.
+  - Herd absolute binary `herd php -v`: passed, PHP `8.5.10`.
+  - Herd absolute binary `herd composer --version`: passed, Composer `2.10.2` through PHP `8.5.10`.
+  - Herd absolute binary `herd php:list`: passed, PHP 8.5 installed; global Herd marker showed 8.6.
+  - Herd absolute binary `herd which-php`: passed, `C:/Users/hamza/.config/herd/bin/php85/php.exe`.
+  - Herd NVM absolute binary `nvm list`: passed, installed versions include `24.21.0`.
+  - Herd-managed Node absolute binary: passed, `v24.21.0`.
+  - Herd-managed npm absolute binary: passed, `11.19.0`.
+  - `npx @angular/cli@22 version` with Herd Node 24 on PATH: passed, Angular CLI `22.1.8`.
+  - FND-002 foundation file existence check: passed for `.editorconfig`, `.gitignore`, `.nvmrc`, `README.md`, `frontend/.gitkeep`, and `backend/.gitkeep`.
+  - FND-002 manual file review: passed for README app inventory, ignore rules, and editor settings.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
 
@@ -88,7 +93,8 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 ## Known Untested Areas
 
 - No application code exists yet.
-- Herd is selected for PHP/Composer, but it currently reports PHP `8.4.25`; PHP 8.5 is still required.
+- Herd PHP 8.5 and Herd Composer are verified.
 - Docker must not be used for this project.
 - The globally installed Angular CLI is `19.0.7`, so Angular 22 CLI must be invoked through a project-local install or `npx`.
-- The installed Node.js `v22.13.0` is not compatible with Angular 22; Node.js 24.21.0 LTS is the selected replacement.
+- Direct `node` in the Codex sandbox still resolves to `v22.13.0`; use the Herd-managed Node `24.21.0` binary or prepend its directory for Angular commands.
+- Herd PHP prints an OPcache API warning on startup; monitor during Laravel initialization.

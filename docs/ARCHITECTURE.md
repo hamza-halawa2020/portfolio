@@ -3,9 +3,10 @@
 ## Current Repository State
 
 - Current root: `D:\hamza\portfolio`
-- Existing files: `project.md`
-- Missing at discovery time: `.git/`, `frontend/`, `backend/`, `docs/`, Docker files, CI files, Angular app, Laravel app.
-- Decision: keep the requested monorepo layout and create `frontend/`, `backend/`, `docs/`, and `docker/` non-destructively as later tasks.
+- Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
+- Application placeholders: `frontend/.gitkeep`, `backend/.gitkeep`.
+- Missing application code: Angular app, Laravel app, CI files.
+- Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
 
@@ -23,6 +24,19 @@
 | `herd php -v` | User shell verified PHP `8.4.25`; Codex sandbox cannot see `herd` on PATH |
 | `herd composer --version` | User shell verified Composer `2.10.2` through Herd using PHP `8.4.25` |
 | `nvm list` | Codex sandbox cannot see `nvm` on PATH; user shell output not yet provided |
+
+Updated verification after Herd runtime selection:
+
+| Tool | Result |
+| --- | --- |
+| Herd CLI | `Herd 1.30.0` |
+| Herd PHP | `PHP 8.5.10` via `C:/Users/hamza/.config/herd/bin/php85/php.exe` |
+| Herd Composer | `Composer 2.10.2`, running with PHP `8.5.10` |
+| Herd PHP versions | PHP 8.5 installed; global Herd PHP shows 8.6, project `which-php` resolves to 8.5 |
+| Herd NVM versions | `24.21.0`, `23.11.0`, `22.22.0` installed |
+| Herd-managed Node | `v24.21.0` by direct Herd NVM binary |
+| Herd-managed npm | `11.19.0` |
+| Angular CLI via `npx @angular/cli@22` | `22.1.8` with Node `24.21.0` |
 
 ## Required Target Versions
 
@@ -58,7 +72,7 @@ Official documentation and package metadata show that the required stack is mutu
 ## Compatibility Result
 
 - Stack status: verified compatible with required replacement runtime versions.
-- Local host status: blocked for implementation until Herd is using PHP 8.5 and Node.js 24 LTS is active.
+- Local host status: verified through Herd PHP 8.5 and Herd-managed Node.js 24 LTS.
 - Docker status: intentionally not selected. This project uses Laravel Herd on Windows for local PHP/Composer instead of Docker.
 - Angular CLI strategy: do not use the global CLI `19.0.7`; use a project-local Angular CLI 22 command during frontend initialization, for example `npx -p @angular/cli@22.1.7 ng new ...`.
 - PHP strategy: use PHP 8.5 through Laravel Herd. Do not use direct `php`/`composer` commands unless Herd exposes them; prefer `herd php` and `herd composer`.
@@ -79,13 +93,11 @@ Minimum required from package metadata and planned project features:
 
 ## Known Local Blockers
 
-- Laravel Herd is available in the user's regular Windows command prompt but not visible to the Codex sandbox PATH.
-- Herd currently reports PHP `8.4.25`, not PHP 8.5.
-- Herd Composer works as Composer `2.10.2`, but currently runs on PHP `8.4.25`.
-- `herd php:list`, `herd which-php`, `herd --version`, and `nvm list` still need user-shell verification because the sandbox cannot execute them.
+- Herd command shims are not visible on the Codex sandbox PATH, so commands should use absolute Herd binary paths when run by Codex.
+- Direct `node` still resolves to `v22.13.0` in the Codex sandbox PATH; Node 24 commands must prepend or directly invoke `C:/Users/hamza/.config/herd/bin/nvm/v24.21.0`.
+- Herd PHP startup prints an OPcache API warning. PHP, Composer, extension listing, and version checks still exit successfully; monitor this during Laravel initialization.
 - Docker CLI and Docker Compose are not selected and should not be used.
 - Global Angular CLI is `19.0.7` and must not be used for this Angular 22 project.
-- Installed Node.js `v22.13.0` does not satisfy Angular 22's official Node requirement.
 
 ## Herd Runtime Commands Required Before FND-002
 
@@ -98,7 +110,7 @@ herd which-php
 nvm list
 ```
 
-If PHP 8.5 appears in `herd php:list`, select it for this project without removing existing PHP versions:
+PHP 8.5 is selected for this project. If it needs to be re-applied later, use:
 
 ```powershell
 herd isolate 8.5
@@ -106,24 +118,13 @@ herd php -v
 herd composer --version
 ```
 
-If PHP 8.5 is not installed in Herd, install it through the Herd UI PHP settings or run this only after explicit approval:
+Node.js 24.21.0 is installed in Herd NVM. In Codex-run commands, use direct binary paths or temporarily prepend the Herd Node directory:
 
 ```powershell
-herd php:install 8.5
-```
-
-If Node.js 24 appears in `nvm list`, select it for this project:
-
-```powershell
-nvm use 24
+$nodeDir="$env:USERPROFILE\.config\herd\bin\nvm\v24.21.0"
+$env:PATH="$nodeDir;$env:PATH"
 node --version
 npm --version
-```
-
-If Node.js 24 is not installed, do not initialize Angular yet. The required command is:
-
-```powershell
-nvm install 24
 ```
 
 ## Frontend Architecture

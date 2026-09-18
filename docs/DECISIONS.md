@@ -36,6 +36,17 @@
 - Reason: This matches the user's environment and avoids Docker, separate PHP/Composer installation, and PATH modifications.
 - Consequences: `FND-002` may proceed only after Herd reports PHP 8.5 and Node.js 24 LTS is active. Direct `php` and `composer` commands should not be required.
 
+Update on 2026-09-18: Herd PHP `8.5.10`, Herd Composer `2.10.2`, and Herd-managed Node.js `24.21.0` were verified. `FND-002` may proceed using Herd commands and project-local Angular CLI 22.
+
+## DEC-007 - Docker excluded from local development
+
+- Date: 2026-09-18
+- Context: The user explicitly selected Laravel Herd on Windows and instructed not to use Docker.
+- Options considered: keep Docker as the local development target; switch local development documentation to Herd.
+- Selected option: use Herd for local PHP/Composer and do not create Docker configuration unless a future task explicitly changes this.
+- Reason: Herd is installed, supports PHP 8.5, and matches the user's active development setup.
+- Consequences: Deployment documentation may still describe production services conceptually, but local setup and foundation tasks must not rely on Docker.
+
 ## DEC-005 - Angular CLI execution strategy
 
 - Date: 2026-09-18

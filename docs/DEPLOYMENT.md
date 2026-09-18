@@ -12,19 +12,21 @@ Laravel Herd on Windows is the selected local PHP and Composer environment. Do n
 
 Current user-shell verification:
 
-- `herd php -v`: PHP `8.4.25`.
-- `herd composer --version`: Composer `2.10.2`, running through Herd PHP `8.4.25`.
-- `node -v`: Node.js `v22.13.0`.
-- `npm -v`: npm `11.3.0`.
+- `herd php -v`: PHP `8.5.10`.
+- `herd composer --version`: Composer `2.10.2`, running through Herd PHP `8.5.10`.
+- Herd PHP binary: `C:/Users/hamza/.config/herd/bin/php85/php.exe`.
+- Herd-managed Node.js: `v24.21.0`.
+- Herd-managed npm: `11.19.0`.
+- Angular CLI through `npx @angular/cli@22`: `22.1.8`.
 
 Required before `FND-002` can begin:
 
-- Herd must use PHP 8.5 for this project.
-- Composer must work through `herd composer` after PHP 8.5 is active.
-- Node.js 24 LTS must be active for this project.
+- Use Herd PHP 8.5 for Laravel.
+- Use `herd composer` for Composer.
+- Use Node.js 24 LTS for Angular.
 - The global Angular CLI `19.0.7` must be ignored.
 
-The Codex sandbox cannot currently execute `herd` or `nvm` because those commands are not visible on its PATH, but the user shell can execute Herd commands.
+The Codex sandbox cannot resolve `herd` or `nvm` from PATH, so automation should invoke Herd binaries by absolute path or run through the user's normal shell. Direct `node` still resolves to `v22.13.0` in the sandbox; Angular commands must run with the Herd Node 24 directory first on PATH.
 
 ## Environment Variables
 

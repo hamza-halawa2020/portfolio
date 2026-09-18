@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 3 | 1 | 18 | 0 |
+| 4 | 0 | 18 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -59,8 +59,8 @@
   - Verified stack is compatible when using PHP 8.5.10, Laravel 13.32.0, Angular 22.1.7, Angular CLI 22.1.7, Composer 2.10.3, Filament 5.8.2, MySQL 8.4 LTS, Redis 8.10.1, and Node.js 24.21.0 LTS.
   - Installed Node.js `v22.13.0` is not compatible with Angular 22 and must be replaced before frontend initialization.
   - Laravel Herd is the selected PHP/Composer environment. Do not use Docker.
-  - User shell verified Herd PHP `8.4.25` and Herd Composer `2.10.2`; PHP 8.5 must be selected through Herd before `FND-002`.
-  - Node.js 24 LTS must be active before Angular work; current Node is `v22.13.0`.
+  - Initial user shell verification showed Herd PHP `8.4.25` and Node `v22.13.0`; this was superseded by FND-001A.
+  - Node.js 24 LTS must be used for Angular work.
   - Global Angular CLI `19.0.7` must not be used; use project-local Angular CLI 22 through `npx` or local npm scripts.
 - Completed: 2026-09-18
 
@@ -96,7 +96,7 @@
 
 ### FND-002 - Initialize repository foundations
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: FND-001
 - Files: `.editorconfig`, `.gitignore`, `README.md`, root workspace files
 - Acceptance criteria:
@@ -107,7 +107,11 @@
 - Tests:
   - Manual file review.
 - Notes:
-- Completed:
+  - Added root `.editorconfig`, `.gitignore`, `.nvmrc`, and `README.md`.
+  - Added `frontend/.gitkeep` and `backend/.gitkeep` placeholders without initializing Angular or Laravel apps.
+  - Docker remains intentionally unused.
+  - README documents Herd PHP/Composer, Node.js 24, project-local Angular CLI 22, and the current uninitialized application state.
+- Completed: 2026-09-18
 
 ### FND-003 - Initialize Laravel backend
 

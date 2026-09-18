@@ -54,3 +54,25 @@
   - `nvm list`: failed in Codex sandbox because `nvm` is not visible on PATH; user-shell output still required.
 - Current blockers: Herd is currently using PHP `8.4.25`, not PHP 8.5; Node.js `v22.13.0` is active, not Node.js 24 LTS; missing user-shell outputs for `herd --version`, `herd php:list`, `herd which-php`, and `nvm list`.
 - Recommended next task: Finish FND-001A by selecting/verifying Herd PHP 8.5 and Node.js 24 LTS; then begin FND-002 only after those runtime checks pass.
+
+## 2026-09-18 - FND-001A and FND-002
+
+- Tasks attempted: FND-001A - Verify Laravel Herd runtime before repository initialization; FND-002 - Initialize repository foundations.
+- Tasks completed: FND-001A; FND-002.
+- Files changed: `.editorconfig`, `.gitignore`, `.nvmrc`, `README.md`, `frontend/.gitkeep`, `backend/.gitkeep`, `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/DEPLOYMENT.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Tests executed and results:
+  - `herd --version` via absolute Herd binary: passed, `Herd 1.30.0`.
+  - `herd php -v` via absolute Herd binary: passed, PHP `8.5.10`.
+  - `herd composer --version` via absolute Herd binary: passed, Composer `2.10.2` using PHP `8.5.10`.
+  - `herd php:list` via absolute Herd binary: passed, PHP `8.5` installed; global marker showed PHP `8.6`.
+  - `herd which-php` via absolute Herd binary: passed, `C:/Users/hamza/.config/herd/bin/php85/php.exe`.
+  - Herd NVM `nvm list` via absolute binary: passed, installed Node versions include `24.21.0`, `23.11.0`, and `22.22.0`.
+  - Herd-managed `node --version` via direct Node 24 binary: passed, `v24.21.0`.
+  - Herd-managed `npm --version` via direct npm binary: passed, `11.19.0`.
+  - `npx @angular/cli@22 version` with Herd Node 24 prepended to command PATH: passed, Angular CLI `22.1.8`, Node `24.21.0`, npm `11.19.0`.
+  - `herd php -m`: passed; required extensions present, including `ctype`, `curl`, `dom`, `fileinfo`, `filter`, `gd`, `intl`, `json`, `mbstring`, `openssl`, `PDO`, `pdo_mysql`, `session`, `tokenizer`, `xml`, `zip`, and `redis`.
+  - FND-002 file existence check: passed for `.editorconfig`, `.gitignore`, `.nvmrc`, `README.md`, `frontend/.gitkeep`, and `backend/.gitkeep`.
+  - FND-002 manual file review: passed.
+  - `git status --short --untracked-files=all`: showed modified documentation files only after updates; foundation files are tracked in the repository.
+- Current blockers: Direct `node` in the Codex sandbox still resolves to `v22.13.0`; use the Herd Node 24 binary or prepend its directory for Angular commands. Herd PHP emits an OPcache API warning on startup; PHP and Composer commands still exit successfully.
+- Recommended next task: FND-003 - Initialize Laravel backend with Herd PHP 8.5 and Herd Composer.
