@@ -464,3 +464,35 @@
   - `publicSiteConfig.publicOrigin` still uses the safe placeholder `https://example.com`; production deployment must configure the real public origin before indexing.
 - Current blockers: None for FE-001.
 - Recommended next task: FE-002 - Implement localization and theme infrastructure, unless SEO-001 is intentionally pulled forward.
+
+## 2026-09-23 - FE-002
+
+- Tasks attempted: FE-002 - Implement localization and theme infrastructure.
+- Tasks completed: FE-002 - Implement localization and theme infrastructure.
+- Already existed from FE-001:
+  - Explicit `/en/...` and `/ar/...` public routes.
+  - Basic Arabic/English shell labels, language switch links, light/dark/system theme buttons, SSR metadata service, localized `lang`/`dir`, and localized 404 route status.
+  - Monochrome shell layout and CSS logical properties for the main shell.
+- Implemented:
+  - Added typed Arabic/English translation structures for shared shell labels, accessibility labels, navigation, theme labels, common UI state messages, placeholder page content, and 404 content.
+  - Added deterministic English fallback helpers for missing localized dynamic values without browser-only locale detection.
+  - Fixed Arabic placeholder/page copy to valid UTF-8 Arabic strings.
+  - Added typed future-ready localized slug mapping for project/blog detail language switching. Missing mappings fall back to the target language listing page instead of reusing a slug across languages.
+  - Hardened theme service with applied-theme state, guarded storage, guarded system preference resolution, system preference change handling, explicit preference persistence, and `theme-color` metadata updates.
+  - Added centralized monochrome tokens for hover, focus, and disabled states while preserving black/white/neutral gray only.
+  - Expanded Playwright browser checks to fail on unexpected console/page errors while allowing the expected 404 navigation message for the 404 test.
+- Files changed: `frontend/src/app/core/i18n/locale.service.ts`, `frontend/src/app/core/i18n/locale.service.spec.ts`, `frontend/src/app/core/layout/theme.service.ts`, `frontend/src/app/core/layout/theme.service.spec.ts`, `frontend/src/app/core/layout/shell-navigation.service.ts`, `frontend/src/app/core/layout/shell-navigation.service.spec.ts`, `frontend/src/app/pages/public-page/public-page.ts`, `frontend/src/app/app.html`, `frontend/src/app/app.css`, `frontend/src/styles.css`, `frontend/src/index.html`, `frontend/e2e/app.spec.ts`, and project documentation.
+- Verification:
+  - `cmd /c npm test -- --watch=false`: passed, 5 test files and 13 tests.
+  - `cmd /c npm run build`: passed; production SSR browser/server output generated and 0 static routes prerendered by design.
+  - Temporary SSR server on `http://127.0.0.1:4100`: started as process `35716` for verification and stopped afterward.
+  - Direct SSR HTML checks: passed for `/en`, `/ar`, and `/ar/missing`, including `lang`, `dir`, localized title text, meta description, canonical, static `hreflang`, theme attributes, H1, and HTTP 404.
+  - First FE-002 Playwright run: 8 passed and 2 failed because the harness treated the expected 404 navigation console message as an unexpected error.
+  - Final `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test`: passed, 10 tests across desktop and mobile Chromium.
+  - `cmd /c npm audit`: passed, found 0 vulnerabilities.
+- Remaining limitations:
+  - Full public pages, API-backed loading/empty/error/success states, forms, media, and interactions remain deferred.
+  - Project/blog detail `hreflang` alternates remain deferred until API responses provide corresponding localized slug mappings.
+  - Sitemap, robots.txt, structured data, Open Graph, Twitter/X cards, redirects, Lighthouse, and crawl validation remain SEO-001 or later tasks.
+- Current blockers: None for FE-002.
+- Recommended next task: PAGE-001 - Implement core public pages, unless SEO-001 is prioritized first.
