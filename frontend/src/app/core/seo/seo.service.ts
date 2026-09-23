@@ -27,7 +27,7 @@ export class SeoService {
   apply(meta: SeoMeta): void {
     this.title.setTitle(meta.title);
     this.meta.updateTag({ content: meta.description, name: 'description' });
-    this.meta.updateTag({ content: meta.noindex ? 'noindex, nofollow' : 'noindex, follow', name: 'robots' });
+    this.meta.updateTag({ content: meta.noindex ? 'noindex, nofollow' : 'index, follow', name: 'robots' });
     this.setLink('canonical', this.absoluteUrl(meta.path));
     this.clearAlternates();
 

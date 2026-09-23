@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 19 | 0 | 8 | 0 |
+| 20 | 0 | 7 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -515,7 +515,7 @@
 
 ### PAGE-001 - Implement core public pages
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: FE-002, BE-003
 - Files: home, projects, project detail, about, services, blog, post detail, contact, privacy, not-found routes
 - Acceptance criteria:
@@ -526,7 +526,14 @@
   - Component tests.
   - Playwright critical navigation tests.
 - Notes:
-- Completed:
+  - 2026-09-23: PAGE-001 started. The attached brief excludes full project/blog detail implementations, contact write workflows, likes/views, testimonial submission, sitemap, and later SEO tasks; those remain deferred.
+  - Implemented read-only API-backed public pages for home, projects, project detail, about, services, blog, blog detail, contact, privacy, and not-found routes.
+  - Added typed frontend public API models/service and a page facade so API orchestration, state mapping, and localized copy stay outside presentation components.
+  - Pages render loading, empty, error, and success states without fake content fallbacks.
+  - Project and blog detail pages read the localized slug from the route and use the corresponding detail endpoints; language switching still follows the FE-002 typed slug-mapping strategy and falls back to the listing page until API-provided localized slug mappings are available.
+  - Contact is read-only in PAGE-001 and displays configured public channels from site settings. Contact submissions, testimonials, project views, likes, filters/search UI, sitemap, structured data, and full SEO enhancements remain deferred to later tasks.
+  - Verification passed: frontend unit tests (7 files, 18 tests), production SSR build, temporary Laravel API + Angular SSR raw HTML checks for English/Arabic API-backed pages, Playwright (10 tests across desktop/mobile Chromium), and `npm audit` (0 vulnerabilities).
+- Completed: 2026-09-23
 
 ## Dedicated SEO Milestone
 

@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, full public website pages, sitemap/robots, frontend API consumption, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
+- Missing application code: CI files, sitemap/robots, frontend public write workflows/interactions, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -172,6 +172,9 @@ npm --version
 - Theme handling supports light, dark, and system preferences with guarded browser storage, Bootstrap `data-bs-theme`, `data-theme-preference`, `theme-color` metadata updates, system preference change handling, and an inline pre-hydration theme script in `index.html` to reduce theme flash.
 - Frontend public configuration defaults to safe placeholders and can be overridden with `PORTFOLIO_API_BASE_URL`, `PORTFOLIO_PUBLIC_ORIGIN`, or a host-provided `globalThis.PORTFOLIO_PUBLIC_CONFIG`.
 - Language switching preserves static routes. Dynamic project/blog detail routes use a typed localized-slug mapping strategy and fall back to the target language listing page until API-provided corresponding slugs are available.
+- PAGE-001 adds a typed Angular public API service and public page facade for read-only API-backed pages. Components render state and presentation only; API orchestration, localized state copy, pagination payload handling, and fallback decisions live in services/facades.
+- Public page data is fetched from `/api/v1` through Angular `HttpClient` with SSR fetch support and hydration transfer. Components do not serialize private visitor data into SSR HTML and do not use browser-only APIs for content selection.
+- PAGE-001 renders read-only home, projects, project details, about, services, blog, blog details, contact, privacy, and localized 404 pages with loading, empty, error, and success states. Contact form submission, testimonials submission, project views/likes, filters/search UI, sitemap, robots, Open Graph/Twitter cards, JSON-LD, and final SEO verification remain later task scope.
 
 ## Backend Architecture
 

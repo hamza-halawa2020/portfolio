@@ -28,21 +28,31 @@ FE-002 localization and theme status:
 - Light, dark, and system theme modes persist explicit visitor preference safely, update `data-bs-theme`, update `theme-color`, and respond to system preference changes.
 - Public colors remain centralized monochrome tokens only. Focus, hover, active, and disabled states use black, white, and neutral gray values.
 
+PAGE-001 public page status:
+
+- Home, projects, project detail, about, services, blog, blog detail, contact, privacy, and 404 routes now render read-only API-backed page content where API data exists.
+- Each data-driven page has loading, empty, error, and success states. Error states do not invent fallback content.
+- Project and blog detail pages are SSR-rendered from the localized route slug. Language switching does not assume English and Arabic slugs match; it falls back to the target listing until localized slug mappings are available from the API.
+- Media returned by the public API renders with explicit dimensions, lazy loading for list media, and localized alt text from the content title.
+- Contact remains a read-only public information page for PAGE-001. Contact submission, testimonials submission, project views/likes, advanced filters/search, sitemap/robots, structured data, and rich sharing controls remain deferred.
+
 ### Home
 
 - Sections: header, developer intro, professional title, value proposition, project CTA, contact CTA, selected projects, services, skills/technologies, statistics, testimonials, latest blog posts, contact CTA, footer.
-- APIs: `GET /api/v1/site`, project/post/testimonial/service data as needed.
+- APIs: `GET /api/v1/site`, `GET /api/v1/about`, `GET /api/v1/projects`, `GET /api/v1/posts`, `GET /api/v1/services`, `GET /api/v1/testimonials`.
 - SEO: `WebSite` and `Person` structured data.
 
 ### Projects
 
-- Sections: project grid, search, category filters, technology filters, featured projects, pagination, counts.
+- Sections: project grid, featured/public metadata, category/technology display, pagination payload support.
+- Deferred: search UI and category/technology filter controls.
 - States: loading, empty search, API error, pagination loading.
 - APIs: `GET /api/v1/projects`.
 
 ### Project Details
 
-- Sections: case study header, category, role, duration, technologies, challenge, solution, features, development challenges, results, metrics, screenshots, video walkthroughs, captions, likes, views, related projects, sharing, contact CTA.
+- Sections: case study header, category, role, duration, technologies, challenge, solution, features, development challenges, results, metrics, screenshots/media, captions, related projects, contact CTA.
+- Deferred: likes, view registration, sharing controls, and richer media carousel/player behavior.
 - Exclusions: no demo URLs, dashboard URLs, demo credentials, or private client links.
 - APIs: `GET /api/v1/projects/{slug}`, view and like endpoints.
 - SEO: localized title/description, canonical, `hreflang`, Open Graph, BreadcrumbList.
@@ -59,21 +69,22 @@ FE-002 localization and theme status:
 
 ### Blog
 
-- Sections: article list, categories, tags, search, featured articles, pagination, reading time.
+- Sections: article list, categories/tags display, featured metadata, pagination payload support, reading time.
+- Deferred: search UI and category/tag filter controls.
 - APIs: `GET /api/v1/posts`.
 
 ### Blog Details
 
-- Sections: title, cover image, article body, table of contents when useful, category, tags, date, reading time, related posts, share buttons.
+- Sections: title, cover image, article body, category, tags, date, reading time, related posts.
+- Deferred: table of contents and share buttons.
 - APIs: `GET /api/v1/posts/{slug}`.
 - SEO: Article structured data.
 
 ### Contact
 
-- Fields: name, email, phone, company, project type, budget range, message, optional attachment, privacy consent, spam protection.
-- States: validation, submitting, success, error.
-- APIs: `POST /api/v1/contact`.
-- Extra: WhatsApp button with configurable prefilled message.
+- PAGE-001 status: read-only public channels from `GET /api/v1/site`.
+- Later workflow: name, email, phone, company, project type, budget range, message, privacy consent, spam protection, validation, submitting, success, error, and `POST /api/v1/contact`.
+- Attachments remain deferred until private storage and upload security are configured.
 
 ### Privacy
 

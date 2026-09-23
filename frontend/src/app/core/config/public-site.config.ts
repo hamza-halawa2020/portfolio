@@ -18,6 +18,6 @@ const runtimeConfig = (globalThis as { PORTFOLIO_PUBLIC_CONFIG?: RuntimePortfoli
 const serverEnv = typeof process === 'undefined' ? undefined : process.env;
 
 export const publicSiteConfig: PublicSiteConfig = {
-  apiBaseUrl: runtimeConfig?.apiBaseUrl ?? serverEnv?.['PORTFOLIO_API_BASE_URL'] ?? 'http://localhost/api/v1',
+  apiBaseUrl: runtimeConfig?.apiBaseUrl ?? serverEnv?.['PORTFOLIO_API_BASE_URL'] ?? 'http://localhost:8000/api/v1',
   publicOrigin: runtimeConfig?.publicOrigin ?? serverEnv?.['PORTFOLIO_PUBLIC_ORIGIN'] ?? 'https://example.com',
 };

@@ -1,118 +1,171 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AsyncPipe, DatePipe } from '@angular/common';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink } from '@angular/router';
+import { filter, Observable, tap } from 'rxjs';
+import { AboutPayload, BlogPostSummary, ProjectSummary, Service, Skill } from '../../core/api/public-api.models';
 import { AppLocale, LocaleService } from '../../core/i18n/locale.service';
 import { SeoService } from '../../core/seo/seo.service';
-
-type PublicPageKey =
-  | 'home'
-  | 'projects'
-  | 'projectDetail'
-  | 'about'
-  | 'services'
-  | 'blog'
-  | 'blogDetail'
-  | 'contact'
-  | 'privacy'
-  | 'notFound';
-
-interface PageCopy {
-  readonly title: string;
-  readonly description: string;
-}
-
-const PAGE_COPY: Record<PublicPageKey, Record<AppLocale, PageCopy>> = {
-  about: {
-    ar: { description: 'مسار النبذة والسيرة المهنية جاهز للعرض عبر الخادم.', title: 'نبذة' },
-    en: { description: 'The developer biography and resume route is ready for SSR rendering.', title: 'About' },
-  },
-  blog: {
-    ar: { description: 'مسار قائمة المقالات جاهز للربط بواجهة المقالات لاحقا.', title: 'المدونة' },
-    en: { description: 'The blog listing route is ready for later API integration.', title: 'Blog' },
-  },
-  blogDetail: {
-    ar: { description: 'مسار تفاصيل المقال الديناميكي يبقى معروضا عبر الخادم ولا يختفي من البناء.', title: 'تفاصيل المقال' },
-    en: { description: 'The dynamic blog detail route stays server-rendered and is not dropped from production output.', title: 'Blog detail' },
-  },
-  contact: {
-    ar: { description: 'مسار التواصل جاهز لنموذج الرسائل وتكامل واتساب في المهام اللاحقة.', title: 'تواصل' },
-    en: { description: 'The contact route is ready for the later message form and WhatsApp integration.', title: 'Contact' },
-  },
-  home: {
-    ar: { description: 'أساس الواجهة العامة ثنائي اللغة جاهز لاستقبال محتوى الصفحة الرئيسية.', title: 'الرئيسية' },
-    en: { description: 'The bilingual public frontend foundation is ready for homepage content.', title: 'Home' },
-  },
-  notFound: {
-    ar: { description: 'الصفحة المطلوبة غير موجودة.', title: 'الصفحة غير موجودة' },
-    en: { description: 'The requested page was not found.', title: 'Page not found' },
-  },
-  privacy: {
-    ar: { description: 'مسار سياسة الخصوصية جاهز لشرح التحليلات والمعرفات المجهولة لاحقا.', title: 'الخصوصية' },
-    en: { description: 'The privacy route is ready for the later analytics and visitor identifier policy.', title: 'Privacy' },
-  },
-  projectDetail: {
-    ar: { description: 'مسار تفاصيل العمل الديناميكي يبقى معروضا عبر الخادم ولا يضيف روابط أو بيانات تجريبية.', title: 'تفاصيل العمل' },
-    en: { description: 'The dynamic project detail route stays server-rendered and does not add demo links or credentials.', title: 'Project detail' },
-  },
-  projects: {
-    ar: { description: 'مسار قائمة الأعمال جاهز للمرشحات والبيانات العامة في المهام اللاحقة.', title: 'الأعمال' },
-    en: { description: 'The projects listing route is ready for later filters and public API data.', title: 'Projects' },
-  },
-  services: {
-    ar: { description: 'مسار الخدمات جاهز للمحتوى المدار من لوحة التحكم.', title: 'الخدمات' },
-    en: { description: 'The services route is ready for dashboard-managed content.', title: 'Services' },
-  },
-};
+import {
+  BlogDetailPayload,
+  BlogPayload,
+  HomePayload,
+  PageState,
+  ProjectDetailPayload,
+  ProjectsPayload,
+  PublicPageFacade,
+  ServicesPayload,
+  StaticPayload,
+} from './public-page.facade';
 
 @Component({
-  imports: [RouterLink],
+  imports: [AsyncPipe, DatePipe, RouterLink],
   selector: 'app-public-page',
   styleUrl: './public-page.css',
   templateUrl: './public-page.html',
 })
 export class PublicPage implements OnInit {
+  private readonly facade = inject(PublicPageFacade);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly localeService = inject(LocaleService);
-  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
 
   protected readonly copy = this.localeService.copy;
   protected readonly locale = this.localeService.locale;
-  protected readonly page = computed(() => this.localizedPageCopy(this.pageKey(), this.locale()));
-  protected readonly isNotFound = computed(() => this.pageKey() === 'notFound');
+  protected pageState$!: Observable<PageState>;
 
   ngOnInit(): void {
-    const path = this.route.snapshot.pathFromRoot.flatMap((snapshot) => snapshot.url.map((segment) => segment.path)).join('/');
+    this.loadCurrentRoute();
+
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.loadCurrentRoute();
+      });
+  }
+
+  private loadCurrentRoute(): void {
+    const snapshot = this.activeSnapshot();
+    const path = snapshot.pathFromRoot.flatMap((routeSnapshot) => routeSnapshot.url.map((segment) => segment.path)).join('/');
     const locale = this.localeService.activateLocaleFromUrl(`/${path}`);
-    const page = this.localizedPageCopy(this.pageKey(), locale);
     const canonicalPath = this.canonicalPath(path, locale);
 
+    this.pageState$ = this.facade.load(snapshot, locale, canonicalPath).pipe(tap((state) => this.applySeo(state)));
+  }
+
+  private activeSnapshot(): ActivatedRouteSnapshot {
+    let snapshot = this.router.routerState.snapshot.root;
+
+    while (snapshot.firstChild) {
+      snapshot = snapshot.firstChild;
+    }
+
+    return snapshot;
+  }
+
+  protected asHome(state: PageState): HomePayload {
+    return state.payload as HomePayload;
+  }
+
+  protected asProjects(state: PageState): ProjectsPayload {
+    return state.payload as ProjectsPayload;
+  }
+
+  protected asProjectDetail(state: PageState): ProjectDetailPayload {
+    return state.payload as ProjectDetailPayload;
+  }
+
+  protected asAbout(state: PageState): AboutPayload {
+    return state.payload as AboutPayload;
+  }
+
+  protected asServices(state: PageState): ServicesPayload {
+    return state.payload as ServicesPayload;
+  }
+
+  protected asBlog(state: PageState): BlogPayload {
+    return state.payload as BlogPayload;
+  }
+
+  protected asBlogDetail(state: PageState): BlogDetailPayload {
+    return state.payload as BlogDetailPayload;
+  }
+
+  protected asStatic(state: PageState): StaticPayload {
+    return state.payload as StaticPayload;
+  }
+
+  protected projectUrl(project: ProjectSummary): string {
+    return `/${this.locale()}/projects/${project.slug}`;
+  }
+
+  protected postUrl(post: BlogPostSummary): string {
+    return `/${this.locale()}/blog/${post.slug}`;
+  }
+
+  protected contactUrl(): string {
+    return `/${this.locale()}/contact`;
+  }
+
+  protected projectsUrl(): string {
+    return `/${this.locale()}/projects`;
+  }
+
+  protected servicesUrl(): string {
+    return `/${this.locale()}/services`;
+  }
+
+  protected blogUrl(): string {
+    return `/${this.locale()}/blog`;
+  }
+
+  protected hasImage(url: string | null): url is string {
+    return Boolean(url);
+  }
+
+  protected trackProject(_index: number, project: ProjectSummary): string {
+    return project.slug;
+  }
+
+  protected trackPost(_index: number, post: BlogPostSummary): string {
+    return post.slug;
+  }
+
+  protected trackService(_index: number, service: Service): string {
+    return service.slug;
+  }
+
+  protected trackSkill(_index: number, skill: Skill): string {
+    return `${skill.group ?? 'skill'}-${skill.name}`;
+  }
+
+  private applySeo(state: PageState): void {
+    if (state.status === 'loading') {
+      return;
+    }
+
     this.seo.apply({
-      alternates: this.alternatesForCurrentRoute(canonicalPath),
-      description: page.description,
-      locale,
-      noindex: true,
-      path: canonicalPath,
-      title: `${page.title} | ${this.localeService.translate('brand', locale)}`,
+      alternates: this.alternatesFor(state),
+      description: state.description,
+      locale: state.locale,
+      noindex: state.status === 'error' || state.status === 'empty' || state.pageKey === 'notFound',
+      path: state.path,
+      title: `${state.title} | ${this.localeService.translate('brand', state.locale)}`,
     });
   }
 
-  private pageKey(): PublicPageKey {
-    return (this.route.snapshot.data['pageKey'] as PublicPageKey | undefined) ?? 'notFound';
-  }
-
-  private localizedPageCopy(pageKey: PublicPageKey, locale: AppLocale): PageCopy {
-    return PAGE_COPY[pageKey][locale] ?? PAGE_COPY[pageKey].en;
-  }
-
-  private alternatesForCurrentRoute(path: string): readonly { locale: AppLocale; path: string }[] {
-    if (this.pageKey() === 'projectDetail' || this.pageKey() === 'blogDetail' || this.pageKey() === 'notFound') {
+  private alternatesFor(state: PageState): readonly { locale: AppLocale; path: string }[] {
+    if (state.pageKey === 'projectDetail' || state.pageKey === 'blogDetail' || state.pageKey === 'notFound') {
       return [];
     }
 
-    const alternatePath = path.startsWith('/ar') ? path.replace('/ar', '/en') : path.replace('/en', '/ar');
-
     return [
-      { locale: this.locale(), path },
-      { locale: this.locale() === 'ar' ? 'en' : 'ar', path: alternatePath },
+      { locale: state.locale, path: state.path },
+      { locale: state.locale === 'ar' ? 'en' : 'ar', path: state.path.startsWith('/ar') ? state.path.replace('/ar', '/en') : state.path.replace('/en', '/ar') },
     ];
   }
 

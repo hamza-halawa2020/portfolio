@@ -42,6 +42,9 @@
 - Frontend locale, theme, shell navigation, public-site config, and SEO services with SSR-safe browser API access and raw-HTML title, description, canonical, and static-page `hreflang` metadata.
 - Playwright desktop/mobile smoke coverage for public shell navigation, theme switching, language switching, keyboard skip-link access, mobile menu behavior, and 404 behavior.
 - Production-ready frontend localization/theme foundation with typed Arabic/English copy, deterministic English fallback for missing dynamic translations, translated shared UI states, typed localized slug switching strategy for future API-backed detail routes, system theme change handling, and browser `theme-color` metadata updates.
+- API-backed Angular public pages for home, projects, project detail, about, services, blog, blog detail, contact, privacy, and localized 404 routes.
+- Typed frontend public API models/service and a public page facade for read-only `/api/v1` content loading, localized state mapping, and loading/empty/error/success behavior.
+- Frontend unit coverage for public API query serialization and public page facade states.
 
 ### Changed
 
@@ -61,11 +64,14 @@
 - Development seeding now reuses existing local technology records by name to preserve earlier local data and avoid duplicate unique names.
 - Playwright configuration can target an externally started SSR server through `PLAYWRIGHT_BASE_URL`, while still supporting the local Angular dev server by default.
 - Frontend Playwright smoke coverage now checks both directions, light/dark/system themes, theme persistence after reload, dynamic detail slug fallback, mobile navigation, keyboard access, and unexpected browser console/page errors.
+- Public page robots metadata now uses `index, follow` for completed API-backed pages while preserving non-indexable behavior for 404/error-style routes.
+- Frontend Playwright coverage now exercises API-backed public content and uses a real published project slug for dynamic detail language-switch fallback checks.
 
 ### Fixed
 
 - Hardened frontend locale and theme services so missing or unavailable browser storage does not crash SSR, tests, or constrained browser-like runtimes.
 - Fixed Arabic frontend placeholder copy and replaced mojibake text with valid UTF-8 Arabic strings.
+- Normalized frontend boolean API query parameters to `1`/`0` for Laravel validation compatibility across SSR and browser fetch.
 
 ### Security
 

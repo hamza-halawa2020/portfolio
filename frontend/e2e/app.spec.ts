@@ -66,7 +66,7 @@ test('supports keyboard access to the skip link and mobile navigation', async ({
 
   if (isMobile) {
     await page.getByRole('button', { name: 'Open navigation' }).click();
-    await expect(page.getByRole('link', { name: 'Services' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Services', exact: true })).toBeVisible();
   }
 });
 
@@ -78,7 +78,10 @@ test('returns a localized not found page for unknown routes', async ({ page }) =
 });
 
 test('does not reuse dynamic slugs when switching languages without mappings', async ({ page, isMobile }) => {
-  await page.goto('/en/projects/source-slug');
+  await page.goto('/en/projects');
+  const firstProjectHref = await page.locator('.content-card').first().getAttribute('href');
+  expect(firstProjectHref).toContain('/en/projects/');
+  await page.goto(firstProjectHref ?? '/en/projects');
 
   if (isMobile) {
     await page.getByRole('button', { name: 'Open navigation' }).click();

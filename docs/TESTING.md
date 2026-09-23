@@ -153,6 +153,12 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - FE-002 temporary SSR server on `http://127.0.0.1:4100`: direct raw HTML checks passed for English and Arabic `lang`/`dir`, localized title text, meta description, canonical URL, static-page `hreflang`, theme attributes, H1, and unknown-route HTTP 404.
   - FE-002 `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test`: passed, 10 tests across desktop/mobile Chromium covering English/Arabic, LTR/RTL, light/dark/system modes, theme persistence after reload, language switching, dynamic slug fallback, desktop/mobile navigation, keyboard skip-link access, and no unexpected browser console/page errors.
   - FE-002 `cmd /c npm audit`: passed, found 0 vulnerabilities.
+  - PAGE-001 `npm.cmd test -- --watch=false`: passed, 7 test files and 18 tests covering public API query construction, encoded detail slugs, page facade loading/success/empty/error behavior, locale/theme/navigation/SEO regressions, and SSR-safe services.
+  - PAGE-001 `npm.cmd run build`: passed; Angular production SSR build generated browser/server output and prerendered 0 static routes by design.
+  - PAGE-001 temporary backend API server on `http://127.0.0.1:8000`: API smoke passed for `/api/v1/projects?locale=en&per_page=1`.
+  - PAGE-001 temporary built Angular SSR server on `http://127.0.0.1:4000`: raw HTML checks passed for `/en/projects` and `/ar/projects`, including HTTP 200, rendered API-backed content cards, `index, follow` robots metadata, and exact SSR `<html lang="en" dir="ltr">` / `<html lang="ar" dir="rtl">` attributes.
+  - PAGE-001 `npx.cmd playwright test --reporter=line`: passed, 10 tests across desktop/mobile Chromium covering English/Arabic, LTR/RTL, light/dark/system themes, preference persistence after reload, language switching, desktop/mobile navigation, keyboard access, dynamic detail slug fallback, localized 404 behavior, and no unexpected browser console/page errors.
+  - PAGE-001 `npm.cmd audit`: passed, found 0 vulnerabilities.
 
 ## Backend Tests
 
@@ -249,7 +255,7 @@ Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 - BE-003 public API tests verify published-only read behavior, localized responses, filter validation, localized slug lookup, pagination metadata, public cache headers, privacy exclusions, and a basic project-list query-count guard.
 - BE-003 architecture tests verify public API controllers do not contain Eloquent query calls, controllers delegate to services, services apply visibility rules independently from HTTP, query services apply filters/eager loading, invalid transport input is rejected before query filters run, and Resources do not trigger unexpected lazy-loading queries in the covered project-detail path.
 - BE-004 public write tests verify anonymous project views, likes/unlikes, testimonial submissions, contact submissions, validation/spam controls, privacy exclusions, event dispatch, direct service usage, endpoint-specific rate limiting, transaction usage, query-free Resources, and thin controller boundaries.
-- Sitemap/robots, Redis-backed cache/queues, frontend API integration, notification listener delivery, production analytics cleanup jobs, S3 media storage, and contact attachments are still untested because their implementation tasks have not started.
+  - Sitemap/robots, Redis-backed cache/queues, frontend public write interactions, notification listener delivery, production analytics cleanup jobs, S3 media storage, and contact attachments are still untested because their implementation tasks have not started.
 - ADM-001 covers Filament dashboard authentication, explicit administrator authorization, noindex/private headers, English/Arabic direction, login throttling, logout, and interactive owner provisioning.
 - ADM-002 covers implemented admin content services/resources, but does not test image transcoding, video conversion, S3 storage, or public browser upload flows because those capabilities are not implemented yet.
 - ADM-003 covers testimonial moderation, contact inbox workflows, analytics aggregation boundaries, thin widget/query architecture, comprehensive seeder coverage, seeder repeatability, production refusal, local admin provisioning safety, and public privacy checks.

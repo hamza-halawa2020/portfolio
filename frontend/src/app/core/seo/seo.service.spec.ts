@@ -25,7 +25,7 @@ describe('SeoService', () => {
 
     expect(title.getTitle()).toBe('Home | Portfolio Platform');
     expect(meta.getTag('name="description"')?.content).toBe('A server-rendered portfolio shell.');
-    expect(meta.getTag('name="robots"')?.content).toBe('noindex, follow');
+    expect(meta.getTag('name="robots"')?.content).toBe('index, follow');
     expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe('https://example.com/en');
     expect(document.head.querySelectorAll('link[rel="alternate"]').length).toBe(2);
   });

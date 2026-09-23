@@ -496,3 +496,36 @@
   - Sitemap, robots.txt, structured data, Open Graph, Twitter/X cards, redirects, Lighthouse, and crawl validation remain SEO-001 or later tasks.
 - Current blockers: None for FE-002.
 - Recommended next task: PAGE-001 - Implement core public pages, unless SEO-001 is prioritized first.
+
+## 2026-09-23 - PAGE-001
+
+- Tasks attempted: PAGE-001 - Implement core public pages.
+- Tasks completed: PAGE-001 - Implement core public pages.
+- Already existed from FE-001/FE-002:
+  - SSR-rendered Angular shell, hydration, localized `/en/...` and `/ar/...` routes, localized 404 routing/status, language switcher, light/dark/system theme controls, `lang`/`dir` handling, monochrome tokens, and deterministic localization/theme infrastructure.
+  - FE-002 dynamic detail language switching strategy already avoided assuming English and Arabic slugs match.
+- Implemented:
+  - Added typed frontend public API models and `PublicApiService` for read-only `/api/v1` site, about, projects, project detail, services, testimonials, posts, and post detail calls.
+  - Added `PublicPageFacade` so page loading, API orchestration, localized state copy, empty/error mapping, and route-to-endpoint selection stay outside the presentation component.
+  - Replaced placeholder public page bodies with API-backed read-only home, projects, project detail, about, services, blog, blog detail, contact, privacy, and 404 views.
+  - Added loading, empty, error, and success states without fake fallback content.
+  - Rendered public API media with alt text, explicit dimensions, and lazy loading for list media.
+  - Kept contact read-only for PAGE-001 by displaying configured public channels from site settings; contact submission remains INT-001/later scope.
+  - Preserved SEO service behavior and changed completed public pages to `index, follow` while keeping 404/error-style pages non-indexable.
+  - Added Angular `HttpClient` with fetch support for SSR API access.
+  - Updated Playwright dynamic slug coverage to use a real published project link instead of assuming a fixture slug.
+- Files changed: `frontend/src/app/core/api/`, `frontend/src/app/pages/public-page/`, `frontend/src/app/app.config.ts`, `frontend/src/app/core/seo/seo.service.ts`, `frontend/e2e/app.spec.ts`, and project documentation.
+- Verification:
+  - `npm.cmd test -- --watch=false`: passed, 7 test files and 18 tests.
+  - `npm.cmd run build`: passed; production SSR browser/server output generated and 0 routes prerendered by design.
+  - Temporary Laravel API server on `http://127.0.0.1:8000`: started for verification.
+  - Temporary Angular SSR server on `http://127.0.0.1:4000`: started for verification with `PORTFOLIO_API_BASE_URL=http://127.0.0.1:8000/api/v1`.
+  - Raw SSR HTML checks: passed for `/en/projects` and `/ar/projects`, including HTTP 200, API-backed content cards, `index, follow`, and exact `lang`/`dir` output.
+  - First PAGE-001 Playwright run after API wiring found one mobile selector ambiguity; fixed the test to target the exact navigation link.
+  - Final `npx.cmd playwright test --reporter=line`: passed, 10 tests across desktop and mobile Chromium.
+  - `npm.cmd audit`: passed, found 0 vulnerabilities.
+- Remaining limitations:
+  - Contact form submission, testimonial submission, project views/likes, advanced project/blog filter/search controls, sitemap, robots.txt, Open Graph, Twitter/X cards, JSON-LD, redirects, Lighthouse, crawl validation, and production public origin replacement remain later tasks.
+  - Detail page cross-locale `hreflang` remains deferred until the API provides explicit localized slug mappings in responses.
+- Current blockers: None for PAGE-001.
+- Recommended next task: SEO-001 - Implement and verify SEO foundation, unless INT-001 public interactions are prioritized first.

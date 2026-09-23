@@ -48,6 +48,15 @@ BE-003 backend API status:
 - Draft, future, archived, or missing project/post slugs return HTTP 404.
 - Sitemap, robots, canonical URL rendering, `hreflang`, Open Graph, Twitter/X card rendering, JSON-LD rendering, and redirects remain deferred to the dedicated SEO milestone and Angular SSR page work.
 
+PAGE-001 public page status:
+
+- Core public pages now render API-backed primary content through Angular SSR for home, projects, project detail, about, services, blog, blog detail, contact, privacy, and 404 routes.
+- Completed public content pages use `index, follow` robots metadata in raw SSR HTML. Localized 404/error-style routes remain non-indexable where appropriate.
+- Page titles, descriptions, canonical URLs, and static-route alternates are rendered by the existing Angular `SeoService`.
+- Detail pages use localized route slugs for fetching, but do not emit dynamic cross-locale `hreflang` alternates until API responses provide explicit corresponding localized slug mappings.
+- PAGE-001 raw HTML verification passed for English and Arabic API-backed routes, including `lang`, `dir`, rendered content cards, and `index, follow` robots metadata.
+- Open Graph, Twitter/X cards, JSON-LD, sitemap.xml, robots.txt, redirects, Lighthouse/Core Web Vitals, crawl validation, and production public origin replacement remain SEO-001 scope.
+
 ## URL and Localization Strategy
 
 - Arabic and English pages use separate URLs.
