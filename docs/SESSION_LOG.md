@@ -529,3 +529,38 @@
   - Detail page cross-locale `hreflang` remains deferred until the API provides explicit localized slug mappings in responses.
 - Current blockers: None for PAGE-001.
 - Recommended next task: SEO-001 - Implement and verify SEO foundation, unless INT-001 public interactions are prioritized first.
+
+## 2026-09-23 - SEO-001
+
+- Tasks attempted: SEO-001 - Implement and verify SEO foundation.
+- Tasks completed: SEO-001 - Implement and verify SEO foundation.
+- Existing SEO behavior preserved:
+  - SSR localized `/en/...` and `/ar/...` routes, `lang`/`dir`, canonical/title/description basics, localized 404 status, dashboard noindex/private headers, and PAGE-001 API-backed public content.
+- Implemented:
+  - Added backend `localized_slugs.en` and `localized_slugs.ar` to project and blog detail API responses.
+  - Added Laravel-generated `/sitemap.xml` from static public routes plus published, indexable projects and posts.
+  - Added environment-aware `/robots.txt`; removed static `backend/public/robots.txt` so the controller is authoritative.
+  - Added `PUBLIC_SITE_URL` and `PUBLIC_INDEXING_ENABLED` safe environment placeholders.
+  - Extended Angular SEO metadata with Open Graph, Twitter Card, canonical overrides, `x-default`, dynamic `hreflang`, and managed JSON-LD cleanup.
+  - Added JSON-LD for `WebSite`, `Person`, `BreadcrumbList`, `BlogPosting`, and project `CreativeWork` using real payload data only.
+  - Wired API-provided dynamic slug mappings into shell language switching and detail-page `hreflang`.
+  - Changed Angular SSR root redirect from 302 to permanent 301 `/en`.
+- Verification:
+  - Focused `php artisan test --filter=PublicSeoTest`: passed, 3 tests and 28 assertions.
+  - Final full backend `php artisan test`: passed, 72 tests and 708 assertions.
+  - Pint via Herd PHP 8.5: passed.
+  - Composer validate/audit: passed.
+  - Full frontend `npm.cmd test -- --watch=false`: passed, 7 files and 18 tests.
+  - `npm.cmd run build`: passed.
+  - `npm.cmd audit`: passed, 0 vulnerabilities.
+  - Temporary Laravel server on `http://127.0.0.1:8000`: `/sitemap.xml` and `/robots.txt` checks passed; local robots blocks indexing.
+  - Temporary built Angular SSR server on `http://127.0.0.1:4000`: raw checks passed for root 301, static page canonical/social/JSON-LD/alternate metadata, dynamic project localized alternates, `og:image`, `CreativeWork`, and one H1.
+  - Final Playwright with `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4000`: passed, 12 tests across desktop and mobile Chromium.
+  - Lighthouse was not run because it is not installed locally; `npx.cmd lighthouse --version` timed out and `npm.cmd ls lighthouse --depth=0` showed no local dependency.
+  - Temporary Laravel and Angular SSR processes started for this task were stopped.
+- Remaining limitations:
+  - Old-slug 301 redirects and removed-content 410 behavior remain dependent on future redirect policy/editorial data.
+  - Full Lighthouse/Core Web Vitals scoring remains pending until Lighthouse is available locally or in CI.
+  - Contact/testimonial/like/view public interactions remain INT-001 scope.
+- Current blockers: None for SEO-001.
+- Recommended next task: INT-001 - Implement visitor interactions, unless QA-001 quality gates are prioritized first.

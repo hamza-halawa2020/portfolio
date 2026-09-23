@@ -1,6 +1,6 @@
 # API_CONTRACT.md
 
-The public API is implemented in Laravel under `/api/v1`. Public read endpoints and anonymous public write workflows are available. Authentication, sitemap, and robots responses are deferred to later tasks.
+The public API is implemented in Laravel under `/api/v1`. Public read endpoints, anonymous public write workflows, sitemap, and robots responses are available.
 
 Implementation architecture:
 
@@ -28,12 +28,12 @@ Implementation architecture:
 | GET | `/api/v1/site` | Public settings allowlist, navigation, services, skills, social links | `locale`, `page`, `per_page` |
 | GET | `/api/v1/about` | Public about payload with experience, skills, technologies, social links | `locale`, `page`, `per_page` |
 | GET | `/api/v1/projects` | Published project cards | `locale`, `page`, `per_page`, `search`, `category`, `technology`, `featured`, `sort` |
-| GET | `/api/v1/projects/{slug}` | Published project case study detail | `locale`; `{slug}` may be localized with English fallback |
+| GET | `/api/v1/projects/{slug}` | Published project case study detail with SEO metadata and localized slug mappings | `locale`; `{slug}` may be localized with English fallback |
 | GET | `/api/v1/project-categories` | Visible project categories used by published projects | `locale`, `page`, `per_page` |
 | GET | `/api/v1/technologies` | Visible technologies used by published projects | `locale`, `page`, `per_page` |
 | GET | `/api/v1/testimonials` | Approved testimonials only | `locale`, `page`, `per_page`, `featured`, `project` |
 | GET | `/api/v1/posts` | Published blog post cards | `locale`, `page`, `per_page`, `search`, `category`, `tag`, `featured`, `sort` |
-| GET | `/api/v1/posts/{slug}` | Published blog post detail | `locale`; `{slug}` may be localized with English fallback |
+| GET | `/api/v1/posts/{slug}` | Published blog post detail with SEO metadata and localized slug mappings | `locale`; `{slug}` may be localized with English fallback |
 | GET | `/api/v1/blog-categories` | Visible blog categories used by published posts | `locale`, `page`, `per_page` |
 | GET | `/api/v1/tags` | Tags used by published posts | `locale`, `page`, `per_page` |
 | GET | `/api/v1/services` | Visible services | `locale`, `page`, `per_page` |
@@ -79,7 +79,7 @@ Write workflow rules:
 
 Project list cards include localized `title`, `slug`, `summary`, `cover_image_url`, category, technologies, featured flag, publication timestamp, and aggregate `view_count` and `like_count`.
 
-Project details additionally include localized `body`, ordered public media URLs with localized alt/caption, related published projects, and SEO metadata.
+Project details additionally include localized `body`, `localized_slugs.en`, `localized_slugs.ar`, ordered public media URLs with localized alt/caption, related published projects, and SEO metadata.
 
 Published-only rules:
 
@@ -91,7 +91,7 @@ Published-only rules:
 
 Blog list cards include localized `title`, `slug`, `excerpt`, category, tags, featured flag, reading time, cover image URL, and publication timestamp.
 
-Blog details additionally include localized `body`, related published posts, and SEO metadata.
+Blog details additionally include localized `body`, `localized_slugs.en`, `localized_slugs.ar`, related published posts, and SEO metadata.
 
 Published-only rules:
 
@@ -110,9 +110,20 @@ Published-only rules:
 
 `GET /api/v1/about` returns public profile data composed from visible experience, skills, technologies, and social links. Private contact messages and dashboard-only settings are not exposed.
 
+## SEO Endpoints
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/sitemap.xml` | XML sitemap for localized static routes plus published, indexable projects and posts. Excludes drafts, future content, noindex records, admin routes, API routes, errors, and write endpoints. |
+| GET | `/robots.txt` | Environment-aware robots response. Local/testing/staging block indexing; production allows public pages and references the production sitemap only when explicitly enabled. |
+
+SEO environment variables:
+
+- `PUBLIC_SITE_URL`: absolute public production origin used by sitemap and robots.
+- `PUBLIC_INDEXING_ENABLED`: must be `true` alongside `APP_ENV=production` before robots allows indexing.
+
 ## Deferred Endpoints
 
 The following endpoints remain planned for later tasks:
 
-- `GET /api/v1/sitemap.xml`
-- `GET /robots.txt`
+- None for SEO-001.

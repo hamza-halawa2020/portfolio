@@ -87,12 +87,13 @@ test('uses API-provided localized slugs when switching detail page languages', a
     await page.getByRole('button', { name: 'Open navigation' }).click();
   }
 
+  await expect(page.getByRole('link', { name: 'AR' })).toHaveAttribute('href', /\/ar\/projects\/[^/]+$/);
   await page.getByRole('link', { name: 'AR' }).click();
   await expect(page).toHaveURL(/\/ar\/projects\/[^/]+$/);
-  expect(page.url()).not.toContain(firstProjectHref?.split('/').pop() ?? 'source-slug');
+  expect(new URL(page.url()).pathname.split('/').pop()).not.toBe(firstProjectHref?.split('/').pop());
 });
 
-test('renders SEO metadata and JSON-LD in hydrated pages without duplicates', async ({ page }) => {
+test('renders SEO metadata and JSON-LD in hydrated pages without duplicates', async ({ page, isMobile }) => {
   await page.goto('/en/projects');
 
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en\/projects$/);
@@ -100,6 +101,10 @@ test('renders SEO metadata and JSON-LD in hydrated pages without duplicates', as
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
   await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveCount(1);
   await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+
+  if (isMobile) {
+    await page.getByRole('button', { name: 'Open navigation' }).click();
+  }
 
   await page.getByRole('link', { name: 'Blog', exact: true }).click();
   await expect(page).toHaveURL(/\/en\/blog$/);

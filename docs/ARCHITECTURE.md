@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, sitemap/robots, frontend public write workflows/interactions, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
+- Missing application code: CI files, frontend public write workflows/interactions, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -167,14 +167,16 @@ npm --version
 - Signals for local UI state such as theme menu, language choice, and small interaction states.
 - RxJS for API workflows and asynchronous forms.
 - Reactive Forms for contact and testimonial submissions.
-- Dedicated SEO service foundation for localized titles, descriptions, canonical links, static-page `hreflang`, and robots metadata. Open Graph, Twitter/X cards, JSON-LD, sitemap, robots, redirects, and production indexing rules remain deferred.
+- Dedicated SEO service foundation for localized titles, descriptions, canonical links, static/dynamic `hreflang`, robots metadata, Open Graph, Twitter Cards, JSON-LD, sitemap, robots, root redirect, and production indexing rules is implemented through FE-001 through SEO-001.
 - Current FE-001 shell includes localized `/en/...` and `/ar/...` routes, server-rendered internal placeholders, one H1 per route, `lang`/`dir` updates, and intentional `noindex` metadata for unfinished placeholder pages.
 - Theme handling supports light, dark, and system preferences with guarded browser storage, Bootstrap `data-bs-theme`, `data-theme-preference`, `theme-color` metadata updates, system preference change handling, and an inline pre-hydration theme script in `index.html` to reduce theme flash.
 - Frontend public configuration defaults to safe placeholders and can be overridden with `PORTFOLIO_API_BASE_URL`, `PORTFOLIO_PUBLIC_ORIGIN`, or a host-provided `globalThis.PORTFOLIO_PUBLIC_CONFIG`.
 - Language switching preserves static routes. Dynamic project/blog detail routes use a typed localized-slug mapping strategy and fall back to the target language listing page until API-provided corresponding slugs are available.
 - PAGE-001 adds a typed Angular public API service and public page facade for read-only API-backed pages. Components render state and presentation only; API orchestration, localized state copy, pagination payload handling, and fallback decisions live in services/facades.
 - Public page data is fetched from `/api/v1` through Angular `HttpClient` with SSR fetch support and hydration transfer. Components do not serialize private visitor data into SSR HTML and do not use browser-only APIs for content selection.
-- PAGE-001 renders read-only home, projects, project details, about, services, blog, blog details, contact, privacy, and localized 404 pages with loading, empty, error, and success states. Contact form submission, testimonials submission, project views/likes, filters/search UI, sitemap, robots, Open Graph/Twitter cards, JSON-LD, and final SEO verification remain later task scope.
+- PAGE-001 renders read-only home, projects, project details, about, services, blog, blog details, contact, privacy, and localized 404 pages with loading, empty, error, and success states. Contact form submission, testimonials submission, project views/likes, and filters/search UI remain later task scope; sitemap, robots, Open Graph/Twitter cards, JSON-LD, and final SEO verification were implemented in SEO-001.
+- SEO-001 extends SSR metadata with Open Graph, Twitter Card, managed localized `hreflang` including `x-default`, canonical overrides, and safely escaped JSON-LD. Managed tags are cleared and rewritten after client navigation to avoid duplicates.
+- Detail pages consume API-provided `localized_slugs` mappings for dynamic `hreflang` and language switching; the frontend never assumes English and Arabic slugs are identical.
 
 ## Backend Architecture
 
@@ -189,6 +191,7 @@ npm --version
 - Backend timezone is UTC.
 - Default locale is English (`en`), and supported locales are documented as `en,ar`.
 - Versioned public read API under `/api/v1` is implemented for site, about, projects, project taxonomies, testimonials, blog posts, blog taxonomies, services, and social links.
+- Public SEO endpoints are implemented outside `/api/v1`: `/sitemap.xml` and `/robots.txt`.
 - Anonymous public write API endpoints under `/api/v1` are implemented for project views, project likes/unlikes, testimonial submissions, and contact submissions.
 - API Resources shape all implemented public read responses.
 - Form Requests validate public read query parameters, public write payloads, locale values, consent fields, and honeypot spam controls.
@@ -235,6 +238,9 @@ npm --version
 - Write endpoints return authoritative state after optimistic UI attempts.
 - Public write endpoints return `no-store` responses.
 - BE-003 detail endpoints resolve localized JSON slugs in query services. ADM-002 added MySQL generated columns and unique indexes for admin-managed localized slugs while preserving SQLite test portability.
+- SEO-001 detail responses include `localized_slugs.en` and `localized_slugs.ar` so frontend SEO and language switching use authoritative API mappings.
+- `/sitemap.xml` is generated by Laravel from database content, not hardcoded files. It includes static localized public routes and published/indexable projects/posts, with XML escaping through DOM APIs, localized alternates, `x-default`, and `lastmod`.
+- `/robots.txt` is environment-aware. Local/testing/staging block indexing; production allows intended public pages and references the sitemap only when `APP_ENV=production` and `PUBLIC_INDEXING_ENABLED=true`.
 
 ## Admin Content Workflow Architecture
 

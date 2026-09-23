@@ -211,3 +211,12 @@ Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Fo
 - Selected option: initialize only the Angular foundation with a minimal semantic shell, Vitest unit test, and Playwright configuration.
 - Reason: This satisfies foundation verification without creating throwaway public-page content or final design decisions.
 - Consequences: Tailwind, Transloco, theme handling, public routes, API integration, and E2E browser installation/runs remain for later frontend tasks.
+
+## DEC-023 - SEO sitemap and robots ownership
+
+- Date: 2026-09-23
+- Context: SEO-001 requires production-ready sitemap and robots behavior for localized static routes plus database-managed projects and blog posts. Angular build-time generation would not have authoritative access to publication status, localized slugs, robots flags, or content timestamps.
+- Options considered: generate static sitemap files during Angular build; generate sitemap/robots from Laravel; hand-maintain sitemap XML.
+- Selected option: generate `/sitemap.xml` and `/robots.txt` from Laravel.
+- Reason: Laravel owns the database, publication visibility rules, localized slug data, SEO robots flags, and environment configuration needed to avoid stale or fabricated SEO output.
+- Consequences: Reverse proxies must route or proxy `/sitemap.xml` and `/robots.txt` to Laravel. Angular SSR owns page-level metadata and JSON-LD. Production indexing requires both `APP_ENV=production` and `PUBLIC_INDEXING_ENABLED=true`.

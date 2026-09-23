@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 20 | 1 | 6 | 0 |
+| 21 | 0 | 6 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -539,7 +539,7 @@
 
 ### SEO-001 - Implement and verify SEO foundation
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: FE-001, BE-003
 - Files: Angular SEO services/routes, Laravel sitemap/robots/redirect endpoints, `docs/SEO.md`, `docs/TESTING.md`
 - Acceptance criteria:
@@ -556,7 +556,16 @@
   - Broken link, duplicate metadata, missing alt, and accidental noindex checks.
 - Notes:
   - 2026-09-23: SEO-001 started. Existing FE-001/FE-002/PAGE-001 SSR metadata, localized routing, robots handling for completed pages, and API-backed content will be audited and preserved where correct.
-- Completed:
+  - Extended backend project/blog detail resources with API-provided localized slug mappings for English and Arabic.
+  - Added Laravel-owned `/sitemap.xml` generated from published, indexable static routes, projects, and blog posts with localized alternates and `lastmod`.
+  - Added environment-aware `/robots.txt`; local/testing/staging defaults block indexing, while production indexing requires `APP_ENV=production` and `PUBLIC_INDEXING_ENABLED=true`.
+  - Removed the static `public/robots.txt` file so environment-aware routing owns robots output.
+  - Extended Angular SSR metadata with Open Graph, Twitter Card, canonical override handling, managed `hreflang` including `x-default`, and safely escaped JSON-LD.
+  - Added SSR JSON-LD for WebSite/Person, BreadcrumbList, BlogPosting, and CreativeWork where supported by real page payloads.
+  - Dynamic project/blog detail pages now use real API localized slug mappings for `hreflang` and language switching.
+  - Root SSR server redirect is permanent `301` to `/en`.
+  - Verification passed: focused SEO tests, full backend suite, Pint, Composer validate/audit, full Angular unit tests, production SSR build, npm audit, raw SSR metadata checks, sitemap/robots checks, and Playwright desktop/mobile checks. Lighthouse was not available locally; `npx lighthouse --version` timed out while `npm ls lighthouse --depth=0` showed no installed Lighthouse package.
+- Completed: 2026-09-23
 
 ## Phase 6 - Interactions and Analytics
 

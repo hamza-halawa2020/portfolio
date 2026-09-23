@@ -40,7 +40,7 @@ Environment files must use safe placeholders only. Required categories will incl
 - Filesystem disk and S3-compatible storage credentials.
 - Visitor hash secret.
 - Angular API base URL.
-- Public site URL.
+- Public site URL and indexing flag.
 
 Current safe local placeholders:
 
@@ -49,6 +49,8 @@ APP_ENV=local
 APP_DEBUG=true
 APP_URL=https://backend.test
 FRONTEND_URL=http://localhost:4200
+PUBLIC_SITE_URL=https://example.com
+PUBLIC_INDEXING_ENABLED=false
 CORS_ALLOWED_ORIGINS=http://localhost:4200,http://127.0.0.1:4200,http://localhost:4000,http://127.0.0.1:4000
 PUBLIC_VISITOR_COOKIE=portfolio_visitor
 PUBLIC_VISITOR_COOKIE_LIFETIME=525600
@@ -249,6 +251,14 @@ herd isolate 8.5
 ## Angular Deployment
 
 Angular SSR output must be deployed with a Node-compatible SSR runtime or adapter selected during implementation. The current foundation build uses Angular's SSR server output under `frontend/dist/portfolio-frontend/server` and prerenders the root route.
+
+SEO deployment requirements:
+
+- Set Angular SSR `PORTFOLIO_PUBLIC_ORIGIN` to the production public origin.
+- Set Laravel `PUBLIC_SITE_URL` to the same production public origin for `/sitemap.xml` and `/robots.txt`.
+- Keep `PUBLIC_INDEXING_ENABLED=false` outside production. In production, robots allows indexing only when both `APP_ENV=production` and `PUBLIC_INDEXING_ENABLED=true`.
+- Angular SSR redirects `/` to `/en` with HTTP 301. Reverse proxies must preserve this status and avoid redirect loops.
+- Route `/sitemap.xml` and `/robots.txt` to Laravel, or proxy them to Laravel if the public host fronts both Angular SSR and Laravel.
 
 ## Laravel Deployment
 

@@ -34,7 +34,13 @@ PAGE-001 public page status:
 - Each data-driven page has loading, empty, error, and success states. Error states do not invent fallback content.
 - Project and blog detail pages are SSR-rendered from the localized route slug. Language switching does not assume English and Arabic slugs match; it falls back to the target listing until localized slug mappings are available from the API.
 - Media returned by the public API renders with explicit dimensions, lazy loading for list media, and localized alt text from the content title.
-- Contact remains a read-only public information page for PAGE-001. Contact submission, testimonials submission, project views/likes, advanced filters/search, sitemap/robots, structured data, and rich sharing controls remain deferred.
+- Contact remains a read-only public information page for PAGE-001. Contact submission, testimonials submission, project views/likes, advanced filters/search, and rich sharing controls remain deferred.
+
+SEO-001 status:
+
+- Sitemap, robots, Open Graph, Twitter Card, static/dynamic `hreflang`, `x-default`, and JSON-LD are implemented.
+- Dynamic project and blog detail pages use API-provided localized slug mappings for alternates and language switching.
+- Contact submission, testimonials submission, project views/likes, advanced filters/search, and rich sharing controls remain deferred.
 
 ### Home
 

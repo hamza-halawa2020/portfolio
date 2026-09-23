@@ -45,6 +45,10 @@
 - API-backed Angular public pages for home, projects, project detail, about, services, blog, blog detail, contact, privacy, and localized 404 routes.
 - Typed frontend public API models/service and a public page facade for read-only `/api/v1` content loading, localized state mapping, and loading/empty/error/success behavior.
 - Frontend unit coverage for public API query serialization and public page facade states.
+- Laravel-generated `/sitemap.xml` and environment-aware `/robots.txt` for localized public SEO.
+- API-provided `localized_slugs` mappings on project and blog detail responses.
+- SSR Open Graph, Twitter Card, `x-default` alternates, dynamic localized `hreflang`, and safely escaped JSON-LD metadata.
+- Playwright coverage for SEO metadata, JSON-LD duplication prevention, and API-provided dynamic language switching.
 
 ### Changed
 
@@ -55,9 +59,9 @@
 - FND-005 now uses approved local development fallbacks: MySQL `8.0.41`, database cache/session/queue drivers, and Laravel `log` mailer.
 - Database schema documentation now reflects the implemented BE-001 migration and ADM-002 localized slug generated-column indexes for routed content tables.
 - Architecture and decisions now document the explicit model localization helper, administrator-only dashboard policy, and fictional development seed strategy.
-- API contract now reflects implemented BE-003 read endpoints; sitemap and robots endpoints remain deferred.
+- API contract now reflects implemented BE-003 read endpoints; SEO-001 later added sitemap and robots endpoints.
 - BE-003 public API controllers were refactored to remove Eloquent query construction, filtering, visibility rules, relationship loading, and business orchestration.
-- API contract now reflects implemented BE-004 write endpoints and keeps sitemap/robots deferred.
+- API contract now reflects implemented BE-004 write endpoints; sitemap/robots are implemented by SEO-001.
 - Contact attachments are explicitly rejected by public writes until private storage and upload security are configured.
 - Dashboard model policies now require explicit administrator access instead of any authenticated user.
 - Localized JSON slug uniqueness is now protected by admin validation plus MySQL generated-column unique indexes for routed content tables.
@@ -66,12 +70,16 @@
 - Frontend Playwright smoke coverage now checks both directions, light/dark/system themes, theme persistence after reload, dynamic detail slug fallback, mobile navigation, keyboard access, and unexpected browser console/page errors.
 - Public page robots metadata now uses `index, follow` for completed API-backed pages while preserving non-indexable behavior for 404/error-style routes.
 - Frontend Playwright coverage now exercises API-backed public content and uses a real published project slug for dynamic detail language-switch fallback checks.
+- Angular SSR root now redirects `/` to `/en` with HTTP 301.
+- Dynamic project/blog language switching now uses API-provided localized slug mappings when available.
 
 ### Fixed
 
 - Hardened frontend locale and theme services so missing or unavailable browser storage does not crash SSR, tests, or constrained browser-like runtimes.
 - Fixed Arabic frontend placeholder copy and replaced mojibake text with valid UTF-8 Arabic strings.
 - Normalized frontend boolean API query parameters to `1`/`0` for Laravel validation compatibility across SSR and browser fetch.
+- Fixed robots indexing flag parsing so `PUBLIC_INDEXING_ENABLED=false` is treated as false.
+- Removed static Laravel `public/robots.txt` so environment-aware robots routing is not shadowed.
 
 ### Security
 
