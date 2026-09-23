@@ -25,7 +25,7 @@ return [
 
     'seo' => [
         'public_origin' => rtrim((string) env('PUBLIC_SITE_URL', env('FRONTEND_URL', 'https://example.com')), '/'),
-        'indexing_enabled' => (bool) env('PUBLIC_INDEXING_ENABLED', env('APP_ENV') === 'production'),
+        'indexing_enabled' => filter_var(env('PUBLIC_INDEXING_ENABLED', env('APP_ENV') === 'production'), FILTER_VALIDATE_BOOL),
     ],
 
     'local_admin' => [
