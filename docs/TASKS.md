@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 20 | 0 | 7 | 0 |
+| 20 | 1 | 6 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -539,7 +539,7 @@
 
 ### SEO-001 - Implement and verify SEO foundation
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: FE-001, BE-003
 - Files: Angular SEO services/routes, Laravel sitemap/robots/redirect endpoints, `docs/SEO.md`, `docs/TESTING.md`
 - Acceptance criteria:
@@ -555,6 +555,7 @@
   - Lighthouse SEO checks.
   - Broken link, duplicate metadata, missing alt, and accidental noindex checks.
 - Notes:
+  - 2026-09-23: SEO-001 started. Existing FE-001/FE-002/PAGE-001 SSR metadata, localized routing, robots handling for completed pages, and API-backed content will be audited and preserved where correct.
 - Completed:
 
 ## Phase 6 - Interactions and Analytics

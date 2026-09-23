@@ -6,6 +6,7 @@ import { filter, Observable, tap } from 'rxjs';
 import { AboutPayload, BlogPostSummary, ProjectSummary, Service, Skill } from '../../core/api/public-api.models';
 import { AppLocale, LocaleService } from '../../core/i18n/locale.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { ShellNavigationService } from '../../core/layout/shell-navigation.service';
 import {
   BlogDetailPayload,
   BlogPayload,
@@ -28,6 +29,7 @@ export class PublicPage implements OnInit {
   private readonly facade = inject(PublicPageFacade);
   private readonly destroyRef = inject(DestroyRef);
   private readonly localeService = inject(LocaleService);
+  private readonly navigation = inject(ShellNavigationService);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
 
@@ -148,25 +150,209 @@ export class PublicPage implements OnInit {
       return;
     }
 
+    const detailSeo = this.detailSeo(state);
+    this.navigation.setLocalizedSlugMapping(this.slugMapping(state));
+
     this.seo.apply({
       alternates: this.alternatesFor(state),
-      description: state.description,
+      canonicalUrl: detailSeo.canonicalUrl,
+      description: detailSeo.description ?? state.description,
+      imageUrl: detailSeo.imageUrl,
+      jsonLd: this.jsonLdFor(state, detailSeo.title ?? state.title, detailSeo.description ?? state.description),
       locale: state.locale,
-      noindex: state.status === 'error' || state.status === 'empty' || state.pageKey === 'notFound',
+      noindex: state.status === 'error' || state.status === 'empty' || state.pageKey === 'notFound' || detailSeo.noindex,
       path: state.path,
-      title: `${state.title} | ${this.localeService.translate('brand', state.locale)}`,
+      title: `${detailSeo.title ?? state.title} | ${this.localeService.translate('brand', state.locale)}`,
+      type: state.pageKey === 'blogDetail' ? 'article' : 'website',
     });
   }
 
-  private alternatesFor(state: PageState): readonly { locale: AppLocale; path: string }[] {
-    if (state.pageKey === 'projectDetail' || state.pageKey === 'blogDetail' || state.pageKey === 'notFound') {
+  private alternatesFor(state: PageState): readonly { locale: AppLocale | 'x-default'; path: string }[] {
+    if (state.pageKey === 'notFound') {
       return [];
+    }
+
+    if (state.pageKey === 'projectDetail') {
+      const project = (state.payload as ProjectDetailPayload | undefined)?.project;
+
+      return this.dynamicAlternates('projects', project?.localized_slugs);
+    }
+
+    if (state.pageKey === 'blogDetail') {
+      const post = (state.payload as BlogDetailPayload | undefined)?.post;
+
+      return this.dynamicAlternates('blog', post?.localized_slugs);
     }
 
     return [
       { locale: state.locale, path: state.path },
       { locale: state.locale === 'ar' ? 'en' : 'ar', path: state.path.startsWith('/ar') ? state.path.replace('/ar', '/en') : state.path.replace('/en', '/ar') },
+      { locale: 'x-default' as const, path: state.path.startsWith('/ar') ? state.path.replace('/ar', '/en') : state.path },
     ];
+  }
+
+  private dynamicAlternates(section: 'blog' | 'projects', slugs: Partial<Record<AppLocale, string | null>> | undefined): readonly { locale: AppLocale | 'x-default'; path: string }[] {
+    if (!slugs?.en || !slugs?.ar) {
+      return [];
+    }
+
+    return [
+      { locale: 'en', path: `/en/${section}/${slugs.en}` },
+      { locale: 'ar', path: `/ar/${section}/${slugs.ar}` },
+      { locale: 'x-default', path: `/en/${section}/${slugs.en}` },
+    ];
+  }
+
+  private slugMapping(state: PageState) {
+    if (state.pageKey === 'projectDetail') {
+      const project = (state.payload as ProjectDetailPayload | undefined)?.project;
+
+      return project?.localized_slugs ? { slugs: this.nonNullSlugs(project.localized_slugs), type: 'project' as const } : undefined;
+    }
+
+    if (state.pageKey === 'blogDetail') {
+      const post = (state.payload as BlogDetailPayload | undefined)?.post;
+
+      return post?.localized_slugs ? { slugs: this.nonNullSlugs(post.localized_slugs), type: 'blog' as const } : undefined;
+    }
+
+    return undefined;
+  }
+
+  private nonNullSlugs(slugs: Partial<Record<AppLocale, string | null>>): Partial<Record<AppLocale, string>> {
+    return {
+      ...(slugs.en ? { en: slugs.en } : {}),
+      ...(slugs.ar ? { ar: slugs.ar } : {}),
+    };
+  }
+
+  private detailSeo(state: PageState): {
+    canonicalUrl?: string | null;
+    description?: string | null;
+    imageUrl?: string | null;
+    noindex?: boolean;
+    title?: string | null;
+  } {
+    if (state.pageKey === 'projectDetail') {
+      const project = (state.payload as ProjectDetailPayload | undefined)?.project;
+
+      return {
+        canonicalUrl: project?.seo?.canonical_url,
+        description: project?.seo?.description || project?.summary,
+        imageUrl: project?.seo?.og_image_url || project?.cover_image_url,
+        noindex: project?.seo?.robots?.index === false || project?.seo?.robots?.follow === false,
+        title: project?.seo?.title || project?.title,
+      };
+    }
+
+    if (state.pageKey === 'blogDetail') {
+      const post = (state.payload as BlogDetailPayload | undefined)?.post;
+
+      return {
+        canonicalUrl: post?.seo?.canonical_url,
+        description: post?.seo?.description || post?.excerpt,
+        imageUrl: post?.seo?.og_image_url || post?.cover_image_url,
+        noindex: post?.seo?.robots?.index === false || post?.seo?.robots?.follow === false,
+        title: post?.seo?.title || post?.title,
+      };
+    }
+
+    return {};
+  }
+
+  private jsonLdFor(state: PageState, title: string, description: string): readonly unknown[] {
+    const url = this.seo.absoluteUrl(state.path);
+    const base = [
+      this.websiteSchema(state),
+      this.breadcrumbSchema(state, title),
+    ];
+
+    if (state.pageKey === 'home') {
+      return [
+        this.websiteSchema(state),
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Person',
+          description,
+          name: this.localeService.translate('brand', state.locale),
+          url,
+        },
+      ];
+    }
+
+    if (state.pageKey === 'blogDetail') {
+      const post = (state.payload as BlogDetailPayload | undefined)?.post;
+
+      return [
+        ...base,
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          datePublished: post?.published_at ?? undefined,
+          description,
+          headline: title,
+          image: post?.cover_image_url ? this.seo.absoluteUrl(post.cover_image_url) : undefined,
+          mainEntityOfPage: url,
+        },
+      ];
+    }
+
+    if (state.pageKey === 'projectDetail') {
+      const project = (state.payload as ProjectDetailPayload | undefined)?.project;
+
+      return [
+        ...base,
+        {
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          datePublished: project?.published_at ?? undefined,
+          description,
+          headline: title,
+          image: project?.cover_image_url ? this.seo.absoluteUrl(project.cover_image_url) : undefined,
+          url,
+        },
+      ];
+    }
+
+    return state.pageKey === 'notFound' ? [] : base;
+  }
+
+  private websiteSchema(state: PageState): unknown {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      inLanguage: state.locale,
+      name: this.localeService.translate('brand', state.locale),
+      url: this.seo.absoluteUrl(`/${state.locale}`),
+    };
+  }
+
+  private breadcrumbSchema(state: PageState, title: string): unknown {
+    const parts = state.path.split('/').filter(Boolean);
+    const locale = parts[0] ?? state.locale;
+    const items = [
+      {
+        '@type': 'ListItem',
+        item: this.seo.absoluteUrl(`/${locale}`),
+        name: this.localeService.translate('brand', state.locale),
+        position: 1,
+      },
+    ];
+
+    if (parts.length > 1) {
+      items.push({
+        '@type': 'ListItem',
+        item: this.seo.absoluteUrl(state.path),
+        name: title,
+        position: 2,
+      });
+    }
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items,
+    };
   }
 
   private canonicalPath(path: string, locale: AppLocale): string {

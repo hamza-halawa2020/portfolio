@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { AppLocale, NavKey } from '../i18n/locale.service';
 
 export interface ShellNavItem {
@@ -31,7 +31,14 @@ const STATIC_SEGMENT_MAP: Record<string, string> = {
 
 @Injectable({ providedIn: 'root' })
 export class ShellNavigationService {
+  private readonly localizedSlugSignal = signal<LocalizedSlugMapping | undefined>(undefined);
+
   readonly items = ITEMS;
+  readonly localizedSlug = this.localizedSlugSignal.asReadonly();
+
+  setLocalizedSlugMapping(mapping: LocalizedSlugMapping | undefined): void {
+    this.localizedSlugSignal.set(mapping);
+  }
 
   localizedUrl(pageKey: string, locale: AppLocale): string {
     return ITEMS.find((item) => item.key === pageKey)?.path[locale] ?? `/${locale}`;

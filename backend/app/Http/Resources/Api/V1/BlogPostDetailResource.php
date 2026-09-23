@@ -11,6 +11,10 @@ class BlogPostDetailResource extends BlogPostSummaryResource
         return [
             ...parent::toArray($request),
             'body' => $this->localized($this->resource, 'body', $request),
+            'localized_slugs' => [
+                'en' => $this->resource->localizedValues('slug')['en'] ?? null,
+                'ar' => $this->resource->localizedValues('slug')['ar'] ?? null,
+            ],
             'related_posts' => BlogPostSummaryResource::collection($this->whenLoaded('relatedPosts')),
             'seo' => new SeoMetadataResource($this->whenLoaded('seoMetadata')),
         ];

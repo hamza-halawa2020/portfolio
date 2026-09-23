@@ -20,6 +20,10 @@ class ProjectDetailResource extends ProjectSummaryResource
             'development_challenges' => $this->localized($this->resource, 'development_challenges', $request),
             'results' => $this->localized($this->resource, 'results', $request),
             'metrics' => $this->localized($this->resource, 'metrics', $request),
+            'localized_slugs' => [
+                'en' => $this->resource->localizedValues('slug')['en'] ?? null,
+                'ar' => $this->resource->localizedValues('slug')['ar'] ?? null,
+            ],
             'media' => ProjectMediaResource::collection($this->whenLoaded('media')),
             'related_projects' => ProjectSummaryResource::collection($this->whenLoaded('relatedProjects')),
             'seo' => new SeoMetadataResource($this->whenLoaded('seoMetadata')),

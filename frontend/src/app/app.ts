@@ -20,6 +20,7 @@ export class App {
   protected readonly currentLocale = this.localeService.locale;
   protected readonly copy = this.localeService.copy;
   protected readonly navItems = this.navigation.items;
+  protected readonly localizedSlug = this.navigation.localizedSlug;
   protected readonly isMenuOpen = signal(false);
   protected readonly isRtl = computed(() => this.currentLocale() === 'ar');
   protected readonly themeOptions: readonly ThemePreference[] = ['light', 'dark', 'system'];
@@ -38,7 +39,7 @@ export class App {
   }
 
   protected languageSwitchUrl(locale: 'en' | 'ar'): string {
-    return this.navigation.switchLocaleUrl(this.router.url, locale);
+    return this.navigation.switchLocaleUrl(this.router.url, locale, this.localizedSlug());
   }
 
   protected setLocale(locale: 'en' | 'ar'): void {

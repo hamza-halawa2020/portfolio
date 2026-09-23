@@ -62,6 +62,7 @@ export interface ProjectDetail extends ProjectSummary {
   readonly development_challenges: string;
   readonly results: string;
   readonly metrics: string;
+  readonly localized_slugs?: Partial<Record<'en' | 'ar', string | null>>;
   readonly media: readonly ProjectMedia[];
   readonly related_projects: readonly ProjectSummary[];
   readonly seo: SeoMetadata | null;
@@ -81,6 +82,7 @@ export interface BlogPostSummary {
 
 export interface BlogPostDetail extends BlogPostSummary {
   readonly body: string;
+  readonly localized_slugs?: Partial<Record<'en' | 'ar', string | null>>;
   readonly related_posts: readonly BlogPostSummary[];
   readonly seo: SeoMetadata | null;
 }
@@ -160,5 +162,13 @@ export interface SeoMetadata {
   readonly title?: string | null;
   readonly description?: string | null;
   readonly canonical_url?: string | null;
-  readonly robots?: string | null;
+  readonly og_title?: string | null;
+  readonly og_description?: string | null;
+  readonly og_image_url?: string | null;
+  readonly robots?: {
+    readonly index?: boolean | null;
+    readonly follow?: boolean | null;
+  } | null;
+  readonly structured_data?: unknown;
+  readonly redirect_url?: string | null;
 }

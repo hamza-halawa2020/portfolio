@@ -77,7 +77,7 @@ test('returns a localized not found page for unknown routes', async ({ page }) =
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Page not found');
 });
 
-test('does not reuse dynamic slugs when switching languages without mappings', async ({ page, isMobile }) => {
+test('uses API-provided localized slugs when switching detail page languages', async ({ page, isMobile }) => {
   await page.goto('/en/projects');
   const firstProjectHref = await page.locator('.content-card').first().getAttribute('href');
   expect(firstProjectHref).toContain('/en/projects/');
@@ -88,5 +88,21 @@ test('does not reuse dynamic slugs when switching languages without mappings', a
   }
 
   await page.getByRole('link', { name: 'AR' }).click();
-  await expect(page).toHaveURL(/\/ar\/projects$/);
+  await expect(page).toHaveURL(/\/ar\/projects\/[^/]+$/);
+  expect(page.url()).not.toContain(firstProjectHref?.split('/').pop() ?? 'source-slug');
+});
+
+test('renders SEO metadata and JSON-LD in hydrated pages without duplicates', async ({ page }) => {
+  await page.goto('/en/projects');
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en\/projects$/);
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /Projects/);
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+  await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveCount(1);
+  await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+
+  await page.getByRole('link', { name: 'Blog', exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/blog$/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
 });

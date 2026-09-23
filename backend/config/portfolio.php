@@ -23,6 +23,11 @@ return [
         'max_video_kb' => (int) env('PORTFOLIO_MAX_VIDEO_KB', 51200),
     ],
 
+    'seo' => [
+        'public_origin' => rtrim((string) env('PUBLIC_SITE_URL', env('FRONTEND_URL', 'https://example.com')), '/'),
+        'indexing_enabled' => (bool) env('PUBLIC_INDEXING_ENABLED', env('APP_ENV') === 'production'),
+    ],
+
     'local_admin' => [
         'name' => env('LOCAL_DEV_ADMIN_NAME'),
         'email' => env('LOCAL_DEV_ADMIN_EMAIL'),
