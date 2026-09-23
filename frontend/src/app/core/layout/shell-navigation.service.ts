@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
-import { AppLocale } from '../i18n/locale.service';
+import { AppLocale, NavKey } from '../i18n/locale.service';
 
 export interface ShellNavItem {
-  readonly key: string;
+  readonly key: Exclude<NavKey, 'privacy'>;
   readonly path: Record<AppLocale, string>;
+}
+
+export interface LocalizedSlugMapping {
+  readonly type: 'project' | 'blog';
+  readonly slugs: Partial<Record<AppLocale, string>>;
 }
 
 const ITEMS: readonly ShellNavItem[] = [
@@ -32,7 +37,7 @@ export class ShellNavigationService {
     return ITEMS.find((item) => item.key === pageKey)?.path[locale] ?? `/${locale}`;
   }
 
-  switchLocaleUrl(url: string, targetLocale: AppLocale): string {
+  switchLocaleUrl(url: string, targetLocale: AppLocale, localizedSlug?: LocalizedSlugMapping): string {
     const path = url.split('?')[0].split('#')[0];
     const parts = path.split('/').filter(Boolean);
     const currentLocale = parts[0] === 'ar' || parts[0] === 'en' ? parts[0] : 'en';
@@ -47,6 +52,13 @@ export class ShellNavigationService {
     }
 
     if ((segment === 'projects' || segment === 'blog') && parts.length > 2) {
+      const expectedType = segment === 'projects' ? 'project' : 'blog';
+      const targetSlug = localizedSlug?.type === expectedType ? localizedSlug.slugs[targetLocale] : undefined;
+
+      if (targetSlug) {
+        return `/${targetLocale}/${segment}/${targetSlug}`;
+      }
+
       return `/${targetLocale}/${segment}`;
     }
 

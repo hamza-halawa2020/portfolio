@@ -1,28 +1,29 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { effect, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { Meta } from '@angular/platform-browser';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
-type AppliedTheme = 'light' | 'dark';
+export type AppliedTheme = 'light' | 'dark';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
+  private readonly meta = inject(Meta);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly storageKey = 'portfolio.theme';
   private readonly preferenceSignal = signal<ThemePreference>(this.readInitialPreference());
+  private readonly appliedThemeSignal = signal<AppliedTheme>(this.resolveAppliedTheme(this.preferenceSignal()));
 
   readonly preference = this.preferenceSignal.asReadonly();
+  readonly appliedTheme = this.appliedThemeSignal.asReadonly();
 
   constructor() {
     effect(() => this.applyTheme(this.preferenceSignal()));
-
-    if (this.hasMatchMedia()) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (this.preferenceSignal() === 'system') {
-          this.applyTheme('system');
-        }
-      });
-    }
+    this.systemThemeQuery()?.addEventListener('change', () => {
+      if (this.preferenceSignal() === 'system') {
+        this.applyTheme('system');
+      }
+    });
   }
 
   setPreference(preference: ThemePreference): void {
@@ -38,8 +39,10 @@ export class ThemeService {
 
   private applyTheme(preference: ThemePreference): void {
     const theme = this.resolveAppliedTheme(preference);
+    this.appliedThemeSignal.set(theme);
     this.document.documentElement.setAttribute('data-bs-theme', theme);
     this.document.documentElement.setAttribute('data-theme-preference', preference);
+    this.meta.updateTag({ content: theme === 'dark' ? '#101010' : '#ffffff', name: 'theme-color' });
   }
 
   private readInitialPreference(): ThemePreference {
@@ -59,15 +62,15 @@ export class ThemeService {
       return preference;
     }
 
-    if (!this.hasMatchMedia()) {
-      return 'light';
-    }
-
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return this.systemThemeQuery()?.matches ? 'dark' : 'light';
   }
 
-  private hasMatchMedia(): boolean {
-    return isPlatformBrowser(this.platformId) && typeof window.matchMedia === 'function';
+  private systemThemeQuery(): MediaQueryList | null {
+    if (!isPlatformBrowser(this.platformId) || typeof globalThis.matchMedia !== 'function') {
+      return null;
+    }
+
+    return globalThis.matchMedia('(prefers-color-scheme: dark)');
   }
 
   private storage(): Storage | null {

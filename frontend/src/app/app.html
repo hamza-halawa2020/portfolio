@@ -1,7 +1,7 @@
 <a class="skip-link" href="#main-content">{{ copy().skipToContent }}</a>
 
 <header class="site-header">
-  <nav class="navbar navbar-expand-lg shell-nav" [class.is-rtl]="isRtl()" aria-label="Primary navigation">
+  <nav class="navbar navbar-expand-lg shell-nav" [class.is-rtl]="isRtl()" [attr.aria-label]="copy().primaryNavigation">
     <a class="brand" [routerLink]="['/', currentLocale()]">{{ copy().brand }}</a>
 
     <button
@@ -52,7 +52,7 @@
 
 <footer class="site-footer">
   <p>{{ copy().footerLead }}</p>
-  <nav aria-label="Footer navigation">
+  <nav [attr.aria-label]="copy().footerNavigation">
     <a [routerLink]="['/', currentLocale(), 'privacy']">{{ copy().navigation['privacy'] }}</a>
     <a [routerLink]="['/', currentLocale(), 'contact']">{{ copy().navigation['contact'] }}</a>
   </nav>

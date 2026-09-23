@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
-import { LocaleService } from '../../core/i18n/locale.service';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AppLocale, LocaleService } from '../../core/i18n/locale.service';
 import { SeoService } from '../../core/seo/seo.service';
 
 type PublicPageKey =
@@ -20,9 +20,9 @@ interface PageCopy {
   readonly description: string;
 }
 
-const PAGE_COPY: Record<PublicPageKey, Record<'en' | 'ar', PageCopy>> = {
+const PAGE_COPY: Record<PublicPageKey, Record<AppLocale, PageCopy>> = {
   about: {
-    ar: { description: 'مسار نبذة عن المطور والسيرة المهنية جاهز للعرض عبر SSR.', title: 'نبذة' },
+    ar: { description: 'مسار النبذة والسيرة المهنية جاهز للعرض عبر الخادم.', title: 'نبذة' },
     en: { description: 'The developer biography and resume route is ready for SSR rendering.', title: 'About' },
   },
   blog: {
@@ -30,7 +30,7 @@ const PAGE_COPY: Record<PublicPageKey, Record<'en' | 'ar', PageCopy>> = {
     en: { description: 'The blog listing route is ready for later API integration.', title: 'Blog' },
   },
   blogDetail: {
-    ar: { description: 'مسار تفاصيل المقالات الديناميكي يبقى معروضا عبر SSR ولا يختفي من البناء.', title: 'تفاصيل المقال' },
+    ar: { description: 'مسار تفاصيل المقال الديناميكي يبقى معروضا عبر الخادم ولا يختفي من البناء.', title: 'تفاصيل المقال' },
     en: { description: 'The dynamic blog detail route stays server-rendered and is not dropped from production output.', title: 'Blog detail' },
   },
   contact: {
@@ -50,7 +50,7 @@ const PAGE_COPY: Record<PublicPageKey, Record<'en' | 'ar', PageCopy>> = {
     en: { description: 'The privacy route is ready for the later analytics and visitor identifier policy.', title: 'Privacy' },
   },
   projectDetail: {
-    ar: { description: 'مسار تفاصيل الأعمال الديناميكي يبقى معروضا عبر SSR ولا يضيف روابط أو بيانات تجريبية.', title: 'تفاصيل العمل' },
+    ar: { description: 'مسار تفاصيل العمل الديناميكي يبقى معروضا عبر الخادم ولا يضيف روابط أو بيانات تجريبية.', title: 'تفاصيل العمل' },
     en: { description: 'The dynamic project detail route stays server-rendered and does not add demo links or credentials.', title: 'Project detail' },
   },
   projects: {
@@ -76,13 +76,13 @@ export class PublicPage implements OnInit {
 
   protected readonly copy = this.localeService.copy;
   protected readonly locale = this.localeService.locale;
-  protected readonly page = computed(() => PAGE_COPY[this.pageKey()][this.locale()]);
+  protected readonly page = computed(() => this.localizedPageCopy(this.pageKey(), this.locale()));
   protected readonly isNotFound = computed(() => this.pageKey() === 'notFound');
 
   ngOnInit(): void {
     const path = this.route.snapshot.pathFromRoot.flatMap((snapshot) => snapshot.url.map((segment) => segment.path)).join('/');
     const locale = this.localeService.activateLocaleFromUrl(`/${path}`);
-    const page = PAGE_COPY[this.pageKey()][locale];
+    const page = this.localizedPageCopy(this.pageKey(), locale);
     const canonicalPath = this.canonicalPath(path, locale);
 
     this.seo.apply({
@@ -91,7 +91,7 @@ export class PublicPage implements OnInit {
       locale,
       noindex: true,
       path: canonicalPath,
-      title: `${page.title} | ${this.copy().brand}`,
+      title: `${page.title} | ${this.localeService.translate('brand', locale)}`,
     });
   }
 
@@ -99,7 +99,11 @@ export class PublicPage implements OnInit {
     return (this.route.snapshot.data['pageKey'] as PublicPageKey | undefined) ?? 'notFound';
   }
 
-  private alternatesForCurrentRoute(path: string): readonly { locale: 'en' | 'ar'; path: string }[] {
+  private localizedPageCopy(pageKey: PublicPageKey, locale: AppLocale): PageCopy {
+    return PAGE_COPY[pageKey][locale] ?? PAGE_COPY[pageKey].en;
+  }
+
+  private alternatesForCurrentRoute(path: string): readonly { locale: AppLocale; path: string }[] {
     if (this.pageKey() === 'projectDetail' || this.pageKey() === 'blogDetail' || this.pageKey() === 'notFound') {
       return [];
     }
@@ -112,7 +116,7 @@ export class PublicPage implements OnInit {
     ];
   }
 
-  private canonicalPath(path: string, locale: 'en' | 'ar'): string {
+  private canonicalPath(path: string, locale: AppLocale): string {
     if (!path) {
       return `/${locale}`;
     }

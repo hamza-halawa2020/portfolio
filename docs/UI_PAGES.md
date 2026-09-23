@@ -20,6 +20,14 @@ FE-001 shell status:
 - The language switch preserves static page locations. Dynamic project/blog detail switches intentionally return to the target language listing page until localized slug correspondence is available from API data.
 - No demo URLs, dashboard demo links, demo credentials, or private client links are present in the frontend shell.
 
+FE-002 localization and theme status:
+
+- Shared shell labels, navigation labels, accessibility labels, theme labels, placeholder page text, 404 text, and common UI state messages are translated in English and Arabic.
+- Missing localized dynamic values use deterministic English fallback. The frontend does not use browser-only locale detection that would alter server-rendered content unexpectedly after hydration.
+- The language switch preserves static public routes and uses a typed localized slug mapping strategy for future API-backed project/blog detail routes. Until corresponding localized slugs are available, detail pages switch to the target language listing page.
+- Light, dark, and system theme modes persist explicit visitor preference safely, update `data-bs-theme`, update `theme-color`, and respond to system preference changes.
+- Public colors remain centralized monochrome tokens only. Focus, hover, active, and disabled states use black, white, and neutral gray values.
+
 ### Home
 
 - Sections: header, developer intro, professional title, value proposition, project CTA, contact CTA, selected projects, services, skills/technologies, statistics, testimonials, latest blog posts, contact CTA, footer.

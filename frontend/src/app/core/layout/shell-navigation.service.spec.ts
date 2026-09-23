@@ -14,4 +14,15 @@ describe('ShellNavigationService', () => {
     expect(service.switchLocaleUrl('/en/projects/source-slug', 'ar')).toBe('/ar/projects');
     expect(service.switchLocaleUrl('/ar/blog/local-slug', 'en')).toBe('/en/blog');
   });
+
+  it('uses API-provided localized slug mappings for dynamic detail pages when available', () => {
+    const service = TestBed.inject(ShellNavigationService);
+
+    expect(
+      service.switchLocaleUrl('/en/projects/source-slug', 'ar', {
+        slugs: { ar: 'slug-ar', en: 'source-slug' },
+        type: 'project',
+      }),
+    ).toBe('/ar/projects/slug-ar');
+  });
 });

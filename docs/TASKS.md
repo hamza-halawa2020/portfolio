@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 18 | 1 | 8 | 0 |
+| 19 | 0 | 8 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -489,7 +489,7 @@
 
 ### FE-002 - Implement localization and theme infrastructure
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: FE-001
 - Files: frontend translation files, locale/theme services, SSR providers
 - Acceptance criteria:
@@ -501,7 +501,15 @@
   - SSR HTML inspection.
 - Notes:
   - 2026-09-23: FE-002 started after FE-001 completion. Existing FE-001 locale/theme shell code will be audited and extended without duplicating working behavior.
-- Completed:
+  - FE-001 already provided localized routes, basic Arabic/English shell copy, basic theme controls, SSR metadata, and 404 behavior.
+  - Added typed locale/navigation/page copy structures for shared UI labels, accessibility labels, theme labels, state messages, placeholders, and 404 content.
+  - Added deterministic English fallback helpers for missing localized dynamic values without browser-only locale detection.
+  - Fixed Arabic placeholder/page copy and kept `/en/...` and `/ar/...` explicit routes.
+  - Added a typed dynamic project/blog localized slug switching strategy so API-provided slug mappings can be used later; missing mappings safely fall back to the target language listing page.
+  - Hardened theme handling with applied theme state, SSR-safe storage and system preference resolution, system-theme change handling, persistent explicit preferences, and `theme-color` metadata updates.
+  - Added centralized monochrome tokens for disabled, hover, and focus states; no colored accents or gradients were introduced.
+  - Verification passed: `cmd /c npm test -- --watch=false` (5 files, 13 tests), `cmd /c npm run build`, direct SSR HTML checks for English/Arabic metadata and 404 behavior, `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test` (10 tests across desktop/mobile Chromium), and `cmd /c npm audit` (0 vulnerabilities).
+- Completed: 2026-09-23
 
 ## Phase 5 - Public Pages
 

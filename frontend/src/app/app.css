@@ -132,8 +132,14 @@
 .theme-controls button:hover,
 .theme-controls button:focus-visible,
 .theme-controls button.is-active {
+  background: var(--color-hover-surface);
   border-color: var(--color-border-strong);
   color: var(--color-text);
+}
+
+.theme-controls button:disabled {
+  background: transparent;
+  border-color: transparent;
 }
 
 .shell-controls,

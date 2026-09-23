@@ -33,6 +33,14 @@ FE-001 foundation status:
 - FE-001 placeholder pages are intentionally `noindex` until real public page content and final production SEO decisions are implemented.
 - Open Graph, Twitter/X cards, JSON-LD, sitemap, robots.txt, redirects, production indexing rules, localized dynamic slug alternates, and Lighthouse/crawl validation remain in SEO-001 or later page tasks.
 
+FE-002 localization/theme status:
+
+- Arabic and English SSR output continues to render with correct initial `lang` and `dir` attributes.
+- Localization fallback is deterministic and server-safe: missing dynamic localized values fall back to English instead of changing after hydration based on browser-only detection.
+- Static page language alternates remain emitted only for real corresponding static routes.
+- Project and blog detail language switching has a typed strategy for future API-provided localized slug mappings. Until mappings are available, dynamic detail routes do not emit `hreflang` alternates and language switching falls back to the target listing page.
+- Theme preference state is client preference only and is not serialized as private visitor-specific data in SSR HTML.
+
 BE-003 backend API status:
 
 - Project and blog detail endpoints expose dashboard-managed SEO metadata through public API resources.

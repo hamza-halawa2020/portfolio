@@ -41,6 +41,7 @@
 - Angular public frontend shell with SSR-rendered localized routes, responsive header/navigation, footer, skip link, language controls, light/dark/system theme controls, and internal noindexed placeholders for documented public pages.
 - Frontend locale, theme, shell navigation, public-site config, and SEO services with SSR-safe browser API access and raw-HTML title, description, canonical, and static-page `hreflang` metadata.
 - Playwright desktop/mobile smoke coverage for public shell navigation, theme switching, language switching, keyboard skip-link access, mobile menu behavior, and 404 behavior.
+- Production-ready frontend localization/theme foundation with typed Arabic/English copy, deterministic English fallback for missing dynamic translations, translated shared UI states, typed localized slug switching strategy for future API-backed detail routes, system theme change handling, and browser `theme-color` metadata updates.
 
 ### Changed
 
@@ -59,10 +60,12 @@
 - Localized JSON slug uniqueness is now protected by admin validation plus MySQL generated-column unique indexes for routed content tables.
 - Development seeding now reuses existing local technology records by name to preserve earlier local data and avoid duplicate unique names.
 - Playwright configuration can target an externally started SSR server through `PLAYWRIGHT_BASE_URL`, while still supporting the local Angular dev server by default.
+- Frontend Playwright smoke coverage now checks both directions, light/dark/system themes, theme persistence after reload, dynamic detail slug fallback, mobile navigation, keyboard access, and unexpected browser console/page errors.
 
 ### Fixed
 
 - Hardened frontend locale and theme services so missing or unavailable browser storage does not crash SSR, tests, or constrained browser-like runtimes.
+- Fixed Arabic frontend placeholder copy and replaced mojibake text with valid UTF-8 Arabic strings.
 
 ### Security
 

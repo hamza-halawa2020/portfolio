@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, public website pages, localization/theme implementation, sitemap/robots, frontend API consumption, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
+- Missing application code: CI files, full public website pages, sitemap/robots, frontend API consumption, production analytics cleanup jobs, notification delivery, and secure contact attachment storage.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -162,15 +162,16 @@ npm --version
 - Prerender suitable static pages such as privacy and selected content pages when data availability allows.
 - CSS is the initial stylesheet format for the Angular foundation.
 - Bootstrap reboot/utilities and project-owned monochrome design tokens are integrated in the public shell. Tailwind, Transloco, full API integration, full public page content, and final SEO services remain deferred to later tasks.
-- FE-001 uses a lightweight typed in-app copy map for shell labels and internal placeholders; Transloco or an equivalent maintained runtime translation solution remains the planned long-term UI text layer.
+- FE-002 uses typed in-app translation maps for shared shell labels, accessibility labels, placeholder page copy, UI state labels, and 404 text. Missing localized dynamic values fall back to English deterministically, without browser-only locale detection that would change SSR output after hydration.
 - Angular services/repositories for API access; components stay focused on rendering and local UI state.
 - Signals for local UI state such as theme menu, language choice, and small interaction states.
 - RxJS for API workflows and asynchronous forms.
 - Reactive Forms for contact and testimonial submissions.
 - Dedicated SEO service foundation for localized titles, descriptions, canonical links, static-page `hreflang`, and robots metadata. Open Graph, Twitter/X cards, JSON-LD, sitemap, robots, redirects, and production indexing rules remain deferred.
 - Current FE-001 shell includes localized `/en/...` and `/ar/...` routes, server-rendered internal placeholders, one H1 per route, `lang`/`dir` updates, and intentional `noindex` metadata for unfinished placeholder pages.
-- Theme handling supports light, dark, and system preferences with guarded browser storage, Bootstrap `data-bs-theme`, and an inline pre-hydration theme script in `index.html` to reduce theme flash.
+- Theme handling supports light, dark, and system preferences with guarded browser storage, Bootstrap `data-bs-theme`, `data-theme-preference`, `theme-color` metadata updates, system preference change handling, and an inline pre-hydration theme script in `index.html` to reduce theme flash.
 - Frontend public configuration defaults to safe placeholders and can be overridden with `PORTFOLIO_API_BASE_URL`, `PORTFOLIO_PUBLIC_ORIGIN`, or a host-provided `globalThis.PORTFOLIO_PUBLIC_CONFIG`.
+- Language switching preserves static routes. Dynamic project/blog detail routes use a typed localized-slug mapping strategy and fall back to the target language listing page until API-provided corresponding slugs are available.
 
 ## Backend Architecture
 

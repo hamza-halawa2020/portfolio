@@ -148,6 +148,11 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - FE-001 first `cmd /c npx playwright test` attempt failed because the Playwright Chromium binary was not installed for `C:\Users\abdelaziz`; `cmd /c npx playwright install chromium` then passed.
   - FE-001 `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test`: passed, 6 tests across desktop and mobile Chromium covering localized navigation, theme switching, language switching, skip-link keyboard focus, mobile menu behavior, and 404 behavior.
   - FE-001 `cmd /c npm audit`: passed, found 0 vulnerabilities.
+  - FE-002 `cmd /c npm test -- --watch=false`: passed, 5 test files and 13 tests covering locale resolution, deterministic translation fallback, locale persistence, route language switching, dynamic slug mapping strategy, theme persistence, system preference changes, theme metadata, and SSR safety.
+  - FE-002 `cmd /c npm run build`: passed; Angular production SSR build generated browser/server output and prerendered 0 static routes by design.
+  - FE-002 temporary SSR server on `http://127.0.0.1:4100`: direct raw HTML checks passed for English and Arabic `lang`/`dir`, localized title text, meta description, canonical URL, static-page `hreflang`, theme attributes, H1, and unknown-route HTTP 404.
+  - FE-002 `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test`: passed, 10 tests across desktop/mobile Chromium covering English/Arabic, LTR/RTL, light/dark/system modes, theme persistence after reload, language switching, dynamic slug fallback, desktop/mobile navigation, keyboard skip-link access, and no unexpected browser console/page errors.
+  - FE-002 `cmd /c npm audit`: passed, found 0 vulnerabilities.
 
 ## Backend Tests
 
