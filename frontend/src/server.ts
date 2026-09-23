@@ -50,72 +50,9 @@ app.get('/', (_req, res) => {
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then(async (response) =>
-      response ? writeResponseToNodeResponse(await withShellFallbackText(response, req.originalUrl), res) : next(),
-    )
+    .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))
     .catch(next);
 });
-
-async function withShellFallbackText(response: Response, originalUrl: string): Promise<Response> {
-  const contentType = response.headers.get('content-type') ?? '';
-
-  if (!contentType.includes('text/html')) {
-    return response;
-  }
-
-  const copy = shellFallbackCopy(originalUrl);
-  const html = await response.text();
-  const transformed = html
-    .replace(/(<p[^>]*class="eyebrow"[^>]*>)(?:<!--ngetn-->)?(<\/p>)/, `$1${escapeHtml(copy.eyebrow)}$2`)
-    .replace(/(<h1[^>]*>)(?:<!--ngetn-->)?(<\/h1>)/, `$1${escapeHtml(copy.title)}$2`)
-    .replace(/(<p[^>]*class="lede"[^>]*>)(?:<!--ngetn-->)?(<\/p>)/, `$1${escapeHtml(copy.description)}$2`)
-    .replace(/(<p[^>]*class="page-note"[^>]*>)(?:<!--ngetn-->)?(<\/p>)/, `$1${escapeHtml(copy.note)}$2`);
-
-  const headers = new Headers(response.headers);
-  headers.delete('content-length');
-
-  return new Response(transformed, {
-    headers,
-    status: response.status,
-    statusText: response.statusText,
-  });
-}
-
-function shellFallbackCopy(originalUrl: string): { description: string; eyebrow: string; note: string; title: string } {
-  const path = originalUrl.split('?')[0].split('#')[0] || '/en';
-  const segments = path.split('/').filter(Boolean);
-  const section = segments[1] ?? 'home';
-  const isDetail = segments.length > 2;
-  const titles: Record<string, string> = {
-    about: 'About',
-    blog: isDetail ? 'Blog detail' : 'Blog',
-    contact: 'Contact',
-    home: 'Home',
-    privacy: 'Privacy',
-    projects: isDetail ? 'Project detail' : 'Projects',
-    services: 'Services',
-  };
-
-  return {
-    description:
-      segments[0] === 'en' && section in titles
-        ? 'This server-rendered route placeholder is intentionally noindexed until full page content is implemented.'
-        : 'The page you requested was not found.',
-    eyebrow: 'Frontend foundation',
-    note:
-      'This route is intentionally wired for FE-001. Full page content, API data, and interaction states remain in later tasks.',
-    title: segments[0] === 'en' && section in titles ? titles[section] : 'Page not found',
-  };
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
 
 /**
  * Start the server if this module is the main entry point, or it is ran via PM2.

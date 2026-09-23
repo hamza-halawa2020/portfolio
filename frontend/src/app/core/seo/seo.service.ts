@@ -47,19 +47,19 @@ export class SeoService {
 
     if (!link) {
       link = this.document.createElement('link');
-      link.rel = rel;
+      link.setAttribute('rel', rel);
       this.document.head.appendChild(link);
     }
 
-    link.href = href;
+    link.setAttribute('href', href);
   }
 
   private addAlternate(locale: AppLocale, href: string): void {
     const link = this.document.createElement('link');
-    link.rel = 'alternate';
-    link.hreflang = locale;
-    link.href = href;
-    link.dataset['managedBy'] = 'seo-service';
+    link.setAttribute('rel', 'alternate');
+    link.setAttribute('hreflang', locale);
+    link.setAttribute('href', href);
+    link.setAttribute('data-managed-by', 'seo-service');
     this.document.head.appendChild(link);
   }
 

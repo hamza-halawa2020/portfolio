@@ -141,6 +141,13 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - ADM-003 temporary Laravel HTTP smoke was attempted, but the server did not become reachable from the automation shell. Route registration, dashboard authorization, Arabic RTL login behavior, and seeded public API behavior are covered by automated tests.
   - Official/package compatibility verification passed for PHP 8.5.10, Laravel 13.32.0, Composer 2.10.3, Filament 5.8.2, Angular 22.1.7, Angular CLI 22.1.7, Node.js 24.21.0 LTS, MySQL 8.4 LTS, Redis 8.10.1, Sanctum 4.3.3, Spatie Permission 8.3.0, Pest 5.2.1, Playwright 1.63.0, Angular SSR/hydration, and Transloco 8.4.0.
   - Installed Node.js `v22.13.0` was found incompatible with Angular 22 because Angular 22 requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
+  - FE-001 `node --version` through the restricted sandbox failed because no Node binary was visible; unsandboxed machine PATH reported Node `v26.4.0`, which satisfies Angular 22's `>=26.0.0` range.
+  - FE-001 `cmd /c npm test -- --watch=false`: passed, 5 test files and 7 tests covering shell rendering, localization, theme persistence, navigation URL switching, and SEO metadata.
+  - FE-001 `cmd /c npm run build`: passed; Angular production SSR build generated browser/server output and prerendered 0 static routes by design.
+  - FE-001 direct SSR server checks against `http://127.0.0.1:4100`: passed for localized `lang`/`dir`, title, meta description, canonical URL, static-page `hreflang`, one H1, dynamic project canonical handling, and unknown-route HTTP 404.
+  - FE-001 first `cmd /c npx playwright test` attempt failed because the Playwright Chromium binary was not installed for `C:\Users\abdelaziz`; `cmd /c npx playwright install chromium` then passed.
+  - FE-001 `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test`: passed, 6 tests across desktop and mobile Chromium covering localized navigation, theme switching, language switching, skip-link keyboard focus, mobile menu behavior, and 404 behavior.
+  - FE-001 `cmd /c npm audit`: passed, found 0 vulnerabilities.
 
 ## Backend Tests
 

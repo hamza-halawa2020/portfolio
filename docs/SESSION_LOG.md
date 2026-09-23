@@ -426,3 +426,41 @@
 - Current blockers: No ADM-003 implementation blocker. Browser smoke remains limited by temporary local server startup from automation. Herd PHP still prints the known OPcache startup warning.
 - Remaining tasks: FE-001 and later frontend/content/deployment tasks, plus deferred infrastructure tasks INF-001, INF-002, and INF-003.
 - Recommended next task: FE-001 - Implement frontend app shell, SSR, routing, and layout, unless deferred infrastructure is prioritized first.
+
+## 2026-09-23 - FE-001
+
+- Tasks attempted: FE-001 - Implement frontend app shell, SSR, routing, and layout.
+- Tasks completed: FE-001 - Implement frontend app shell, SSR, routing, and layout.
+- ADM consistency check: ADM-002 and ADM-003 are both recorded as completed in `docs/TASKS.md`; no inconsistency found.
+- Implemented:
+  - Added a reusable SSR-rendered Angular public shell with skip link, responsive header, accessible mobile navigation, main outlet, footer, language controls, and light/dark/system theme controls.
+  - Added localized public routes under `/en/...` and `/ar/...` for home, projects, project details, about, services, blog, blog details, contact, privacy, and not-found handling.
+  - Kept dynamic project and blog detail routes in `RenderMode.Server` so unknown slugs are server-rendered instead of being dropped from production output.
+  - Added typed frontend services for locale, theme, shell navigation, public-site configuration, and SEO metadata.
+  - Added SSR-safe guards around browser storage and media APIs.
+  - Added environment-overridable public frontend config through `PORTFOLIO_API_BASE_URL`, `PORTFOLIO_PUBLIC_ORIGIN`, and `globalThis.PORTFOLIO_PUBLIC_CONFIG`.
+  - Added internal FE-001 placeholders with one H1 per rendered route. Full public page content, API integration, forms, interactions, and content states remain deferred.
+  - Added SSR-visible title, description, canonical, robots, and static-page `hreflang` metadata. Placeholder pages are intentionally `noindex`.
+  - Updated Playwright config so tests can target an already running SSR server through `PLAYWRIGHT_BASE_URL`.
+- Files changed: `frontend/src/app/`, `frontend/src/server.ts`, `frontend/src/styles.css`, `frontend/src/index.html`, `frontend/playwright.config.ts`, `frontend/e2e/app.spec.ts`, `docs/ARCHITECTURE.md`, `docs/SEO.md`, `docs/UI_PAGES.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, and `docs/SESSION_LOG.md`.
+- Verification:
+  - Restricted sandbox `node --version`: failed because no Node binary was visible.
+  - Unsandboxed `node --version`: passed with `v26.4.0`, which satisfies Angular 22's `>=26.0.0` support range.
+  - Initial `cmd /c npm test -- --watch=false`: failed because `ThemeService` assumed `localStorage` existed; fixed with guarded storage access.
+  - Final `cmd /c npm test -- --watch=false`: passed, 5 test files and 7 tests.
+  - `cmd /c npm run build`: passed; production SSR output generated and 0 routes prerendered by design.
+  - Temporary built SSR server on `http://127.0.0.1:4100`: started for verification and later stopped.
+  - Direct HTTP checks: passed for `/en`, `/ar`, `/ar/privacy`, dynamic `/en/projects/example-slug`, and unknown route HTTP 404. Raw HTML includes localized `lang`/`dir`, title, description, canonical, static-page `hreflang`, and H1.
+  - Initial Playwright run: failed because the Chromium browser binary was missing for the current Windows user.
+  - `cmd /c npx playwright install chromium`: passed after a longer retry.
+  - Final `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4100 cmd /c npx playwright test`: passed, 6 tests across desktop and mobile Chromium.
+  - Desktop hydration/browser smoke rerun: passed, 3 tests.
+  - `cmd /c npm audit`: passed, found 0 vulnerabilities.
+  - After the public config update, `cmd /c npm test -- --watch=false` passed again, 5 test files and 7 tests.
+  - After the public config update, `cmd /c npm run build` passed again.
+- Remaining limitations:
+  - FE-001 placeholder pages are noindexed and are not final public content.
+  - API integration, forms, loading/empty/error/success states, project/blog localized dynamic slug alternates, sitemap, robots.txt, structured data, Open Graph, Twitter/X cards, redirects, Lighthouse, and crawl validation remain in later tasks.
+  - `publicSiteConfig.publicOrigin` still uses the safe placeholder `https://example.com`; production deployment must configure the real public origin before indexing.
+- Current blockers: None for FE-001.
+- Recommended next task: FE-002 - Implement localization and theme infrastructure, unless SEO-001 is intentionally pulled forward.

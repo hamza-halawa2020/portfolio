@@ -161,14 +161,16 @@ npm --version
 - Production SSR build output is generated at `frontend/dist/portfolio-frontend` with browser output in `browser/` and server output in `server/`.
 - Prerender suitable static pages such as privacy and selected content pages when data availability allows.
 - CSS is the initial stylesheet format for the Angular foundation.
-- Tailwind, Bootstrap, Transloco, final design system, API integration, public pages, and final SEO services are deferred to later tasks.
-- Transloco or equivalent maintained runtime translation solution for UI text.
+- Bootstrap reboot/utilities and project-owned monochrome design tokens are integrated in the public shell. Tailwind, Transloco, full API integration, full public page content, and final SEO services remain deferred to later tasks.
+- FE-001 uses a lightweight typed in-app copy map for shell labels and internal placeholders; Transloco or an equivalent maintained runtime translation solution remains the planned long-term UI text layer.
 - Angular services/repositories for API access; components stay focused on rendering and local UI state.
 - Signals for local UI state such as theme menu, language choice, and small interaction states.
 - RxJS for API workflows and asynchronous forms.
 - Reactive Forms for contact and testimonial submissions.
-- Dedicated SEO service for localized metadata, canonical links, `hreflang`, Open Graph, Twitter/X cards, and JSON-LD.
-- Current shell is intentionally minimal: title `Portfolio Platform`, an English `lang` attribute, semantic `<main>`, and no `noindex` metadata.
+- Dedicated SEO service foundation for localized titles, descriptions, canonical links, static-page `hreflang`, and robots metadata. Open Graph, Twitter/X cards, JSON-LD, sitemap, robots, redirects, and production indexing rules remain deferred.
+- Current FE-001 shell includes localized `/en/...` and `/ar/...` routes, server-rendered internal placeholders, one H1 per route, `lang`/`dir` updates, and intentional `noindex` metadata for unfinished placeholder pages.
+- Theme handling supports light, dark, and system preferences with guarded browser storage, Bootstrap `data-bs-theme`, and an inline pre-hydration theme script in `index.html` to reduce theme flash.
+- Frontend public configuration defaults to safe placeholders and can be overridden with `PORTFOLIO_API_BASE_URL`, `PORTFOLIO_PUBLIC_ORIGIN`, or a host-provided `globalThis.PORTFOLIO_PUBLIC_CONFIG`.
 
 ## Backend Architecture
 

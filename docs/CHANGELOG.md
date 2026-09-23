@@ -38,6 +38,9 @@
 - Dashboard analytics widgets for visits, unique visitors, project views, project likes, contact submissions, pending testimonials, daily trends, top projects, and device breakdowns.
 - Admin analytics query service and moderation/inbox services to keep Filament widgets/resources thin.
 - Comprehensive local/testing development seeder with bilingual fictional content, analytics fixtures, safe media fixtures, and optional local administrator provisioning from ignored environment variables.
+- Angular public frontend shell with SSR-rendered localized routes, responsive header/navigation, footer, skip link, language controls, light/dark/system theme controls, and internal noindexed placeholders for documented public pages.
+- Frontend locale, theme, shell navigation, public-site config, and SEO services with SSR-safe browser API access and raw-HTML title, description, canonical, and static-page `hreflang` metadata.
+- Playwright desktop/mobile smoke coverage for public shell navigation, theme switching, language switching, keyboard skip-link access, mobile menu behavior, and 404 behavior.
 
 ### Changed
 
@@ -55,10 +58,11 @@
 - Dashboard model policies now require explicit administrator access instead of any authenticated user.
 - Localized JSON slug uniqueness is now protected by admin validation plus MySQL generated-column unique indexes for routed content tables.
 - Development seeding now reuses existing local technology records by name to preserve earlier local data and avoid duplicate unique names.
+- Playwright configuration can target an externally started SSR server through `PLAYWRIGHT_BASE_URL`, while still supporting the local Angular dev server by default.
 
 ### Fixed
 
-- None.
+- Hardened frontend locale and theme services so missing or unavailable browser storage does not crash SSR, tests, or constrained browser-like runtimes.
 
 ### Security
 

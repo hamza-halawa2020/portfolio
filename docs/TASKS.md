@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 17 | 1 | 9 | 0 |
+| 18 | 1 | 8 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -461,7 +461,7 @@
 
 ### FE-001 - Implement frontend app shell, SSR, routing, and layout
 
-- Status: [~] In Progress
+- Status: [x] Completed
 - Dependencies: FND-004, BE-003
 - Files: `frontend/src/`
 - Acceptance criteria:
@@ -473,11 +473,23 @@
   - Angular production SSR build.
   - Unit tests for shell services/components.
 - Notes:
-- Completed:
+  - 2026-09-23: FE-001 implementation resumed. ADM-002 and ADM-003 are both recorded as completed above; no inconsistency found.
+  - Implemented a reusable standalone Angular public shell with skip link, responsive header, accessible mobile navigation, footer, language controls, and light/dark/system theme controls.
+  - Added localized `/en/...` and `/ar/...` routes for home, projects, project details, about, services, blog, blog details, contact, privacy, and localized 404 handling.
+  - Dynamic project and blog detail routes use SSR server rendering rather than prerender-only output.
+  - Added bilingual shell/page placeholder copy for FE-001 only; full page content, API integration, forms, interactions, and content states remain deferred.
+  - Added SSR-compatible locale, theme, navigation, public-site config, and SEO services. Browser storage and media APIs are guarded for SSR/constrained runtimes.
+  - Frontend public configuration can be overridden with `PORTFOLIO_API_BASE_URL`, `PORTFOLIO_PUBLIC_ORIGIN`, or `globalThis.PORTFOLIO_PUBLIC_CONFIG`.
+  - Raw SSR HTML verifies localized `lang`, `dir`, title, meta description, canonical, real static-page `hreflang` alternates, one H1, and HTTP 404 for unknown routes.
+  - All FE-001 placeholder routes intentionally set `noindex` until real page content and production SEO rules are implemented in later tasks.
+  - Verification used Node.js `v26.4.0` from the unsandboxed machine PATH because this sandbox did not expose the previously documented Herd Node path. Angular 22 supports `>=26.0.0`.
+  - Playwright Chromium was installed for the current Windows user after the first browser-smoke attempt found the browser binary missing.
+  - Verification passed: `cmd /c npm test -- --watch=false` (5 files, 7 tests), `cmd /c npm run build`, direct SSR HTTP checks against `http://127.0.0.1:4100`, `cmd /c npx playwright test` (6 tests across desktop/mobile Chromium), and `cmd /c npm audit` (0 vulnerabilities).
+- Completed: 2026-09-23
 
 ### FE-002 - Implement localization and theme infrastructure
 
-- Status: [ ] Not started
+- Status: [~] In Progress
 - Dependencies: FE-001
 - Files: frontend translation files, locale/theme services, SSR providers
 - Acceptance criteria:
@@ -488,6 +500,7 @@
   - Unit tests for locale and theme services.
   - SSR HTML inspection.
 - Notes:
+  - 2026-09-23: FE-002 started after FE-001 completion. Existing FE-001 locale/theme shell code will be audited and extended without duplicating working behavior.
 - Completed:
 
 ## Phase 5 - Public Pages

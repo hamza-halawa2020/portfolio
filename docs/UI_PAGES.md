@@ -12,6 +12,14 @@
 
 ## Public Pages
 
+FE-001 shell status:
+
+- A reusable SSR-rendered Angular app shell exists with skip-to-content, responsive header, accessible mobile navigation, language controls, light/dark/system theme controls, main outlet, and footer.
+- English and Arabic public routes exist for all public page types listed below. Arabic routes render RTL; English routes render LTR.
+- Current page bodies are internal FE-001 placeholders only and are intentionally noindexed. Full page content, API data, loading/empty/error/success states, forms, interactions, and media remain in later tasks.
+- The language switch preserves static page locations. Dynamic project/blog detail switches intentionally return to the target language listing page until localized slug correspondence is available from API data.
+- No demo URLs, dashboard demo links, demo credentials, or private client links are present in the frontend shell.
+
 ### Home
 
 - Sections: header, developer intro, professional title, value proposition, project CTA, contact CTA, selected projects, services, skills/technologies, statistics, testimonials, latest blog posts, contact CTA, footer.

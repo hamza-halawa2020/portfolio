@@ -158,47 +158,6 @@ main:focus {
   outline: none;
 }
 
-.page-shell-fallback {
-  display: grid;
-  gap: 1rem;
-  max-width: 56rem;
-  padding-block: clamp(3rem, 8vw, 7rem);
-}
-
-.page-shell-fallback .eyebrow {
-  color: var(--color-muted);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.page-shell-fallback h1 {
-  color: var(--color-text);
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  line-height: 1;
-  margin: 0;
-}
-
-.page-shell-fallback .lede,
-.page-shell-fallback .page-note {
-  color: var(--color-muted);
-  line-height: 1.7;
-  margin: 0;
-  max-width: 44rem;
-}
-
-.page-shell-fallback .lede {
-  color: var(--color-text);
-  font-size: clamp(1.125rem, 2vw, 1.35rem);
-}
-
-.page-shell-fallback .page-note {
-  border-inline-start: 0.25rem solid var(--color-border-strong);
-  padding-inline-start: 1rem;
-}
-
 .site-footer {
   border-block-start: 1px solid var(--color-border);
   display: grid;

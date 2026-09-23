@@ -109,8 +109,10 @@ export class LocaleService {
     this.localeSignal.set(locale);
     this.applyDocumentLocale(locale);
 
-    if (persist && isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(this.storageKey, locale);
+    const storage = this.storage();
+
+    if (persist && storage) {
+      storage.setItem(this.storageKey, locale);
     }
   }
 
@@ -126,11 +128,13 @@ export class LocaleService {
   }
 
   persistedLocale(): AppLocale | null {
-    if (!isPlatformBrowser(this.platformId)) {
+    const storage = this.storage();
+
+    if (!storage) {
       return null;
     }
 
-    const stored = localStorage.getItem(this.storageKey);
+    const stored = storage.getItem(this.storageKey);
 
     return stored === 'ar' || stored === 'en' ? stored : null;
   }
@@ -138,5 +142,13 @@ export class LocaleService {
   private applyDocumentLocale(locale: AppLocale): void {
     this.document.documentElement.lang = locale;
     this.document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  private storage(): Storage | null {
+    if (!isPlatformBrowser(this.platformId) || typeof globalThis.localStorage === 'undefined') {
+      return null;
+    }
+
+    return globalThis.localStorage;
   }
 }

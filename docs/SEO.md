@@ -22,6 +22,17 @@ FND-004 foundation status:
 
 Detailed metadata, canonical URLs, `hreflang`, Open Graph, Twitter/X cards, JSON-LD, sitemap, robots, redirects, and localized URLs remain for the dedicated SEO implementation tasks.
 
+FE-001 foundation status:
+
+- Localized public route structure exists under `/en/...` and `/ar/...`.
+- Angular SSR server rendering is configured for home, projects, project details, about, services, blog, blog details, contact, privacy, and wildcard not-found routes.
+- Dynamic project and blog detail routes use `RenderMode.Server`, so they are not silently omitted from production output when slugs are unknown at build time.
+- A centralized Angular `SeoService` writes SSR-visible title, description, canonical URL, robots metadata, and static-page language alternates.
+- Canonical URLs use `publicSiteConfig.publicOrigin`; it can be set through `PORTFOLIO_PUBLIC_ORIGIN` during SSR or `globalThis.PORTFOLIO_PUBLIC_CONFIG.publicOrigin` in a host-provided runtime config. The default placeholder is `https://example.com` and must be replaced before production indexing.
+- Raw SSR checks on 2026-09-23 verified localized `lang`, `dir`, title, meta description, canonical, static-page `hreflang`, H1, and HTTP 404 behavior.
+- FE-001 placeholder pages are intentionally `noindex` until real public page content and final production SEO decisions are implemented.
+- Open Graph, Twitter/X cards, JSON-LD, sitemap, robots.txt, redirects, production indexing rules, localized dynamic slug alternates, and Lighthouse/crawl validation remain in SEO-001 or later page tasks.
+
 BE-003 backend API status:
 
 - Project and blog detail endpoints expose dashboard-managed SEO metadata through public API resources.

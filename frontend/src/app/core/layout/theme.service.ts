@@ -29,8 +29,10 @@ export class ThemeService {
     this.preferenceSignal.set(preference);
     this.applyTheme(preference);
 
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(this.storageKey, preference);
+    const storage = this.storage();
+
+    if (storage) {
+      storage.setItem(this.storageKey, preference);
     }
   }
 
@@ -41,11 +43,13 @@ export class ThemeService {
   }
 
   private readInitialPreference(): ThemePreference {
-    if (!isPlatformBrowser(this.platformId)) {
+    const storage = this.storage();
+
+    if (!storage) {
       return 'system';
     }
 
-    const stored = localStorage.getItem(this.storageKey);
+    const stored = storage.getItem(this.storageKey);
 
     return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
   }
@@ -64,5 +68,13 @@ export class ThemeService {
 
   private hasMatchMedia(): boolean {
     return isPlatformBrowser(this.platformId) && typeof window.matchMedia === 'function';
+  }
+
+  private storage(): Storage | null {
+    if (!isPlatformBrowser(this.platformId) || typeof globalThis.localStorage === 'undefined') {
+      return null;
+    }
+
+    return globalThis.localStorage;
   }
 }
