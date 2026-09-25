@@ -28,6 +28,10 @@ return [
         'indexing_enabled' => filter_var(env('PUBLIC_INDEXING_ENABLED', env('APP_ENV') === 'production'), FILTER_VALIDATE_BOOL),
     ],
 
+    'analytics' => [
+        'raw_event_retention_days' => (int) env('ANALYTICS_RAW_EVENT_RETENTION_DAYS', 180),
+    ],
+
     'local_admin' => [
         'name' => env('LOCAL_DEV_ADMIN_NAME'),
         'email' => env('LOCAL_DEV_ADMIN_EMAIL'),

@@ -60,6 +60,7 @@ RATE_LIMIT_PROJECT_VIEWS_PER_MINUTE=60
 RATE_LIMIT_PROJECT_LIKES_PER_MINUTE=30
 RATE_LIMIT_TESTIMONIALS_PER_HOUR=5
 RATE_LIMIT_CONTACT_PER_HOUR=5
+ANALYTICS_RAW_EVENT_RETENTION_DAYS=180
 PORTFOLIO_MEDIA_DISK=public
 PORTFOLIO_MAX_IMAGE_KB=5120
 PORTFOLIO_MAX_VIDEO_KB=51200
@@ -162,9 +163,22 @@ Production must run Laravel queue workers for notifications, media processing, a
 
 BE-004 currently dispatches public testimonial/contact submission events after database commit. Notification listeners, mail delivery, and database queue worker verification remain future work until SMTP/local inbox configuration is completed.
 
+INT-002 dispatches queued analytics jobs from the scheduler. Queue workers must process `AggregateDailyAnalyticsJob` and `CleanupAnalyticsEventsJob` for daily summaries and raw event retention cleanup to run outside local/manual test execution.
+
 ## Scheduler
 
 Production must run Laravel scheduler every minute for aggregation, cleanup, sitemap generation where applicable, and maintenance jobs.
+
+INT-002 scheduled jobs:
+
+- `analytics.aggregate-daily`: runs daily at 00:10 and writes count-only rows to `analytics_daily_summaries`.
+- `analytics.cleanup-events`: runs daily at 00:30 and prunes `analytics_events` older than `ANALYTICS_RAW_EVENT_RETENTION_DAYS`.
+
+Example scheduler entry:
+
+```cron
+* * * * * cd /path/to/backend && php artisan schedule:run >> /dev/null 2>&1
+```
 
 ## Storage
 

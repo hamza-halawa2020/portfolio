@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, production analytics cleanup jobs, notification delivery, and secure contact attachment storage. Frontend public write workflows/interactions are implemented and browser-verified for INT-001.
+- Missing application code: CI files, notification delivery, and secure contact attachment storage. Frontend public write workflows/interactions are implemented and browser-verified for INT-001. Analytics aggregation and raw-event cleanup jobs are implemented for INT-002.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -262,9 +262,9 @@ npm --version
 - Public testimonial reads remain approved-only and never expose verification email addresses.
 - Contact inbox workflows expose private dashboard-only contact details to administrators and update only status/admin notes through `ContactInboxService`.
 - Local mail remains `log`; the dashboard does not claim email replies were sent.
-- Analytics aggregation lives in `App\Queries\Admin\AnalyticsDashboardQuery`, not Filament widgets.
+- Analytics read aggregation lives in `App\Queries\Admin\AnalyticsDashboardQuery`, not Filament widgets. Scheduled summary generation lives in `App\Services\Admin\Analytics\DailyAnalyticsAggregator`.
 - Dashboard metrics distinguish page-view analytics events, distinct hashed visitors, project view records, project likes, contact submissions, and pending testimonials.
-- Daily trends and project rankings use existing `analytics_events`, `project_views`, `project_likes`, `contact_messages`, and `testimonials` data. No statistics are invented when no records exist.
+- Daily trends prefer complete `analytics_daily_summaries` rows when available and fall back to current `analytics_events`, `project_views`, `contact_messages`, and related live tables when summaries are missing. Project rankings still use live project interaction records. No statistics are invented when no records exist.
 
 ## Public Write Workflow Architecture
 
@@ -296,7 +296,8 @@ npm --version
 - Track project views and likes through first-party visitor identifiers, hashed IP values using a server-side secret, user-agent hash where appropriate, project ID, and time windows.
 - Count one unique project view per project, visitor, and UTC calendar day. This implements the current `project_views` unique constraint; a true rolling 24-hour window would require a future schema/service change.
 - Public analytics and visitor interaction tables do not store raw IP addresses.
-- ADM-003 dashboard analytics read current event/interaction tables directly through query services. Scheduled aggregation and cleanup jobs remain INT-002 scope.
+- INT-002 schedules `AggregateDailyAnalyticsJob` daily at 00:10 and `CleanupAnalyticsEventsJob` daily at 00:30 through Laravel's scheduler. The aggregation job stores only daily metric counts in `analytics_daily_summaries`; the cleanup job prunes raw `analytics_events` older than `ANALYTICS_RAW_EVENT_RETENTION_DAYS` while leaving aggregate summaries intact.
+- Analytics limitations: visitor uniqueness is based on server-issued visitor cookies and hashes, so counts can be affected by deleted cookies, browser privacy settings, VPNs, shared networks, device changes, and changing IP/user-agent data.
 - Document limitations from VPNs, shared networks, deleted cookies, and changing IPs in the privacy page.
 
 ## Translation Strategy

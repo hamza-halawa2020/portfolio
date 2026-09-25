@@ -633,3 +633,27 @@
   - `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
 - Current blockers: None for INT-001. Herd PHP still prints the known OPcache API warning, but PHP commands exit successfully.
 - Recommended next task: INT-002 - Implement analytics aggregation and cleanup, unless QA-001 quality gates are prioritized first.
+
+## 2026-09-25 - INT-002
+
+- Tasks attempted: INT-002 - Implement analytics aggregation and cleanup.
+- Tasks completed: INT-002 - Implement analytics aggregation and cleanup.
+- Prerequisite gate:
+  - Confirmed `SEO-001` and `INT-001` are marked completed in `docs/TASKS.md` before continuing.
+- Implemented:
+  - Added `DailyAnalyticsAggregator`, `AnalyticsEventCleanupService`, `AggregateDailyAnalyticsJob`, and `CleanupAnalyticsEventsJob`.
+  - Scheduled `analytics.aggregate-daily` at 00:10 and `analytics.cleanup-events` at 00:30 through Laravel scheduler bootstrap.
+  - Added `ANALYTICS_RAW_EVENT_RETENTION_DAYS` configuration and `.env.example` entry.
+  - Updated dashboard daily trends to prefer complete count-only `analytics_daily_summaries` rows and fall back to live records when summaries are missing.
+  - Documented privacy limits, production scheduler/queue expectations, raw event retention, and aggregate-summary behavior.
+- Verification:
+  - Focused `AnalyticsAggregationCleanupTest`: passed, 4 tests and 9 assertions.
+  - Focused `AdminModerationAnalyticsTest`: passed, 5 tests and 40 assertions.
+  - Full backend `artisan test`: passed, 77 tests and 728 assertions.
+  - PHP syntax checks for touched backend files: passed.
+  - Pint check for touched backend files: passed.
+  - Composer validation and audit: passed; Composer emitted PHP 8.5 deprecation notices from its bundled dependencies, and no security advisories were found.
+- Not run:
+  - Browser/E2E checks were not applicable because INT-002 changed backend scheduler/jobs/query behavior only.
+- Current blockers: None for INT-002. Herd PHP still prints the known OPcache API warning, but PHP commands exit successfully.
+- Recommended next task: QA-001 - Add CI and quality gates, unless another pending task is intentionally prioritized.

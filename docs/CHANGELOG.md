@@ -50,6 +50,7 @@
 - SSR Open Graph, Twitter Card, `x-default` alternates, dynamic localized `hreflang`, and safely escaped JSON-LD metadata.
 - Playwright coverage for SEO metadata, JSON-LD duplication prevention, and API-provided dynamic language switching.
 - Isolated INT-001 Playwright acceptance harness covering project views, likes/unlikes, contact submissions, testimonial submissions, WhatsApp action behavior, credentialed CORS, and encrypted visitor-cookie behavior against a temp SQLite Laravel backend and built Angular SSR frontend.
+- Scheduled analytics aggregation and cleanup jobs with count-only daily summaries, configurable raw event retention, and scheduler tests.
 
 ### Changed
 
@@ -74,6 +75,7 @@
 - Angular SSR root now redirects `/` to `/en` with HTTP 301.
 - Dynamic project/blog language switching now uses API-provided localized slug mappings when available.
 - Angular SSR now serves `/portfolio-public-config.js` so browser hydration can use the same runtime API base URL as SSR in isolated and deployed environments.
+- Dashboard daily trend metrics now prefer complete daily analytics summaries when available and fall back to live tables when summaries are missing.
 
 ### Fixed
 
@@ -97,6 +99,7 @@
 - Local administrator provisioning reads credentials from ignored `.env`, hashes the password, refuses production, avoids password resets on repeat seed runs, and refuses to elevate existing non-admin accounts automatically.
 - Public APIs continue to hide testimonial verification emails, contact messages, admin notes, raw identifiers, and raw IP data.
 - INT-001 browser verification confirms the visitor cookie is HTTP-only, unavailable to JavaScript, accepted cross-origin with explicit credentialed CORS, and not used as localStorage-derived like state.
+- Analytics daily summaries store aggregate counts only, and scheduled cleanup prunes raw analytics events after the configured retention period while preserving summaries.
 
 ### Removed
 

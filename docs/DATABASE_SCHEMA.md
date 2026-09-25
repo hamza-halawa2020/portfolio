@@ -228,6 +228,7 @@ ADM-003 did not require schema changes. It uses existing testimonial, contact, a
 - Indexes: `event_type`, `occurred_at`, `visitor_id_hash`.
 - Privacy-sensitive fields: hashes and derived analytics attributes.
 - ADM-003 behavior: dashboard widgets aggregate total page visits, distinct hashed visitors, device/referrer/browser/country breakdowns, and daily trends without exposing hashes.
+- INT-002 behavior: raw rows are retained only temporarily for aggregation and dashboard fallback. `CleanupAnalyticsEventsJob` deletes rows older than `ANALYTICS_RAW_EVENT_RETENTION_DAYS` and never deletes aggregate summaries.
 
 ## analytics_daily_summaries
 
@@ -235,3 +236,4 @@ ADM-003 did not require schema changes. It uses existing testimonial, contact, a
 - Columns: `id`, `date`, `metric`, `dimension` nullable, `value`, timestamps.
 - Unique constraints: `date`, `metric`, `dimension`.
 - ADM-003 development fixtures use `dimension=development_fixture` so they are distinguishable from future production summaries.
+- INT-002 production summaries use `dimension=null` for daily metrics such as `page_views`, `unique_visitors`, `project_views`, `project_likes`, and `contact_submissions`. Summary rows store counts only and do not contain visitor hashes, IP hashes, user-agent hashes, contact details, or other private form data.

@@ -229,3 +229,12 @@ Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Fo
 - Selected option: use `frontend/tools/int001-e2e-runner.mjs` to create a temp SQLite DB, migrate and seed fictional E2E data, start Laravel and built Angular SSR on explicit 127.0.0.1 ports, inject runtime public config, run Playwright, and clean up exact owned PIDs and temp files.
 - Reason: This verifies the real write workflows and real encrypted visitor cookie behavior while avoiding destructive database operations and avoiding mocked interaction behavior.
 - Consequences: Laravel must be started with `artisan serve --no-reload` in this harness so process-scoped env such as `DB_DATABASE`, `CORS_ALLOWED_ORIGINS`, `PUBLIC_VISITOR_COOKIE`, and `VISITOR_HASH_SECRET` reach the served PHP child. Future browser write suites should reuse this pattern or an equivalent CI service setup.
+
+## DEC-025 - Analytics summary and raw event retention boundary
+
+- Date: 2026-09-25
+- Context: INT-002 requires scheduled analytics aggregation and cleanup while preserving privacy-conscious reporting and the thin-controller/service-layer architecture.
+- Options considered: keep dashboard analytics entirely live; move all dashboard metrics to summaries immediately; aggregate daily count-only summaries and keep live fallbacks where summaries are unavailable.
+- Selected option: schedule daily count-only summary generation for common dashboard trend metrics, keep live fallbacks for missing summary days, and prune only raw `analytics_events` after the configured retention window.
+- Reason: This improves production reporting and retention hygiene without inventing statistics, losing dashboard functionality before the first scheduled run, or storing identifiers in summary records.
+- Consequences: Operations must run Laravel scheduler and queue workers. Summaries intentionally cannot answer identifier-level questions, and visitor uniqueness remains approximate because cookies, VPNs, shared networks, browser privacy settings, device changes, and changing IP/user-agent data affect analytics inputs.

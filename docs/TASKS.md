@@ -202,7 +202,7 @@
 
 ### INF-001 - Configure and verify Redis or Valkey
 
-- Status: [ ] Not started
+- Status: [ ] In progress
 - Dependencies: FND-005
 - Files: deployment docs, backend environment docs, queue/cache configuration
 - Acceptance criteria:
@@ -218,7 +218,7 @@
 
 ### INF-002 - Configure local mail inbox or production SMTP
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: FND-005
 - Files: deployment docs, backend mail configuration, notification tests
 - Acceptance criteria:
@@ -593,7 +593,7 @@
 
 ### INT-002 - Implement analytics aggregation and cleanup
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: INT-001, ADM-003
 - Files: Laravel jobs, scheduler, analytics docs/tests
 - Acceptance criteria:
@@ -603,7 +603,9 @@
 - Tests:
   - Backend job and scheduler tests.
 - Notes:
-- Completed:
+  - 2026-09-25: Started after confirming `SEO-001` and `INT-001` are marked completed. Scope is limited to analytics daily aggregation, analytics event cleanup scheduling, privacy limitation documentation, and dashboard use of aggregated summaries where appropriate.
+  - 2026-09-25: Implemented scheduled `AggregateDailyAnalyticsJob` and `CleanupAnalyticsEventsJob`, daily count-only summary aggregation, configurable raw event retention, dashboard daily-trend summary usage with live fallback, and backend coverage for jobs, scheduler registration, privacy-safe summaries, and dashboard query behavior.
+- Completed: 2026-09-25
 
 ## Phase 7 - Quality and Deployment
 

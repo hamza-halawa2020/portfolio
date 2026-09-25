@@ -7,6 +7,7 @@ use App\Enums\ContactMessageStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\AnalyticsEvent;
 use App\Models\ContactMessage;
+use App\Models\DailyAnalyticsSummary;
 use App\Models\Project;
 use App\Models\ProjectLike;
 use App\Models\ProjectView;
@@ -56,13 +57,14 @@ class AnalyticsDashboardQuery
         for ($day = $from; $day->lessThanOrEqualTo($to); $day = $day->addDay()) {
             $dayStart = $day->startOfDay();
             $dayEnd = $day->endOfDay();
+            $summary = $this->dailySummary($dayStart);
 
             $days->push([
                 'date' => $dayStart->toDateString(),
-                'visits' => $this->eventsBetween($dayStart, $dayEnd)->where('event_type', AnalyticsEventType::PageView)->count(),
-                'unique_visitors' => $this->eventsBetween($dayStart, $dayEnd)->whereNotNull('visitor_id_hash')->distinct('visitor_id_hash')->count('visitor_id_hash'),
-                'project_views' => $this->projectViewsBetween($dayStart, $dayEnd)->count(),
-                'contacts' => ContactMessage::query()->whereBetween('created_at', [$dayStart, $dayEnd])->count(),
+                'visits' => $summary['page_views'] ?? $this->eventsBetween($dayStart, $dayEnd)->where('event_type', AnalyticsEventType::PageView)->count(),
+                'unique_visitors' => $summary['unique_visitors'] ?? $this->eventsBetween($dayStart, $dayEnd)->whereNotNull('visitor_id_hash')->distinct('visitor_id_hash')->count('visitor_id_hash'),
+                'project_views' => $summary['project_views'] ?? $this->projectViewsBetween($dayStart, $dayEnd)->count(),
+                'contacts' => $summary['contact_submissions'] ?? ContactMessage::query()->whereBetween('created_at', [$dayStart, $dayEnd])->count(),
             ]);
         }
 
@@ -157,5 +159,25 @@ class AnalyticsDashboardQuery
     private function projectLikesBetween(CarbonInterface $from, CarbonInterface $to): Builder
     {
         return ProjectLike::query()->whereBetween('liked_at', [$from, $to]);
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function dailySummary(CarbonInterface $date): array
+    {
+        $rows = DailyAnalyticsSummary::query()
+            ->whereDate('date', $date->toDateString())
+            ->whereNull('dimension')
+            ->whereIn('metric', ['page_views', 'unique_visitors', 'project_views', 'contact_submissions'])
+            ->get(['metric', 'value']);
+
+        if ($rows->count() < 4) {
+            return [];
+        }
+
+        return $rows
+            ->mapWithKeys(fn (DailyAnalyticsSummary $summary): array => [$summary->metric => (int) $summary->value])
+            ->all();
     }
 }

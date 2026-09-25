@@ -182,6 +182,13 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - INT-001 E2E harness uses a temp SQLite database, fictional E2E seed data, built Angular SSR, Laravel `artisan serve --no-reload`, explicit unused 127.0.0.1 frontend/API ports, process-scoped CORS/cookie/mail/env settings, exact owned PID cleanup, and no MySQL destructive operations.
   - INT-001 browser CORS/cookie evidence: readiness and browser responses emitted `Access-Control-Allow-Origin` for the generated Angular origin and `Access-Control-Allow-Credentials: true`; the visitor cookie was `HttpOnly`, unavailable to `document.cookie`, and reload preserved server-backed like state without localStorage.
   - INT-001 `cmd /c npm audit`: initial sandboxed attempt failed on registry/cache access; approved rerun passed with 0 vulnerabilities.
+  - INT-002 focused `AnalyticsAggregationCleanupTest`: passed, 4 tests and 9 assertions covering daily summary aggregation, privacy-safe summary columns, dashboard summary usage, raw event cleanup, and scheduler registration.
+  - INT-002 focused `AdminModerationAnalyticsTest`: passed, 5 tests and 40 assertions after dashboard query changes.
+  - INT-002 full backend `artisan test`: passed, 77 tests and 728 assertions.
+  - INT-002 PHP syntax checks passed for both analytics jobs, both analytics services, `bootstrap/app.php`, `config/portfolio.php`, `AnalyticsDashboardQuery`, and the new feature test. Herd PHP still prints the known OPcache API warning.
+  - INT-002 Pint check passed for touched backend files.
+  - INT-002 Composer validation and audit passed after adding Herd PHP to the command PATH; Composer emitted PHP 8.5 deprecation notices from its bundled dependencies, and no security advisories were found.
+  - INT-002 browser/E2E checks were not run because this task changes backend scheduler/jobs/query behavior only and does not alter browser workflows.
 
 ## Backend Tests
 
