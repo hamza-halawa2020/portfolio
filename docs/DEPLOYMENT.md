@@ -306,9 +306,38 @@ Reverse proxy must route public website requests to Angular SSR and API/dashboar
 
 HTTPS is required in production. Secure cookies, HSTS, and security headers must be configured.
 
+Production HTTP security checklist:
+
+- Terminate HTTPS at the edge or application host and redirect HTTP to HTTPS before requests reach Angular SSR or Laravel.
+- Set `SESSION_SECURE_COOKIE=true` and keep `PUBLIC_VISITOR_COOKIE` encrypted, HTTP-only, SameSite=Lax, and scoped to the public site domain when needed.
+- Send HSTS only after HTTPS is stable for the production domain.
+- Preserve dashboard `X-Robots-Tag: noindex, nofollow, noarchive` and private `no-store` cache headers.
+- Preserve public write `Cache-Control: no-store` responses for views, likes, contact, and testimonials.
+- Configure CORS with explicit Angular origins only; do not use `*` with credentialed public interaction requests.
+- Keep `APP_DEBUG=false`, generated `APP_KEY`, non-empty `VISITOR_HASH_SECRET`, and all production credentials in deployment secrets, never in source control.
+- Verify upload limits and MIME allowlists before enabling public media access through the selected storage disk.
+
 ## Backup and Restore
 
-Production backup strategy must include MySQL backups, uploaded media backups, and restore verification.
+Production backup strategy must include MySQL backups, uploaded media backups, environment recovery material, and restore verification.
+
+Minimum backup requirements:
+
+- Run automated MySQL logical backups at least daily, with point-in-time recovery or binary log retention where the hosting platform supports it.
+- Store backups encrypted at rest outside the application host, with access limited to the owner/operator role.
+- Back up uploaded media from the configured Laravel filesystem disk, including project media, blog media, SEO images, and any future private attachments before those features are enabled.
+- Do not back up raw `.env` files into shared artifact stores. Store production secrets in the deployment secret manager and maintain a separate owner-only recovery record for required variable names and rotation procedures.
+- Retain daily backups for at least 14 days and monthly backups for at least 3 months unless production hosting policy requires a longer window.
+- Verify restoration into an isolated non-production environment before launch and after any schema-changing milestone.
+
+Restore drill checklist:
+
+- Restore the latest MySQL backup into an isolated database.
+- Restore uploaded media into an isolated storage disk or bucket.
+- Configure a non-production `.env` with safe URLs, `APP_DEBUG=false`, and non-production mail/CORS origins.
+- Run `php artisan migrate --force` only after confirming the restored schema version and pending migrations.
+- Run smoke checks for Angular SSR, Laravel API reads, public writes, dashboard login, media URLs, sitemap, robots, queues, and scheduler.
+- Record the restore date, backup artifact identifiers, verification commands, and any gaps in `docs/SESSION_LOG.md`.
 
 ## Post-Deployment Verification
 

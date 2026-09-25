@@ -54,6 +54,9 @@
 - Secret-free GitHub Actions quality gates for backend and frontend verification.
 - Backend Composer quality scripts and frontend npm quality scripts for local CI dry runs.
 - Frontend Prettier ignore rules and formatted frontend source files.
+- QA-002 accessibility, performance, security, and deployment review documentation.
+- Isolated QA-002 Playwright review coverage for bilingual accessibility landmarks, form controls, private-data leakage checks, visitor-cookie privacy, and local navigation timing inputs.
+- Backend security/deployment review tests for safe environment placeholders, credentialed CORS, public write response privacy, upload rejection, raw-IP avoidance, and MIME allowlists.
 
 ### Changed
 
@@ -80,6 +83,9 @@
 - Angular SSR now serves `/portfolio-public-config.js` so browser hydration can use the same runtime API base URL as SSR in isolated and deployed environments.
 - Dashboard daily trend metrics now prefer complete daily analytics summaries when available and fall back to live tables when summaries are missing.
 - `.env.example` no longer carries a generated Laravel `APP_KEY`; CI generates a temporary key during verification.
+- `.env.example` now uses secret-free local administrator placeholders and SQLite as the safe default database connection.
+- Deployment documentation now includes production HTTP security, backup, restore, and post-restore verification checklists.
+- Task bookkeeping was repaired so deferred Redis/Valkey and Mailpit/SMTP tasks are not marked completed without evidence.
 
 ### Fixed
 
@@ -105,6 +111,7 @@
 - INT-001 browser verification confirms the visitor cookie is HTTP-only, unavailable to JavaScript, accepted cross-origin with explicit credentialed CORS, and not used as localStorage-derived like state.
 - Analytics daily summaries store aggregate counts only, and scheduled cleanup prunes raw analytics events after the configured retention period while preserving summaries.
 - Baseline CI runs without production secrets, external databases, Redis, SMTP, S3 credentials, or public demo credentials.
+- QA-002 confirms public write responses avoid exposing visitor/IP/user-agent hashes, public contact attachments are rejected, media MIME allowlists exclude unsafe types, dependency audits report no advisories, and committed example environment values use safe placeholders only.
 
 ### Removed
 

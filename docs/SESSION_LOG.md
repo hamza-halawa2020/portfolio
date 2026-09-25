@@ -679,3 +679,35 @@
   - `npm audit`: initial sandboxed attempt failed on registry/cache access; approved rerun passed with 0 vulnerabilities.
 - Current blockers: None for QA-001. CI was not executed on GitHub from this local environment, but the same local backend/frontend gate scripts passed.
 - Recommended next task: QA-002 - Run accessibility, performance, security, and deployment review, unless deferred infrastructure tasks are intentionally prioritized first.
+
+## 2026-09-25 - QA-002
+
+- Tasks attempted: QA-002 - Run accessibility, performance, security, and deployment review.
+- Tasks completed: QA-002 - Run accessibility, performance, security, and deployment review.
+- Pre-task bookkeeping audit:
+  - Recounted `docs/TASKS.md` individual statuses and found 25 completed-style task statuses versus the stale summary of 21 completed and 6 pending.
+  - Inspected implementation, configuration, docs, session logs, changelog, and Git history/diff for `INF-001` and `INF-002`.
+  - Found no Redis/Valkey service configuration, connectivity verification, Laravel Redis cache/queue smoke test, Horizon/queue decision evidence, or production Redis verification for `INF-001`.
+  - Found no Mailpit/local SMTP or production SMTP configuration, delivery smoke test, notification delivery verification, or production email workflow evidence for `INF-002`.
+  - Returned `INF-001` and `INF-002` to not-started status with concrete audit notes. Summary was repaired before QA-002 continued.
+- Implemented:
+  - Added `docs/QA_REVIEW.md` with accessibility, performance/Core Web Vitals input, security, deployment, backup, and environmental review notes.
+  - Added backend `SecurityDeploymentReviewTest` covering safe `.env.example` placeholders, explicit credentialed CORS, public write no-store/private visitor-cookie behavior, private hash exclusions, contact attachment rejection, raw-IP avoidance, and media MIME allowlists.
+  - Hardened `backend/.env.example` by keeping app/admin/database secrets empty and using SQLite as the safe default database connection.
+  - Added isolated QA-002 Playwright configuration and runner wrapper using the existing temp SQLite Laravel/Angular SSR E2E harness.
+  - Added Playwright checks for bilingual public landmarks, directions, headings, image alt text, horizontal overflow, skip-link focus, contact/testimonial form accessibility, private-data leakage, HTTP-only visitor-cookie privacy, browser storage privacy, and local navigation timing smoke thresholds.
+  - Expanded deployment documentation with production HTTP security, backup, restore, and post-restore verification checklists.
+  - Updated testing, changelog, task, and session documentation.
+- Verification:
+  - Focused backend `SecurityDeploymentReviewTest`: passed, 4 tests and 32 assertions.
+  - Frontend Prettier check for QA-002 files: passed.
+  - `cmd /c npm run build`: passed; production SSR build generated browser/server output. Browser initial raw size was `419.35 kB`, estimated transfer size was `99.41 kB`, and lazy public-page estimated transfer size was `20.74 kB`.
+  - Isolated QA-002 Playwright `cmd /c npm run test:e2e:qa002`: passed, 8 tests across desktop and mobile Chromium.
+  - `cmd /c npm audit --audit-level=moderate`: passed after approved registry access; found 0 vulnerabilities.
+  - `cmd /c herd composer --working-dir=backend audit`: passed; no security vulnerability advisories found.
+  - Backend CI `cmd /c herd composer --working-dir=backend run ci`: passed, including 81 tests, 760 assertions, and Pint.
+  - Frontend CI `cmd /c npm run ci`: passed, including Prettier, 8 test files, 20 tests, and production SSR build.
+- Not completed by environment:
+  - Lighthouse CLI remained unavailable locally. `npx lighthouse --version` and `npx --yes lighthouse --version` remained without output for about 60 seconds and were stopped, so QA-002 documents performance build/timing inputs but does not claim a Lighthouse score.
+- Current blockers: None for QA-002. Remaining pending tasks are `INF-001`, `INF-002`, and `INF-003`.
+- Recommended next task: Choose one pending infrastructure task explicitly; do not infer completion for Redis/Valkey, mail, or MySQL 8.4 compatibility without concrete service verification.

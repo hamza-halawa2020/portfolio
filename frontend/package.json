@@ -14,6 +14,7 @@
     "test:ci": "ng test --watch=false",
     "test:e2e": "playwright test",
     "test:e2e:int001": "node tools/int001-e2e-runner.mjs",
+    "test:e2e:qa002": "node tools/qa002-e2e-runner.mjs",
     "serve:ssr:portfolio-frontend": "node dist/portfolio-frontend/server/server.mjs"
   },
   "private": true,

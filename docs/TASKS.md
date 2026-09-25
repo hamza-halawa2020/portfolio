@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 21 | 0 | 6 | 0 |
+| 24 | 0 | 3 | 0 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -202,7 +202,7 @@
 
 ### INF-001 - Configure and verify Redis or Valkey
 
-- Status: [x] Completed
+- Status: [ ] Not started
 - Dependencies: FND-005
 - Files: deployment docs, backend environment docs, queue/cache configuration
 - Acceptance criteria:
@@ -214,11 +214,12 @@
   - Laravel cache and queue smoke tests.
 - Notes:
   - Deferred from FND-005 because current implemented features do not require Redis locally.
+  - 2026-09-25 bookkeeping audit: Not completed. No Redis/Valkey service, approved provisioned environment, connectivity check, Laravel Redis cache/queue smoke test, Horizon selection, or production Redis queue/cache verification was found. Current configuration remains database-backed cache/session/queue locally, and docs/session logs still identify Redis/Valkey as deferred.
 - Completed:
 
 ### INF-002 - Configure local mail inbox or production SMTP
 
-- Status: [x] Completed
+- Status: [ ] Not started
 - Dependencies: FND-005
 - Files: deployment docs, backend mail configuration, notification tests
 - Acceptance criteria:
@@ -230,6 +231,7 @@
   - Local inbox or SMTP delivery smoke test.
 - Notes:
   - Deferred from FND-005 because local development uses `MAIL_MAILER=log`.
+  - 2026-09-25 bookkeeping audit: Not completed. No Mailpit/local SMTP or production SMTP configuration, delivery smoke test, notification delivery verification, or production-ready email workflow evidence was found. Current configuration remains `MAIL_MAILER=log`, and docs/session logs still identify Mailpit/SMTP as deferred.
 - Completed:
 
 ### INF-003 - Verify MySQL 8.4 staging and production compatibility
@@ -626,7 +628,7 @@
 
 ### QA-002 - Run accessibility, performance, security, and deployment review
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: PAGE-001, SEO-001, INT-002
 - Files: docs, frontend/backend fixes
 - Acceptance criteria:
@@ -639,4 +641,6 @@
   - Playwright accessibility/navigation checks.
   - Backend security-focused tests.
 - Notes:
-- Completed:
+  - 2026-09-25: Started after repairing task bookkeeping. Scope is limited to QA-002 accessibility, performance/Core Web Vitals documentation, security review, deployment/backup documentation, and focused verification. INF-003 and later tasks remain untouched.
+  - 2026-09-25: Added focused backend security/deployment tests, isolated QA-002 Playwright accessibility/privacy/performance smoke coverage, and deployment backup/security documentation. Verified backend CI, frontend CI, dependency audits, production SSR build, and isolated desktop/mobile browser checks. Lighthouse CLI remained unavailable locally after timed attempts, so no Lighthouse score is claimed; Core Web Vitals inputs are documented through build output and local navigation timing smoke checks.
+- Completed: 2026-09-25
