@@ -571,7 +571,7 @@
 
 ### INT-001 - Implement visitor interactions
 
-- Status: [ ] In progress
+- Status: [x] Completed
 - Dependencies: BE-004, PAGE-001
 - Files: frontend interaction services/components, backend interaction endpoints
 - Acceptance criteria:
@@ -585,8 +585,11 @@
 - Notes:
   - 2026-09-25: Started after confirming `SEO-001` is marked completed and its acceptance criteria are covered by recorded verification notes. Scope is limited to public interactions: project views, likes/unlikes, contact form, testimonial submission, and WhatsApp contact action.
   - 2026-09-25: Implemented browser-only Angular public interactions through a typed interaction API client, interaction facade, page orchestration, and standalone presentational components for project likes/views, contact submission, and testimonial submission. Added a Laravel visitor-cookie-backed like-state read endpoint so reload/navigation can recover whether the current visitor liked a project without using localStorage or exposing visitor identifiers. Added allowlisted `site.whatsapp_message` for configurable WhatsApp text.
-  - 2026-09-25: Verification passed for backend full suite, Pint, frontend unit tests, and Angular production build. Targeted Playwright interaction coverage was attempted but did not produce a stable passing run in this Windows dev-server setup, so INT-001 remains in progress pending browser E2E verification.
-- Completed:
+  - 2026-09-25: Verification passed for backend full suite, Pint, frontend unit tests, and Angular production build. Targeted Playwright interaction coverage was attempted but did not produce a stable passing run in this Windows dev-server setup, so INT-001 remained in progress pending browser E2E verification.
+  - 2026-09-25: Added an isolated browser E2E harness for INT-001 using a temporary SQLite database, fictional E2E seed data, explicit 127.0.0.1 frontend/API ports, built Angular SSR, Laravel `artisan serve --no-reload`, process-scoped CORS/cookie/env settings, exact owned PID cleanup, and Playwright desktop/mobile projects.
+  - 2026-09-25: Root cause for prior browser instability was Laravel `artisan serve` environment filtering on Windows: without `--no-reload`, the served PHP child ignored the temp DB, CORS origin, visitor cookie name, and E2E site settings and fell back to `.env`. The harness now keeps the HTTP process inside the isolated E2E environment.
+  - 2026-09-25: Browser verification passed twice consecutively for the focused INT-001 suite (16 tests each run) and once for the complete Playwright suite through the same isolated harness (28 tests). Verified cross-origin credentialed CORS headers, encrypted HTTP-only visitor cookie behavior, reload-preserved like state, JS-inaccessible visitor cookie, view idempotency, failed-write non-blocking behavior, accessible localized forms, moderation-only testimonials, WhatsApp configuration/fallback, and absence of private identifier leakage.
+- Completed: 2026-09-25
 
 ### INT-002 - Implement analytics aggregation and cleanup
 

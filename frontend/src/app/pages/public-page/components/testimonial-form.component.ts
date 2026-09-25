@@ -9,17 +9,17 @@ import { SubmissionState, TestimonialSubmissionPayload } from '../../../core/int
   standalone: true,
   template: `
     <form class="interaction-form" [formGroup]="form" (ngSubmit)="submit()">
-      <input class="visually-hidden" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+      <input class="visually-hidden" type="text" formControlName="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <label>
         <span>{{ locale === 'ar' ? 'الاسم' : 'Name' }}</span>
-        <input type="text" formControlName="name" autocomplete="name" />
+        <input type="text" formControlName="name" autocomplete="name" [attr.aria-invalid]="fieldError('name') ? 'true' : null" />
         @if (fieldError('name')) { <small>{{ fieldError('name') }}</small> }
       </label>
 
       <label>
         <span>{{ locale === 'ar' ? 'بريد التحقق' : 'Verification email' }}</span>
-        <input type="email" formControlName="contact_email" autocomplete="email" />
+        <input type="email" formControlName="contact_email" autocomplete="email" [attr.aria-invalid]="fieldError('contact_email') ? 'true' : null" />
         @if (fieldError('contact_email')) { <small>{{ fieldError('contact_email') }}</small> }
       </label>
 
@@ -45,7 +45,7 @@ import { SubmissionState, TestimonialSubmissionPayload } from '../../../core/int
 
       <label class="wide">
         <span>{{ locale === 'ar' ? 'الشهادة' : 'Testimonial' }}</span>
-        <textarea rows="5" formControlName="content"></textarea>
+        <textarea rows="5" formControlName="content" [attr.aria-invalid]="fieldError('content') ? 'true' : null"></textarea>
         @if (fieldError('content')) { <small>{{ fieldError('content') }}</small> }
       </label>
 

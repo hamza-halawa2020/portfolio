@@ -1,0 +1,1 @@
+globalThis.PORTFOLIO_PUBLIC_CONFIG = globalThis.PORTFOLIO_PUBLIC_CONFIG || {};

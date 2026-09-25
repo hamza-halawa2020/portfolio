@@ -10,11 +10,11 @@ import { ProjectLikeViewState } from '../../../core/interactions/public-interact
     <section class="interaction-panel" aria-live="polite">
       <div class="interaction-stat">
         <span>{{ locale === 'ar' ? 'المشاهدات' : 'Views' }}</span>
-        <strong>{{ viewCount ?? project.view_count }}</strong>
+        <strong data-testid="project-view-count">{{ viewCount ?? project.view_count }}</strong>
       </div>
       <div class="interaction-stat">
         <span>{{ locale === 'ar' ? 'الإعجابات' : 'Likes' }}</span>
-        <strong>{{ likeState?.count ?? project.like_count }}</strong>
+        <strong data-testid="project-like-count">{{ likeState?.count ?? project.like_count }}</strong>
       </div>
       <button
         type="button"

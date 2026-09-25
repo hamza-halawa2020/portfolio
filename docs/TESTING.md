@@ -177,7 +177,11 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - INT-001 focused backend `PublicWriteApiTest`: passed, 12 tests and 98 assertions.
   - INT-001 full backend `artisan test`: passed, 73 tests and 719 assertions.
   - INT-001 Pint check: passed.
-  - INT-001 targeted Playwright interaction coverage was attempted but did not produce a stable passing summary in the Windows dev-server setup; the attempted spec was not kept in the suite. Browser E2E coverage for contact/testimonial/like flows remains pending before INT-001 should be marked complete.
+  - INT-001 isolated focused Playwright harness `cmd /c npm run test:e2e:int001`: passed twice consecutively, 16 tests per run across desktop and mobile Chromium.
+  - INT-001 complete Playwright suite through the same isolated harness, `INT001_PLAYWRIGHT_CONFIG=playwright.config.ts cmd /c npm run test:e2e:int001`: passed, 28 tests across desktop and mobile Chromium.
+  - INT-001 E2E harness uses a temp SQLite database, fictional E2E seed data, built Angular SSR, Laravel `artisan serve --no-reload`, explicit unused 127.0.0.1 frontend/API ports, process-scoped CORS/cookie/mail/env settings, exact owned PID cleanup, and no MySQL destructive operations.
+  - INT-001 browser CORS/cookie evidence: readiness and browser responses emitted `Access-Control-Allow-Origin` for the generated Angular origin and `Access-Control-Allow-Credentials: true`; the visitor cookie was `HttpOnly`, unavailable to `document.cookie`, and reload preserved server-backed like state without localStorage.
+  - INT-001 `cmd /c npm audit`: initial sandboxed attempt failed on registry/cache access; approved rerun passed with 0 vulnerabilities.
 
 ## Backend Tests
 

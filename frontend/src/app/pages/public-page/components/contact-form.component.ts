@@ -9,17 +9,17 @@ import { ContactSubmissionPayload, SubmissionState } from '../../../core/interac
   standalone: true,
   template: `
     <form class="interaction-form" [formGroup]="form" (ngSubmit)="submit()">
-      <input class="visually-hidden" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+      <input class="visually-hidden" type="text" formControlName="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <label>
         <span>{{ locale === 'ar' ? 'الاسم' : 'Name' }}</span>
-        <input type="text" formControlName="name" autocomplete="name" />
+        <input type="text" formControlName="name" autocomplete="name" [attr.aria-invalid]="fieldError('name') ? 'true' : null" />
         @if (fieldError('name')) { <small>{{ fieldError('name') }}</small> }
       </label>
 
       <label>
         <span>{{ locale === 'ar' ? 'البريد الإلكتروني' : 'Email' }}</span>
-        <input type="email" formControlName="email" autocomplete="email" />
+        <input type="email" formControlName="email" autocomplete="email" [attr.aria-invalid]="fieldError('email') ? 'true' : null" />
         @if (fieldError('email')) { <small>{{ fieldError('email') }}</small> }
       </label>
 
@@ -45,7 +45,7 @@ import { ContactSubmissionPayload, SubmissionState } from '../../../core/interac
 
       <label class="wide">
         <span>{{ locale === 'ar' ? 'الرسالة' : 'Message' }}</span>
-        <textarea rows="6" formControlName="message"></textarea>
+        <textarea rows="6" formControlName="message" [attr.aria-invalid]="fieldError('message') ? 'true' : null"></textarea>
         @if (fieldError('message')) { <small>{{ fieldError('message') }}</small> }
       </label>
 

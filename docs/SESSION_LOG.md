@@ -598,3 +598,38 @@
   - Stable browser E2E verification for the new public interaction flows.
 - Recommended next step:
   - Finish INT-001 browser E2E verification only; do not start INT-002 or later tasks yet.
+
+## 2026-09-25 - INT-001 browser acceptance completion
+
+- Tasks attempted: Resume and complete only missing INT-001 browser acceptance.
+- Tasks completed: INT-001 - Implement visitor interactions.
+- Prerequisite gate:
+  - Rechecked `SEO-001` in `docs/TASKS.md`; it remains marked completed with recorded verification for SSR metadata, canonical/alternates, Open Graph, Twitter Card, JSON-LD, sitemap, robots, localized status behavior, backend/frontend tests, and Playwright. Lighthouse remains explicitly unavailable rather than claimed.
+- Implemented:
+  - Added an isolated Playwright harness in `frontend/tools/int001-e2e-runner.mjs` using temp SQLite, fictional E2E seed data, process-scoped test env, generated 127.0.0.1 frontend/API ports, built Angular SSR, Laravel `artisan serve --no-reload`, exact owned PID cleanup, and no MySQL destructive operations.
+  - Added `Database\Seeders\E2EInteractionSeeder` with production guard, per-browser-project fictional projects, public site settings, WhatsApp settings, and enough published read data for the existing full Playwright suite.
+  - Added focused INT-001 Playwright coverage for project view tracking/idempotency, failed view non-blocking behavior, like/unlike state and rollback, rapid duplicate prevention, contact validation/submission, testimonial moderation submission, WhatsApp configuration/fallback, Arabic RTL pages, credentialed CORS, and HTTP-only visitor cookie behavior.
+  - Added Angular runtime public config script support through `/portfolio-public-config.js` and a static dev-server fallback.
+  - Fixed contact/testimonial accessibility details for hidden honeypot fields and `aria-invalid` states.
+  - Fixed localized success state display so contact/testimonial success copy comes from the frontend locale rather than the backend English acknowledgement.
+  - Restored Laravel middleware bootstrap with explicit global CORS middleware so credentialed API requests emit the required headers.
+- Root cause:
+  - The earlier Windows browser instability came from Laravel `artisan serve` filtering environment variables when reload watching is enabled. The served PHP child ignored temp DB, CORS origin, visitor cookie name, visitor secret, and E2E site settings and fell back to `.env`. The harness now uses `--no-reload`, and readiness/browser checks confirmed `Access-Control-Allow-Origin` matches the generated Angular origin with `Access-Control-Allow-Credentials: true`.
+- Verification:
+  - Focused isolated INT-001 Playwright run 1: `cmd /c npm run test:e2e:int001` passed, 16 tests across desktop/mobile Chromium.
+  - Focused isolated INT-001 Playwright run 2: `cmd /c npm run test:e2e:int001` passed, 16 tests across desktop/mobile Chromium.
+  - Complete Playwright through isolated harness: `INT001_PLAYWRIGHT_CONFIG=playwright.config.ts cmd /c npm run test:e2e:int001` passed, 28 tests across desktop/mobile Chromium.
+  - `cmd /c npm test -- --watch=false`: passed, 8 test files and 20 tests.
+  - `cmd /c npm run build`: passed; production SSR browser/server output generated.
+  - `cmd /c npm audit`: initial sandbox attempt failed on registry/cache access; approved rerun passed with 0 vulnerabilities.
+  - PHP syntax checks for `bootstrap/app.php` and `database/seeders/E2EInteractionSeeder.php`: passed.
+  - `php artisan test`: passed, 73 tests and 719 assertions.
+  - `php vendor\bin\pint bootstrap\app.php database\seeders\E2EInteractionSeeder.php`: fixed seeder indentation.
+  - `php vendor\bin\pint --test bootstrap\app.php database\seeders\E2EInteractionSeeder.php`: passed.
+- Files changed:
+  - `backend/bootstrap/app.php`, `backend/database/seeders/E2EInteractionSeeder.php`.
+  - `frontend/package.json`, `frontend/playwright.int001.config.ts`, `frontend/tools/int001-e2e-runner.mjs`, `frontend/e2e/int001/interactions.spec.ts`, `frontend/public/portfolio-public-config.js`.
+  - `frontend/src/server.ts`, `frontend/src/index.html`, `frontend/src/app/core/interactions/public-interaction.service.ts`, `frontend/src/app/pages/public-page/components/contact-form.component.ts`, `frontend/src/app/pages/public-page/components/testimonial-form.component.ts`, `frontend/src/app/pages/public-page/components/project-interactions.component.ts`.
+  - `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/TESTING.md`, `docs/TASKS.md`, `docs/CHANGELOG.md`, `docs/SESSION_LOG.md`.
+- Current blockers: None for INT-001. Herd PHP still prints the known OPcache API warning, but PHP commands exit successfully.
+- Recommended next task: INT-002 - Implement analytics aggregation and cleanup, unless QA-001 quality gates are prioritized first.

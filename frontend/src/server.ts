@@ -17,6 +17,18 @@ const angularApp = new AngularNodeAppEngine({
     .filter(Boolean),
 });
 
+app.get('/portfolio-public-config.js', (_req, res) => {
+  const config = {
+    apiBaseUrl: process.env['PORTFOLIO_API_BASE_URL'],
+    publicOrigin: process.env['PORTFOLIO_PUBLIC_ORIGIN'],
+  };
+
+  res
+    .type('application/javascript')
+    .setHeader('Cache-Control', 'no-store')
+    .send(`globalThis.PORTFOLIO_PUBLIC_CONFIG=${JSON.stringify(config)};`);
+});
+
 /**
  * Example Express Rest API endpoints can be defined here.
  * Uncomment and define endpoints as necessary.

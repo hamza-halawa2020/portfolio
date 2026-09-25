@@ -220,3 +220,12 @@ Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Fo
 - Selected option: generate `/sitemap.xml` and `/robots.txt` from Laravel.
 - Reason: Laravel owns the database, publication visibility rules, localized slug data, SEO robots flags, and environment configuration needed to avoid stale or fabricated SEO output.
 - Consequences: Reverse proxies must route or proxy `/sitemap.xml` and `/robots.txt` to Laravel. Angular SSR owns page-level metadata and JSON-LD. Production indexing requires both `APP_ENV=production` and `PUBLIC_INDEXING_ENABLED=true`.
+
+## DEC-024 - Isolated browser acceptance harness for public interactions
+
+- Date: 2026-09-25
+- Context: INT-001 browser acceptance must verify anonymous writes, encrypted visitor cookies, credentialed CORS, and Angular SSR/browser hydration without touching local MySQL data or relying on long-running developer servers.
+- Options considered: use the default Angular dev-server Playwright setup against a developer Laravel server; mock browser writes; create an isolated Laravel/Angular SSR runner with temp data and owned processes.
+- Selected option: use `frontend/tools/int001-e2e-runner.mjs` to create a temp SQLite DB, migrate and seed fictional E2E data, start Laravel and built Angular SSR on explicit 127.0.0.1 ports, inject runtime public config, run Playwright, and clean up exact owned PIDs and temp files.
+- Reason: This verifies the real write workflows and real encrypted visitor cookie behavior while avoiding destructive database operations and avoiding mocked interaction behavior.
+- Consequences: Laravel must be started with `artisan serve --no-reload` in this harness so process-scoped env such as `DB_DATABASE`, `CORS_ALLOWED_ORIGINS`, `PUBLIC_VISITOR_COOKIE`, and `VISITOR_HASH_SECRET` reach the served PHP child. Future browser write suites should reuse this pattern or an equivalent CI service setup.

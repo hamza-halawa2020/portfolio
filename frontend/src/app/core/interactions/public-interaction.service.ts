@@ -125,7 +125,7 @@ export class PublicInteractionService {
 
     this._contactSubmission.set({ status: 'submitting' });
     this.api.submitContact(payload).pipe(
-      tap((response) => this._contactSubmission.set({ message: response.data.message, status: 'success' })),
+      tap(() => this._contactSubmission.set({ status: 'success' })),
       catchError((error) => {
         this._contactSubmission.set(this.toSubmissionState(error));
 
@@ -141,7 +141,7 @@ export class PublicInteractionService {
 
     this._testimonialSubmission.set({ status: 'submitting' });
     this.api.submitTestimonial(payload).pipe(
-      tap((response) => this._testimonialSubmission.set({ message: response.data.message, status: 'success' })),
+      tap(() => this._testimonialSubmission.set({ status: 'success' })),
       catchError((error) => {
         this._testimonialSubmission.set(this.toSubmissionState(error));
 

@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, production analytics cleanup jobs, notification delivery, and secure contact attachment storage. Frontend public write workflows/interactions are implemented but still need stable Playwright browser verification before INT-001 is closed.
+- Missing application code: CI files, production analytics cleanup jobs, notification delivery, and secure contact attachment storage. Frontend public write workflows/interactions are implemented and browser-verified for INT-001.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -178,6 +178,7 @@ npm --version
 - SEO-001 extends SSR metadata with Open Graph, Twitter Card, managed localized `hreflang` including `x-default`, canonical overrides, and safely escaped JSON-LD. Managed tags are cleared and rewritten after client navigation to avoid duplicates.
 - Detail pages consume API-provided `localized_slugs` mappings for dynamic `hreflang` and language switching; the frontend never assumes English and Arabic slugs are identical.
 - INT-001 adds browser-only public interaction orchestration through a typed interaction API client, `PublicInteractionService`, page-level wiring, and standalone presentational components. Project view registration, like-state loading, like/unlike mutations, contact submission, testimonial submission, and WhatsApp URL construction are guarded so writes do not run during SSR and write responses are not serialized into transfer state.
+- INT-001 browser acceptance uses `frontend/tools/int001-e2e-runner.mjs` to create an isolated temporary SQLite Laravel environment, seed fictional E2E content, run Laravel with `artisan serve --no-reload`, run the built Angular SSR server, pass runtime API config through `/portfolio-public-config.js`, verify credentialed CORS on 127.0.0.1 cross-origin ports, and clean up only exact owned PIDs and temp files.
 
 ## Backend Architecture
 

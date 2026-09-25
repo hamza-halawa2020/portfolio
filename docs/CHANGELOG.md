@@ -49,6 +49,7 @@
 - API-provided `localized_slugs` mappings on project and blog detail responses.
 - SSR Open Graph, Twitter Card, `x-default` alternates, dynamic localized `hreflang`, and safely escaped JSON-LD metadata.
 - Playwright coverage for SEO metadata, JSON-LD duplication prevention, and API-provided dynamic language switching.
+- Isolated INT-001 Playwright acceptance harness covering project views, likes/unlikes, contact submissions, testimonial submissions, WhatsApp action behavior, credentialed CORS, and encrypted visitor-cookie behavior against a temp SQLite Laravel backend and built Angular SSR frontend.
 
 ### Changed
 
@@ -72,6 +73,7 @@
 - Frontend Playwright coverage now exercises API-backed public content and uses a real published project slug for dynamic detail language-switch fallback checks.
 - Angular SSR root now redirects `/` to `/en` with HTTP 301.
 - Dynamic project/blog language switching now uses API-provided localized slug mappings when available.
+- Angular SSR now serves `/portfolio-public-config.js` so browser hydration can use the same runtime API base URL as SSR in isolated and deployed environments.
 
 ### Fixed
 
@@ -80,6 +82,8 @@
 - Normalized frontend boolean API query parameters to `1`/`0` for Laravel validation compatibility across SSR and browser fetch.
 - Fixed robots indexing flag parsing so `PUBLIC_INDEXING_ENABLED=false` is treated as false.
 - Removed static Laravel `public/robots.txt` so environment-aware robots routing is not shadowed.
+- Fixed Laravel middleware bootstrap so the default `api` middleware group is registered and CORS middleware is explicitly present for credentialed public API requests.
+- Fixed Windows E2E instability by running Laravel `artisan serve --no-reload`, ensuring process-scoped temp DB, CORS, visitor-cookie, and site-setting env values reach the served PHP child.
 
 ### Security
 
@@ -92,6 +96,7 @@
 - Project and cover media uploads reject unsafe MIME types, use server-generated filenames, and clean up replaced files only when they are no longer referenced.
 - Local administrator provisioning reads credentials from ignored `.env`, hashes the password, refuses production, avoids password resets on repeat seed runs, and refuses to elevate existing non-admin accounts automatically.
 - Public APIs continue to hide testimonial verification emails, contact messages, admin notes, raw identifiers, and raw IP data.
+- INT-001 browser verification confirms the visitor cookie is HTTP-only, unavailable to JavaScript, accepted cross-origin with explicit credentialed CORS, and not used as localStorage-derived like state.
 
 ### Removed
 
