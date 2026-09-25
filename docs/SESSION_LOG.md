@@ -564,3 +564,37 @@
   - Contact/testimonial/like/view public interactions remain INT-001 scope.
 - Current blockers: None for SEO-001.
 - Recommended next task: INT-001 - Implement visitor interactions, unless QA-001 quality gates are prioritized first.
+
+## 2026-09-25 - INT-001
+
+- Tasks attempted: INT-001 - Implement visitor interactions.
+- Tasks completed: None; INT-001 remains in progress because stable Playwright form/interaction verification is still pending.
+- Prerequisite gate:
+  - Confirmed `SEO-001` is marked completed in `docs/TASKS.md`.
+  - Confirmed `SEO-001` notes record verification for SSR metadata, canonical/alternates, Open Graph, Twitter Card, JSON-LD, sitemap, robots, localized status behavior, backend/frontend tests, and Playwright. Lighthouse remains explicitly unavailable rather than claimed.
+- Implemented:
+  - Added Laravel `GET /api/v1/projects/{slug}/likes` to return authoritative like count and current visitor `liked` state from the encrypted visitor cookie, without exposing visitor identifiers.
+  - Added `GetProjectInteractionState` service and kept `ProjectInteractionController` thin.
+  - Added public allowlist support for `site.whatsapp_message` and updated development fixtures.
+  - Added Angular typed interaction API client, typed failure/validation/rate-limit models, and browser-guarded `PublicInteractionService`.
+  - Added standalone presentational components for project interactions, contact form, and testimonial form.
+  - Wired project detail pages to record views only in the browser after successful detail rendering, avoid duplicate view submissions in the current session, load visitor like state from the server, and use authoritative response counts after writes.
+  - Wired contact page to submit contact messages, submit testimonials, and open WhatsApp with configured URL/message where available.
+  - Kept writes out of SSR and did not use localStorage as source of truth for liked state.
+- Verification:
+  - `cmd /c npm test -- --watch=false`: passed, 8 test files and 20 tests.
+  - `cmd /c npm run build`: passed; production SSR browser/server output generated without warnings.
+  - Focused backend `PublicReadApiTest`: passed, 10 tests and 73 assertions.
+  - Focused backend `PublicWriteApiTest`: passed, 12 tests and 98 assertions.
+  - Full backend `artisan test`: passed, 73 tests and 719 assertions.
+  - Backend Pint: passed.
+  - Herd PHP still prints the known OPcache API warning, but commands exit successfully.
+- Attempted but not completed:
+  - Targeted Playwright interaction coverage for contact, testimonial, WhatsApp, project view, and like flows was attempted. The mocked browser spec did not produce a stable passing summary in this Windows dev-server setup and was removed rather than leaving a hanging E2E test in the suite.
+- Remaining limitations:
+  - INT-001 should not be marked complete until stable Playwright/browser coverage is added or the local E2E runner issue is resolved.
+  - Notification delivery, contact attachments, public registration/authentication, comments, and analytics cleanup/aggregation remain out of scope.
+- Current blockers:
+  - Stable browser E2E verification for the new public interaction flows.
+- Recommended next step:
+  - Finish INT-001 browser E2E verification only; do not start INT-002 or later tasks yet.

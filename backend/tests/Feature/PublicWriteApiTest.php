@@ -119,6 +119,30 @@ class PublicWriteApiTest extends TestCase
         $this->assertSame(0, ProjectLike::query()->where('project_id', $project->id)->count());
     }
 
+    public function test_like_state_is_resolved_from_visitor_cookie_without_exposing_identifiers(): void
+    {
+        Project::factory()->published()->create(['slug' => ['en' => 'stateful-project']]);
+        $visitor = (string) Str::uuid();
+
+        $this->withVisitorCookie($visitor)
+            ->getJson('/api/v1/projects/stateful-project/likes')
+            ->assertOk()
+            ->assertJsonPath('data.count', 0)
+            ->assertJsonPath('data.liked', false)
+            ->assertJsonMissing(['visitor_id_hash']);
+
+        $this->withVisitorCookie($visitor)->postJson('/api/v1/projects/stateful-project/likes')->assertCreated();
+
+        $this->withVisitorCookie($visitor)
+            ->getJson('/api/v1/projects/stateful-project/likes')
+            ->assertOk()
+            ->assertJsonPath('data.count', 1)
+            ->assertJsonPath('data.liked', true)
+            ->assertJsonMissing(['ip_hash']);
+
+        $this->assertStringContainsString('no-store', $this->withVisitorCookie($visitor)->getJson('/api/v1/projects/stateful-project/likes')->headers->get('Cache-Control'));
+    }
+
     public function test_different_visitors_can_like_independently_and_draft_project_returns_404(): void
     {
         Project::factory()->published()->create(['slug' => ['en' => 'popular-project']]);

@@ -34,13 +34,13 @@ PAGE-001 public page status:
 - Each data-driven page has loading, empty, error, and success states. Error states do not invent fallback content.
 - Project and blog detail pages are SSR-rendered from the localized route slug. Language switching does not assume English and Arabic slugs match; it falls back to the target listing until localized slug mappings are available from the API.
 - Media returned by the public API renders with explicit dimensions, lazy loading for list media, and localized alt text from the content title.
-- Contact remains a read-only public information page for PAGE-001. Contact submission, testimonials submission, project views/likes, advanced filters/search, and rich sharing controls remain deferred.
+- Contact was read-only in PAGE-001. INT-001 implements contact submission, testimonial submission, project views/likes, and WhatsApp contact action, pending stable browser E2E verification. Advanced filters/search and rich sharing controls remain deferred.
 
 SEO-001 status:
 
 - Sitemap, robots, Open Graph, Twitter Card, static/dynamic `hreflang`, `x-default`, and JSON-LD are implemented.
 - Dynamic project and blog detail pages use API-provided localized slug mappings for alternates and language switching.
-- Contact submission, testimonials submission, project views/likes, advanced filters/search, and rich sharing controls remain deferred.
+- Contact submission, testimonials submission, project views/likes, and WhatsApp contact action are implemented in INT-001 pending stable browser E2E verification. Advanced filters/search and rich sharing controls remain deferred.
 
 ### Home
 
@@ -58,7 +58,8 @@ SEO-001 status:
 ### Project Details
 
 - Sections: case study header, category, role, duration, technologies, challenge, solution, features, development challenges, results, metrics, screenshots/media, captions, related projects, contact CTA.
-- Deferred: likes, view registration, sharing controls, and richer media carousel/player behavior.
+- INT-001 status: likes, unlikes, visitor like-state loading, and browser-only view registration are implemented and pending stable browser E2E verification.
+- Deferred: sharing controls and richer media carousel/player behavior.
 - Exclusions: no demo URLs, dashboard URLs, demo credentials, or private client links.
 - APIs: `GET /api/v1/projects/{slug}`, view and like endpoints.
 - SEO: localized title/description, canonical, `hreflang`, Open Graph, BreadcrumbList.
@@ -88,8 +89,7 @@ SEO-001 status:
 
 ### Contact
 
-- PAGE-001 status: read-only public channels from `GET /api/v1/site`.
-- Later workflow: name, email, phone, company, project type, budget range, message, privacy consent, spam protection, validation, submitting, success, error, and `POST /api/v1/contact`.
+- INT-001 status: public channels from `GET /api/v1/site`, WhatsApp action, contact form submission, testimonial submission, validation, submitting, success, rate-limit/failure states, and honeypot fields are implemented and pending stable browser E2E verification.
 - Attachments remain deferred until private storage and upload security are configured.
 
 ### Privacy

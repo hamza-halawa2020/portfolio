@@ -43,6 +43,7 @@ Implementation architecture:
 
 | Method | Path | Purpose | Request body | Response |
 | --- | --- | --- | --- | --- |
+| GET | `/api/v1/projects/{slug}/likes` | Return authoritative project like count and current visitor liked state | Optional `locale`; visitor identity comes only from the encrypted visitor cookie | `200` with `count` and `liked`; no-store |
 | POST | `/api/v1/projects/{slug}/views` | Register a unique public project view | Optional `locale`; optional honeypot `website` must be absent | `201` when counted, `200` when already counted for the visitor/day |
 | POST | `/api/v1/projects/{slug}/likes` | Add the current visitor's like | Optional `locale`; optional honeypot `website` must be absent | `201` when created, `200` when already liked |
 | DELETE | `/api/v1/projects/{slug}/likes` | Remove the current visitor's like | Optional `locale`; optional honeypot `website` must be absent | `200` with authoritative like count |
@@ -106,6 +107,7 @@ Published-only rules:
 - `site.profile_headline`
 - `site.public_email`
 - `site.whatsapp_url`
+- `site.whatsapp_message`
 - `site.default_seo`
 
 `GET /api/v1/about` returns public profile data composed from visible experience, skills, technologies, and social links. Private contact messages and dashboard-only settings are not exposed.

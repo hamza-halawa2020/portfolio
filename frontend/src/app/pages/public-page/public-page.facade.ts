@@ -47,6 +47,7 @@ export type PagePayload =
   | BlogPayload
   | ProjectDetailPayload
   | BlogDetailPayload
+  | ContactPayload
   | StaticPayload;
 
 export interface HomePayload {
@@ -76,6 +77,10 @@ export interface ProjectDetailPayload {
 
 export interface BlogDetailPayload {
   readonly post: BlogPostDetail;
+}
+
+export interface ContactPayload extends StaticPayload {
+  readonly site: SitePayload;
 }
 
 export interface StaticPayload {
@@ -174,7 +179,7 @@ export class PublicPageFacade {
       case 'blogDetail':
         return this.api.post(locale, slug).pipe(map((response) => ({ post: response.data })));
       case 'contact':
-        return this.api.site(locale).pipe(map((response) => ({ body: this.contactBody(locale, response.data) })));
+        return this.api.site(locale).pipe(map((response) => ({ body: this.contactBody(locale, response.data), site: response.data })));
       case 'privacy':
         return of({ body: this.privacyBody(locale) });
       default:
@@ -249,12 +254,12 @@ export class PublicPageFacade {
   }
 
   private contactBody(locale: AppLocale, site: SitePayload): readonly string[] {
-    const publicEmail = site.settings['site.public_email'];
-    const whatsappUrl = site.settings['site.whatsapp_url'];
+    const publicEmail = this.settingValue(site, 'site.public_email', locale);
+    const whatsappUrl = this.settingValue(site, 'site.whatsapp_url', locale);
 
     return locale === 'ar'
       ? [
-          'تتوفر قنوات التواصل العامة المنشورة من إعدادات الموقع فقط.',
+          'تتوفر قنوات التواصل العامة المنشورة من إعدادات الموقع.',
           publicEmail ? `البريد العام: ${publicEmail}` : 'لم يتم نشر بريد عام بعد.',
           whatsappUrl ? 'رابط واتساب متاح من إعدادات الموقع.' : 'لم يتم نشر رابط واتساب بعد.',
         ]
@@ -270,12 +275,28 @@ export class PublicPageFacade {
       ? [
           'تعرض هذه الصفحة ملخصا عاما للخصوصية إلى أن تتم صياغة سياسة قانونية نهائية.',
           'تستخدم التفاعلات العامة معرفات مجهولة ومجزأة في الخادم ولا تخزن عناوين IP الخام في جداول التفاعل.',
-          'نماذج التواصل والشهادات والتفاعلات الكاملة مؤجلة لمهام لاحقة.',
+          'نماذج التواصل والشهادات والمشاهدات والإعجابات تستخدم التحقق ومحددات المعدل وملف تعريف زائر مشفر.',
         ]
       : [
           'This page provides a plain privacy summary until final legal copy is managed.',
           'Public interactions use server-side anonymous hashed identifiers and do not store raw IP addresses in interaction tables.',
-          'Contact forms, testimonial submissions, and full visitor interactions remain deferred to later tasks.',
+          'Contact forms, testimonial submissions, project views, and likes use validation, rate limiting, and an encrypted visitor cookie.',
         ];
+  }
+
+  private settingValue(site: SitePayload, key: string, locale: AppLocale): string | null {
+    const value = site.settings[key];
+
+    if (value === null || typeof value === 'undefined') {
+      return null;
+    }
+
+    if (typeof value === 'object') {
+      const localized = value[locale] ?? value.en;
+
+      return localized === null || typeof localized === 'undefined' ? null : String(localized);
+    }
+
+    return String(value);
   }
 }

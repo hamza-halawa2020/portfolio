@@ -12,6 +12,7 @@ final readonly class GetPublicSiteData
         'site.profile_headline',
         'site.public_email',
         'site.whatsapp_url',
+        'site.whatsapp_message',
         'site.default_seo',
     ];
 

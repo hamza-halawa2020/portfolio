@@ -418,6 +418,10 @@ class DevelopmentPortfolioSeeder extends Seeder
             'site.profile_headline' => ['en' => 'Fictional Laravel Developer', 'ar' => 'مطور Laravel تجريبي'],
             'site.public_email' => ['en' => 'hello@example.test', 'ar' => 'hello@example.test'],
             'site.whatsapp_url' => ['en' => 'https://example.test/whatsapp', 'ar' => 'https://example.test/whatsapp'],
+            'site.whatsapp_message' => [
+                'en' => 'Hello, I would like to discuss a portfolio project.',
+                'ar' => 'مرحبا، أود مناقشة مشروع جديد.',
+            ],
             'site.default_seo' => ['en' => 'Development portfolio fixtures', 'ar' => 'بيانات معرض أعمال تجريبية'],
         ] as $key => $value) {
             SiteSetting::query()->updateOrCreate(['key' => $key], ['value' => $value]);

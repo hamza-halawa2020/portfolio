@@ -126,12 +126,28 @@
       <span>{{ project.duration }}</span>
     </div>
     <p>{{ project.body }}</p>
+    <app-project-interactions
+      [project]="project"
+      [locale]="locale()"
+      [likeState]="projectLikeState()"
+      [viewCount]="projectViewCounts()[project.slug]"
+      (likeToggle)="toggleProjectLike(project)"
+    />
     <h2>{{ locale() === 'ar' ? 'التحدي' : 'Challenge' }}</h2>
     <p>{{ project.challenge }}</p>
     <h2>{{ locale() === 'ar' ? 'الحل' : 'Solution' }}</h2>
     <p>{{ project.solution }}</p>
     <h2>{{ locale() === 'ar' ? 'النتائج' : 'Results' }}</h2>
     <p>{{ project.results }}</p>
+    <section class="interaction-section">
+      <h2>{{ locale() === 'ar' ? 'إرسال شهادة' : 'Submit a testimonial' }}</h2>
+      <app-testimonial-form
+        [locale]="locale()"
+        [projectSlug]="project.slug"
+        [state]="testimonialSubmission()"
+        (submitted)="submitTestimonial($event)"
+      />
+    </section>
   </section>
   }
 
@@ -201,10 +217,23 @@
   }
 
   @case ('contact') {
+  @let contact = asContact(state);
   <section class="section-grid">
-    @for (paragraph of asStatic(state).body; track paragraph) {
-    <p>{{ paragraph }}</p>
-    }
+    <div class="stack-list">
+      @for (paragraph of contact.body; track paragraph) {
+      <p>{{ paragraph }}</p>
+      }
+      @if (whatsappUrl(contact); as url) {
+      <a class="button-link" [href]="url" target="_blank" rel="noopener noreferrer">
+        {{ locale() === 'ar' ? 'التواصل عبر واتساب' : 'Contact on WhatsApp' }}
+      </a>
+      }
+    </div>
+    <app-contact-form [locale]="locale()" [state]="contactSubmission()" (submitted)="submitContact($event)" />
+  </section>
+  <section class="interaction-section">
+    <h2>{{ locale() === 'ar' ? 'إرسال شهادة' : 'Submit a testimonial' }}</h2>
+    <app-testimonial-form [locale]="locale()" [state]="testimonialSubmission()" (submitted)="submitTestimonial($event)" />
   </section>
   }
 

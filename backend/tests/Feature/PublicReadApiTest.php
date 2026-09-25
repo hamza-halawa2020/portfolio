@@ -149,6 +149,7 @@ class PublicReadApiTest extends TestCase
     public function test_site_endpoint_uses_public_setting_allowlist(): void
     {
         SiteSetting::factory()->create(['key' => 'site.profile_headline', 'value' => ['en' => 'Public headline']]);
+        SiteSetting::factory()->create(['key' => 'site.whatsapp_message', 'value' => ['en' => 'Hello from settings']]);
         SiteSetting::factory()->create(['key' => 'internal.smtp_password', 'value' => ['en' => 'secret']]);
         Service::factory()->create();
         Skill::factory()->create();
@@ -162,6 +163,7 @@ class PublicReadApiTest extends TestCase
             ->assertJsonMissing(['secret']);
 
         $this->assertSame('Public headline', $response->json('data.settings')['site.profile_headline']['en']);
+        $this->assertSame('Hello from settings', $response->json('data.settings')['site.whatsapp_message']['en']);
     }
 
     public function test_about_and_taxonomy_endpoints_are_available(): void

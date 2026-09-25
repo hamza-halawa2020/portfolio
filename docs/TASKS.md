@@ -571,7 +571,7 @@
 
 ### INT-001 - Implement visitor interactions
 
-- Status: [ ] Not started
+- Status: [ ] In progress
 - Dependencies: BE-004, PAGE-001
 - Files: frontend interaction services/components, backend interaction endpoints
 - Acceptance criteria:
@@ -583,6 +583,9 @@
   - Frontend unit tests.
   - Playwright form and interaction tests.
 - Notes:
+  - 2026-09-25: Started after confirming `SEO-001` is marked completed and its acceptance criteria are covered by recorded verification notes. Scope is limited to public interactions: project views, likes/unlikes, contact form, testimonial submission, and WhatsApp contact action.
+  - 2026-09-25: Implemented browser-only Angular public interactions through a typed interaction API client, interaction facade, page orchestration, and standalone presentational components for project likes/views, contact submission, and testimonial submission. Added a Laravel visitor-cookie-backed like-state read endpoint so reload/navigation can recover whether the current visitor liked a project without using localStorage or exposing visitor identifiers. Added allowlisted `site.whatsapp_message` for configurable WhatsApp text.
+  - 2026-09-25: Verification passed for backend full suite, Pint, frontend unit tests, and Angular production build. Targeted Playwright interaction coverage was attempted but did not produce a stable passing run in this Windows dev-server setup, so INT-001 remains in progress pending browser E2E verification.
 - Completed:
 
 ### INT-002 - Implement analytics aggregation and cleanup

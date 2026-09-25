@@ -24,7 +24,7 @@ export interface ApiPaginationMeta {
 }
 
 export interface SitePayload {
-  readonly settings: Record<string, string | number | boolean | null>;
+  readonly settings: Record<string, string | number | boolean | null | Partial<Record<'en' | 'ar', string | number | boolean | null>>>;
   readonly navigation: readonly unknown[];
   readonly services: readonly Service[];
   readonly skills: readonly Skill[];

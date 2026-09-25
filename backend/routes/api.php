@@ -22,6 +22,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('about', AboutController::class)->name('about');
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/{slug}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('projects/{slug}/likes', [ProjectInteractionController::class, 'state'])
+        ->middleware([ResolvePublicVisitor::class])
+        ->name('projects.likes.show');
     Route::post('projects/{slug}/views', [ProjectInteractionController::class, 'view'])
         ->middleware([ResolvePublicVisitor::class, 'throttle:public-project-views'])
         ->name('projects.views.store');

@@ -171,6 +171,13 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - SEO-001 dynamic project raw HTML check passed for localized `hreflang` alternates using API-provided English and Arabic slugs, `og:image`, `CreativeWork` JSON-LD, and one H1.
   - SEO-001 Playwright `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4000 npx.cmd playwright test --reporter=line`: passed, 12 tests across desktop/mobile Chromium.
   - SEO-001 Lighthouse could not be run: `npx.cmd lighthouse --version` timed out and `npm.cmd ls lighthouse --depth=0` showed Lighthouse is not installed locally. No dependency was added for this task.
+  - INT-001 frontend `cmd /c npm test -- --watch=false`: passed, 8 test files and 20 tests, including the public interaction API client.
+  - INT-001 frontend `cmd /c npm run build`: passed; production SSR browser/server output generated without warnings.
+  - INT-001 focused backend `PublicReadApiTest`: passed, 10 tests and 73 assertions.
+  - INT-001 focused backend `PublicWriteApiTest`: passed, 12 tests and 98 assertions.
+  - INT-001 full backend `artisan test`: passed, 73 tests and 719 assertions.
+  - INT-001 Pint check: passed.
+  - INT-001 targeted Playwright interaction coverage was attempted but did not produce a stable passing summary in the Windows dev-server setup; the attempted spec was not kept in the suite. Browser E2E coverage for contact/testimonial/like flows remains pending before INT-001 should be marked complete.
 
 ## Backend Tests
 

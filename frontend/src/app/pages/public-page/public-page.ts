@@ -4,12 +4,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter, Observable, tap } from 'rxjs';
 import { AboutPayload, BlogPostSummary, ProjectSummary, Service, Skill } from '../../core/api/public-api.models';
+import { ContactSubmissionPayload, TestimonialSubmissionPayload } from '../../core/interactions/public-interaction.models';
+import { PublicInteractionService } from '../../core/interactions/public-interaction.service';
 import { AppLocale, LocaleService } from '../../core/i18n/locale.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { ShellNavigationService } from '../../core/layout/shell-navigation.service';
+import { ContactFormComponent } from './components/contact-form.component';
+import { ProjectInteractionsComponent } from './components/project-interactions.component';
+import { TestimonialFormComponent } from './components/testimonial-form.component';
 import {
   BlogDetailPayload,
   BlogPayload,
+  ContactPayload,
   HomePayload,
   PageState,
   ProjectDetailPayload,
@@ -20,7 +26,7 @@ import {
 } from './public-page.facade';
 
 @Component({
-  imports: [AsyncPipe, DatePipe, RouterLink],
+  imports: [AsyncPipe, ContactFormComponent, DatePipe, ProjectInteractionsComponent, RouterLink, TestimonialFormComponent],
   selector: 'app-public-page',
   styleUrl: './public-page.css',
   templateUrl: './public-page.html',
@@ -28,13 +34,18 @@ import {
 export class PublicPage implements OnInit {
   private readonly facade = inject(PublicPageFacade);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly interactions = inject(PublicInteractionService);
   private readonly localeService = inject(LocaleService);
   private readonly navigation = inject(ShellNavigationService);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
 
   protected readonly copy = this.localeService.copy;
+  protected readonly contactSubmission = this.interactions.contactSubmission;
   protected readonly locale = this.localeService.locale;
+  protected readonly projectLikeState = this.interactions.projectLikeState;
+  protected readonly projectViewCounts = this.interactions.projectViewCounts;
+  protected readonly testimonialSubmission = this.interactions.testimonialSubmission;
   protected pageState$!: Observable<PageState>;
 
   ngOnInit(): void {
@@ -97,6 +108,10 @@ export class PublicPage implements OnInit {
     return state.payload as BlogDetailPayload;
   }
 
+  protected asContact(state: PageState): ContactPayload {
+    return state.payload as ContactPayload;
+  }
+
   protected asStatic(state: PageState): StaticPayload {
     return state.payload as StaticPayload;
   }
@@ -123,6 +138,41 @@ export class PublicPage implements OnInit {
 
   protected blogUrl(): string {
     return `/${this.locale()}/blog`;
+  }
+
+  protected whatsappUrl(payload: ContactPayload): string | null {
+    const url = this.localizedSetting(payload, 'site.whatsapp_url');
+
+    if (!url) {
+      return null;
+    }
+
+    const message = this.localizedSetting(payload, 'site.whatsapp_message');
+
+    if (!message) {
+      return url;
+    }
+
+    try {
+      const parsed = new URL(url);
+      parsed.searchParams.set('text', message);
+
+      return parsed.toString();
+    } catch {
+      return url;
+    }
+  }
+
+  protected submitContact(payload: ContactSubmissionPayload): void {
+    this.interactions.submitContact(payload);
+  }
+
+  protected submitTestimonial(payload: TestimonialSubmissionPayload): void {
+    this.interactions.submitTestimonial(payload);
+  }
+
+  protected toggleProjectLike(project: ProjectDetailPayload['project']): void {
+    this.interactions.toggleProjectLike(this.locale(), project);
   }
 
   protected hasImage(url: string | null): url is string {
@@ -165,6 +215,23 @@ export class PublicPage implements OnInit {
       title: `${detailSeo.title ?? state.title} | ${this.localeService.translate('brand', state.locale)}`,
       type: state.pageKey === 'blogDetail' ? 'article' : 'website',
     });
+
+    this.applyInteractions(state);
+  }
+
+  private applyInteractions(state: PageState): void {
+    if (state.status !== 'success' || state.pageKey !== 'projectDetail') {
+      return;
+    }
+
+    const project = (state.payload as ProjectDetailPayload | undefined)?.project;
+
+    if (!project) {
+      return;
+    }
+
+    this.interactions.recordProjectView(state.locale, project);
+    this.interactions.loadProjectLikeState(state.locale, project);
   }
 
   private alternatesFor(state: PageState): readonly { locale: AppLocale | 'x-default'; path: string }[] {
@@ -365,5 +432,21 @@ export class PublicPage implements OnInit {
     }
 
     return `/en/${path}`;
+  }
+
+  private localizedSetting(payload: ContactPayload, key: string): string | null {
+    const value = payload.site.settings[key];
+
+    if (value === null || typeof value === 'undefined') {
+      return null;
+    }
+
+    if (typeof value === 'object') {
+      const localized = value[this.locale()] ?? value.en;
+
+      return localized === null || typeof localized === 'undefined' ? null : String(localized);
+    }
+
+    return String(value);
   }
 }
