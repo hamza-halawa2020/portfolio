@@ -711,3 +711,77 @@
   - Lighthouse CLI remained unavailable locally. `npx lighthouse --version` and `npx --yes lighthouse --version` remained without output for about 60 seconds and were stopped, so QA-002 documents performance build/timing inputs but does not claim a Lighthouse score.
 - Current blockers: None for QA-002. Remaining pending tasks are `INF-001`, `INF-002`, and `INF-003`.
 - Recommended next task: Choose one pending infrastructure task explicitly; do not infer completion for Redis/Valkey, mail, or MySQL 8.4 compatibility without concrete service verification.
+
+## 2026-09-25 - INF-001 attempt
+
+- Tasks attempted: INF-001 - Configure and verify Redis or Valkey.
+- Tasks completed: None. INF-001 is blocked because no approved Redis/Valkey service is available to verify.
+- Scope:
+  - Limited to Redis/Valkey service discovery, Laravel cache/queue/session driver evidence, smoke-test feasibility, and documentation.
+  - Did not start INF-002, INF-003, or any later task.
+- Verification:
+  - `redis-cli`: not found on PATH.
+  - `valkey-cli`: not found on PATH.
+  - `Test-NetConnection 127.0.0.1 -Port 6379`: failed with `TcpTestSucceeded=False`.
+  - `cmd /c herd services:list`: reported `Herd Pro is required to use services`.
+  - `C:\Users\hamza\.config\herd\bin\php85\php.exe -m`: passed and shows the PHP `redis` extension is loaded.
+  - Default `artisan about`: passed; cache, queue, and session drivers remain `database`.
+  - `artisan about` with `CACHE_STORE=redis`, `QUEUE_CONNECTION=redis`, and `SESSION_DRIVER=redis`: passed and showed Laravel can select Redis drivers through environment overrides.
+  - Direct PHP Redis connection to `127.0.0.1:6379`: failed because the host did not respond.
+  - Laravel Redis cache smoke through `artisan tinker`: failed with `RedisException No connection could be made because the target machine actively refused it`.
+- Documentation updated:
+  - `docs/TASKS.md` marks INF-001 blocked with evidence and summary counts repaired to `24 completed`, `0 active`, `2 pending`, `1 blocked`.
+  - `docs/DEPLOYMENT.md` documents the INF-001 blocker and the exact checks required once Redis/Valkey is provisioned.
+  - `docs/TESTING.md` records the failed and passing verification evidence.
+- Current blockers:
+  - Redis or Valkey must be installed/provisioned in an approved environment before cache, queue, rate limiting, Horizon if selected, worker, or production queue configuration can be verified.
+- Recommended next task:
+  - INF-002 can be attempted next if the goal is to continue pending infrastructure, but INF-001 itself requires an external Redis/Valkey service before completion.
+
+## 2026-09-25 - INF-002 attempt
+
+- Tasks attempted: INF-002 - Configure local mail inbox or production SMTP.
+- Tasks completed: None. INF-002 is blocked because no approved Mailpit/local SMTP or production SMTP service is available to verify, and no application mail delivery listeners are implemented.
+- Scope:
+  - Limited to local inbox/SMTP discovery, Laravel mail configuration evidence, delivery-smoke feasibility, notification-delivery readiness, and documentation.
+  - Did not start INF-003 or any later task during this verification pass.
+- Verification:
+  - `mailpit`: not found on PATH.
+  - `smtp4dev`: not found on PATH.
+  - `Test-NetConnection 127.0.0.1 -Port 2525`: failed with `TcpTestSucceeded=False`.
+  - Default `artisan about`: passed; mail driver remains `log`.
+  - `artisan about` with `MAIL_MAILER=smtp`, `MAIL_HOST=127.0.0.1`, and `MAIL_PORT=2525`: passed and showed Laravel can select the `smtp` mailer through environment overrides.
+  - `artisan event:list`: passed; public submission events exist, but no application mail notification listeners are registered for contact/testimonial delivery.
+  - Laravel SMTP smoke through `artisan tinker` and `Mail::raw(...)`: failed with `TransportException Connection could not be established with host "127.0.0.1:2525"`.
+- Documentation updated:
+  - `docs/TASKS.md` marks INF-002 blocked with evidence and summary counts repaired to `24 completed`, `0 active`, `1 pending`, `2 blocked`.
+  - `docs/DEPLOYMENT.md` documents the INF-002 blocker and the checks required once Mailpit/local SMTP or production SMTP is provisioned.
+  - `docs/TESTING.md` records the failed and passing verification evidence.
+- Current blockers:
+  - Mailpit/local SMTP or production SMTP must be provisioned in an approved environment, and real mail notification listener(s) must be implemented before contact-form or notification delivery can be considered production-ready.
+- Recommended next task:
+  - INF-003 can be attempted next if the goal is to continue pending infrastructure, but INF-002 itself requires an external inbox/provider and delivery workflow before completion.
+
+## 2026-09-25 - INF-003 attempt
+
+- Tasks attempted: INF-003 - Verify MySQL 8.4 staging and production compatibility.
+- Tasks completed: None. INF-003 is blocked because no approved MySQL 8.4 LTS staging/production-like environment is available to verify.
+- Scope:
+  - Limited to non-destructive version discovery, current Laravel database evidence, migration compatibility evidence where possible, and documentation.
+- Verification:
+  - `cmd /c mysql --version`: passed and reports MySQL Community Server `8.0.41`.
+  - `Test-NetConnection 127.0.0.1 -Port 3306`: passed with `TcpTestSucceeded=True`.
+  - Laravel `select version()` through Artisan Tinker: passed and returned `8.0.41`.
+  - `artisan migrate:status`: passed and shows all current migrations marked ran on the local database.
+  - `where mysqld`: resolves to the MySQL 8.0 server path.
+  - `docker --version`: failed because Docker is not available and Docker is not selected for this project.
+  - Migration review found the known MySQL-specific generated-column slug-index migration already documented as compatible with local 8.0.41 and target 8.4 LTS, but actual MySQL 8.4 execution could not be verified.
+  - `git diff -- backend\database\migrations`: no uncommitted migration changes.
+- Documentation updated:
+  - `docs/TASKS.md` marks INF-003 blocked with evidence and summary counts repaired to `24 completed`, `0 active`, `0 pending`, `3 blocked`.
+  - `docs/DEPLOYMENT.md` documents the INF-003 blocker and the exact future checks required once MySQL 8.4 is provisioned.
+  - `docs/TESTING.md` records the verification evidence.
+- Current blockers:
+  - MySQL `8.4 LTS` must be available in an approved staging, production-like, or disposable environment before migration compatibility can be verified and INF-003 can be completed.
+- Recommended next task:
+  - No pending tasks remain in `docs/TASKS.md`; the only remaining task states are external infrastructure blockers for INF-001, INF-002, and INF-003.

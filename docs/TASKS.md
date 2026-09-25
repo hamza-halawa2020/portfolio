@@ -4,7 +4,7 @@
 
 | Completed | Active | Pending | Blocked |
 | ---: | ---: | ---: | ---: |
-| 24 | 0 | 3 | 0 |
+| 24 | 0 | 0 | 3 |
 
 ## Phase 0 - Discovery and Documentation
 
@@ -202,7 +202,7 @@
 
 ### INF-001 - Configure and verify Redis or Valkey
 
-- Status: [ ] Not started
+- Status: [!] Blocked
 - Dependencies: FND-005
 - Files: deployment docs, backend environment docs, queue/cache configuration
 - Acceptance criteria:
@@ -215,11 +215,13 @@
 - Notes:
   - Deferred from FND-005 because current implemented features do not require Redis locally.
   - 2026-09-25 bookkeeping audit: Not completed. No Redis/Valkey service, approved provisioned environment, connectivity check, Laravel Redis cache/queue smoke test, Horizon selection, or production Redis queue/cache verification was found. Current configuration remains database-backed cache/session/queue locally, and docs/session logs still identify Redis/Valkey as deferred.
+  - 2026-09-25: Started fresh verification for Redis/Valkey only. Scope is limited to service availability, Laravel cache/queue/rate-limit configuration evidence, smoke-test feasibility, and documentation. No later infrastructure task is included.
+  - 2026-09-25: Blocked by missing Redis/Valkey service. `redis-cli` and `valkey-cli` are unavailable, TCP `127.0.0.1:6379` is not reachable, Herd services require Herd Pro, direct PHP Redis connection fails, and Laravel Redis cache smoke fails with `RedisException`. Herd PHP has the `redis` extension and Laravel can select Redis drivers through env overrides, but there is no approved running service to verify.
 - Completed:
 
 ### INF-002 - Configure local mail inbox or production SMTP
 
-- Status: [ ] Not started
+- Status: [!] Blocked
 - Dependencies: FND-005
 - Files: deployment docs, backend mail configuration, notification tests
 - Acceptance criteria:
@@ -232,11 +234,13 @@
 - Notes:
   - Deferred from FND-005 because local development uses `MAIL_MAILER=log`.
   - 2026-09-25 bookkeeping audit: Not completed. No Mailpit/local SMTP or production SMTP configuration, delivery smoke test, notification delivery verification, or production-ready email workflow evidence was found. Current configuration remains `MAIL_MAILER=log`, and docs/session logs still identify Mailpit/SMTP as deferred.
+  - 2026-09-25: Started fresh verification for local mail inbox or production SMTP only. Scope is limited to service availability, Laravel mail configuration evidence, delivery-smoke feasibility, notification-delivery readiness, and documentation.
+  - 2026-09-25: Blocked by missing mail service and delivery workflow. `mailpit` and `smtp4dev` are unavailable, TCP `127.0.0.1:2525` is not reachable, default mail remains `log`, direct Laravel SMTP smoke fails with `TransportException`, and no application mail notification listeners are registered for public contact/testimonial submission events. Laravel can select `smtp` through env overrides, but there is no approved inbox/provider to verify delivery.
 - Completed:
 
 ### INF-003 - Verify MySQL 8.4 staging and production compatibility
 
-- Status: [ ] Not started
+- Status: [!] Blocked
 - Dependencies: FND-005, BE-001
 - Files: deployment docs, database schema docs, migrations
 - Acceptance criteria:
@@ -248,6 +252,8 @@
   - Migration verification against MySQL 8.4.
 - Notes:
   - Local MySQL `8.0.41` is accepted only for initial development.
+  - 2026-09-25: Started fresh verification for MySQL 8.4 staging/production compatibility only. Scope is limited to non-destructive version discovery, current Laravel database evidence, migration compatibility evidence where possible, and documentation.
+  - 2026-09-25: Blocked by missing MySQL 8.4 LTS environment. Local client/server and Laravel database version are `8.0.41`, port 3306 is reachable for that local instance, migrations are marked ran locally, `where mysqld` resolves to the MySQL 8.0 server path, Docker is unavailable and not selected, and no approved MySQL 8.4 staging/production-like environment was available to run non-destructive migration verification.
 - Completed:
 
 ## Phase 2 - Backend Core

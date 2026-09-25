@@ -202,6 +202,16 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - QA-002 dependency audits: `cmd /c npm audit --audit-level=moderate` passed with 0 vulnerabilities after approved registry access; `cmd /c herd composer --working-dir=backend audit` passed with no security vulnerability advisories.
   - QA-002 backend CI `cmd /c herd composer --working-dir=backend run ci`: passed, including 81 tests, 760 assertions, and Pint.
   - QA-002 frontend CI `cmd /c npm run ci`: passed, including Prettier, 8 test files, 20 tests, and production SSR build.
+  - INF-001 fresh Redis/Valkey verification attempt: `redis-cli` and `valkey-cli` were not found on PATH; `Test-NetConnection 127.0.0.1 -Port 6379` returned `TcpTestSucceeded=False`; `cmd /c herd services:list` reported Herd Pro is required to use services.
+  - INF-001 Herd PHP extension check: `C:\Users\hamza\.config\herd\bin\php85\php.exe -m` shows the `redis` extension is loaded.
+  - INF-001 Laravel runtime check: default `artisan about` reports cache, queue, and session drivers as `database`; with `CACHE_STORE=redis`, `QUEUE_CONNECTION=redis`, and `SESSION_DRIVER=redis`, Laravel reports all three as `redis`, proving environment selection works.
+  - INF-001 Redis smoke checks failed because no service is listening: direct PHP Redis connection to `127.0.0.1:6379` failed, and `artisan tinker --execute "cache()->store('redis')->put(...)"` failed with `RedisException No connection could be made because the target machine actively refused it.`
+  - INF-002 fresh mail verification attempt: `mailpit` and `smtp4dev` were not found on PATH; `Test-NetConnection 127.0.0.1 -Port 2525` returned `TcpTestSucceeded=False`.
+  - INF-002 Laravel runtime check: default `artisan about` reports mail as `log`; with `MAIL_MAILER=smtp`, `MAIL_HOST=127.0.0.1`, and `MAIL_PORT=2525`, Laravel reports mail as `smtp`, proving environment selection works.
+  - INF-002 event-list check: public contact/testimonial submission events exist, but no application mail notification listeners are registered for them.
+  - INF-002 SMTP smoke check failed because no local SMTP service is listening: direct `Mail::raw(...)` send to `127.0.0.1:2525` failed with `TransportException Connection could not be established`.
+  - INF-003 fresh MySQL 8.4 verification attempt: `cmd /c mysql --version` reports MySQL Community Server `8.0.41`, `Test-NetConnection 127.0.0.1 -Port 3306` passed, Laravel `select version()` returned `8.0.41`, and `artisan migrate:status` showed all current migrations ran against the local database.
+  - INF-003 environment discovery: `where mysqld` resolves to the MySQL 8.0 server path, Docker is not available, and no MySQL 8.4 LTS staging/production-like environment was available from this workspace. Migration SQL was reviewed for the known MySQL-specific generated-column slug-index migration, and no uncommitted migration changes were present, but MySQL 8.4 execution could not be verified.
 
 ## Backend Tests
 

@@ -220,15 +220,77 @@ FND-005 verified Laravel's existing database connection non-destructively with M
 
 ADM-002 adds MySQL generated stored columns and unique indexes for localized slugs on routed content tables. This is compatible with local MySQL `8.0.41` and target MySQL `8.4 LTS`; SQLite testing skips the MySQL-specific generated-column SQL.
 
+INF-003 verification on 2026-09-25 remains blocked by the absence of a MySQL 8.4 LTS environment:
+
+- `mysql --version` reports MySQL Community Server `8.0.41`.
+- TCP `127.0.0.1:3306` is reachable for the local 8.0 instance.
+- Laravel `select version()` reports `8.0.41`.
+- `artisan migrate:status` shows all current migrations ran against the local database.
+- `where mysqld` resolves to the MySQL 8.0 server path.
+- Docker is not available and is not selected for this project, so a local MySQL 8.4 container was not used.
+- No uncommitted migration changes were present during this verification pass.
+
+To complete INF-003 later, provide an approved staging, production-like, or explicitly provisioned MySQL `8.4 LTS` environment and verify non-destructively:
+
+```sql
+select version() as version;
+```
+
+Then run migration verification against that environment using an approved disposable database or managed staging database. Do not run destructive commands such as `migrate:fresh`, `db:wipe`, schema drops, or database recreation against any non-disposable database.
+
 ## Redis
 
 Use database-backed cache, session, and queue drivers for local development.
 
 Redis or Valkey remains the staging/production target and future optimization for cache, queues, rate limiting, Horizon if selected, and distributed locks. Redis-dependent features and production queue configuration must not be marked complete until Redis or Valkey is configured and tested.
 
+INF-001 verification on 2026-09-25 remains blocked by service availability:
+
+- `redis-cli` and `valkey-cli` were not found on PATH.
+- TCP `127.0.0.1:6379` was not reachable.
+- `herd services:list` reported that Herd Pro is required to use services.
+- Herd PHP includes the `redis` extension, so the PHP extension is not the blocker.
+- A direct PHP Redis connection to `127.0.0.1:6379` failed.
+- Laravel can select Redis cache, queue, and session drivers through environment overrides, but Redis cache smoke testing fails without a running Redis/Valkey service.
+
+To complete INF-001 later, provision Redis or Valkey in an approved local, staging, or production-like environment and verify:
+
+```powershell
+redis-cli ping
+# or
+valkey-cli ping
+
+cd backend
+C:\Users\hamza\.config\herd\bin\php85\php.exe artisan about
+CACHE_STORE=redis QUEUE_CONNECTION=redis SESSION_DRIVER=redis php artisan about
+php artisan tinker --execute "cache()->store('redis')->put('inf001-smoke', 'ok', 10); dump(cache()->store('redis')->get('inf001-smoke'));"
+```
+
+Only after a real service responds should production `.env` values switch cache, queue, session, or rate-limiter storage to Redis/Valkey. If Horizon is selected later, document its worker, supervisor, retry, and dashboard access strategy before marking that part production-ready.
+
 ## Mail Testing
 
 Local mail uses `MAIL_MAILER=log`, which requires no background mail service and avoids leaking credentials. Mailpit or another local SMTP inbox is deferred, and real SMTP configuration must be completed before contact-form email delivery is considered production-ready.
+
+INF-002 verification on 2026-09-25 remains blocked by service availability and missing notification delivery implementation:
+
+- `mailpit` and `smtp4dev` were not found on PATH.
+- TCP `127.0.0.1:2525` was not reachable.
+- Default Laravel mail driver remains `log`.
+- Laravel can select the `smtp` mailer through environment overrides.
+- A direct Laravel SMTP smoke send to `127.0.0.1:2525` failed because the target actively refused the connection.
+- Public contact and testimonial submissions dispatch internal events, but no application mail notification listeners are registered for those events yet.
+
+To complete INF-002 later, provision Mailpit/local SMTP or approved production SMTP outside committed files and verify:
+
+```powershell
+cd backend
+MAIL_MAILER=smtp MAIL_HOST=127.0.0.1 MAIL_PORT=2525 php artisan about
+php artisan tinker --execute "Illuminate\Support\Facades\Mail::raw('INF-002 smoke', fn ($message) => $message->to('qa@example.test')->subject('INF-002 smoke'));"
+php artisan event:list
+```
+
+Before marking contact-form or notification delivery production-ready, add the actual mail notification listener(s), keep them queued where appropriate, verify delivery into the approved inbox/provider, and document the queue worker expectations.
 
 ## Required PHP Extensions
 
