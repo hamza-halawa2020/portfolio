@@ -20,7 +20,11 @@ describe('PublicPageFacade', () => {
   });
 
   it('returns loading before API-backed projects success state', async () => {
-    const states = await firstValueFrom(TestBed.inject(PublicPageFacade).load(snapshot('projects'), 'en', '/en/projects').pipe(toArray()));
+    const states = await firstValueFrom(
+      TestBed.inject(PublicPageFacade)
+        .load(snapshot('projects'), 'en', '/en/projects')
+        .pipe(toArray()),
+    );
 
     expect(states.map((state) => state.status)).toEqual(['loading', 'success']);
     expect(states[1].title).toBe('Projects');
@@ -29,7 +33,11 @@ describe('PublicPageFacade', () => {
 
   it('maps empty list responses to explicit empty state', async () => {
     emptyServices = true;
-    const states = await firstValueFrom(TestBed.inject(PublicPageFacade).load(snapshot('services'), 'ar', '/ar/services').pipe(toArray()));
+    const states = await firstValueFrom(
+      TestBed.inject(PublicPageFacade)
+        .load(snapshot('services'), 'ar', '/ar/services')
+        .pipe(toArray()),
+    );
 
     expect(states.map((state) => state.status)).toEqual(['loading', 'empty']);
     expect(states[1].title).toBe('الخدمات');
@@ -37,7 +45,11 @@ describe('PublicPageFacade', () => {
 
   it('maps API failures to explicit error state without fake content fallback', async () => {
     failServices = true;
-    const states = await firstValueFrom(TestBed.inject(PublicPageFacade).load(snapshot('services'), 'en', '/en/services').pipe(toArray()));
+    const states = await firstValueFrom(
+      TestBed.inject(PublicPageFacade)
+        .load(snapshot('services'), 'en', '/en/services')
+        .pipe(toArray()),
+    );
 
     expect(states.map((state) => state.status)).toEqual(['loading', 'error']);
     expect(states[1].payload).toBeUndefined();
@@ -70,7 +82,19 @@ describe('PublicPageFacade', () => {
         return throwError(() => new Error('API unavailable'));
       }
 
-      return of({ data: emptyServices ? [] : [{ description: 'Service', icon: null, slug: 'service', sort_order: 1, title: 'Service' }] });
+      return of({
+        data: emptyServices
+          ? []
+          : [
+              {
+                description: 'Service',
+                icon: null,
+                slug: 'service',
+                sort_order: 1,
+                title: 'Service',
+              },
+            ],
+      });
     }
   }
 });

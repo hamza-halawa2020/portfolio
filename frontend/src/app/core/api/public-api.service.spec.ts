@@ -22,13 +22,17 @@ describe('PublicApiService', () => {
   });
 
   it('maps localized project list query parameters to the Laravel API contract', () => {
-    service.projects('ar', { featured: true, page: 2, perPage: 6, sort: 'featured' }).subscribe((response) => {
-      expect(response.data[0].slug).toBe('work-ar');
-      expect(response.data[0].title).toBe('عمل منشور');
-      expect(response.data[0].technologies[0].slug).toBe('angular');
-    });
+    service
+      .projects('ar', { featured: true, page: 2, perPage: 6, sort: 'featured' })
+      .subscribe((response) => {
+        expect(response.data[0].slug).toBe('work-ar');
+        expect(response.data[0].title).toBe('عمل منشور');
+        expect(response.data[0].technologies[0].slug).toBe('angular');
+      });
 
-    const request = http.expectOne((candidate) => candidate.urlWithParams.includes('/api/v1/projects?'));
+    const request = http.expectOne((candidate) =>
+      candidate.urlWithParams.includes('/api/v1/projects?'),
+    );
 
     expect(request.request.method).toBe('GET');
     expect(request.request.params.get('locale')).toBe('ar');
@@ -60,7 +64,9 @@ describe('PublicApiService', () => {
       expect(response.data.title).toBe('Client work');
     });
 
-    const request = http.expectOne((candidate) => candidate.urlWithParams.includes('/api/v1/projects/client%20work?locale=en'));
+    const request = http.expectOne((candidate) =>
+      candidate.urlWithParams.includes('/api/v1/projects/client%20work?locale=en'),
+    );
 
     expect(request.request.method).toBe('GET');
     request.flush({ data: { slug: 'client-work', title: 'Client work' } });

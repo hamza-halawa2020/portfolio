@@ -4,7 +4,11 @@ import { SeoService } from './seo.service';
 
 describe('SeoService', () => {
   beforeEach(() => {
-    document.head.querySelectorAll('link[rel="canonical"], link[rel="alternate"], meta[data-managed-by="seo-service"], script[data-managed-by="seo-service"]').forEach((node) => node.remove());
+    document.head
+      .querySelectorAll(
+        'link[rel="canonical"], link[rel="alternate"], meta[data-managed-by="seo-service"], script[data-managed-by="seo-service"]',
+      )
+      .forEach((node) => node.remove());
   });
 
   it('writes metadata, social tags, alternates, and escaped JSON-LD without duplicates', () => {
@@ -31,10 +35,16 @@ describe('SeoService', () => {
     expect(meta.getTag('name="robots"')?.content).toBe('index, follow');
     expect(meta.getTag('property="og:title"')?.content).toBe('Home | Portfolio Platform');
     expect(meta.getTag('name="twitter:card"')?.content).toBe('summary_large_image');
-    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe('https://example.com/en');
+    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(
+      'https://example.com/en',
+    );
     expect(document.head.querySelectorAll('link[rel="alternate"]').length).toBe(3);
-    expect(document.head.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe('https://example.com/storage/cover.webp');
-    expect(document.head.querySelector('script[type="application/ld+json"]')?.textContent).toContain('\\u003CPortfolio>');
+    expect(document.head.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe(
+      'https://example.com/storage/cover.webp',
+    );
+    expect(
+      document.head.querySelector('script[type="application/ld+json"]')?.textContent,
+    ).toContain('\\u003CPortfolio>');
 
     service.apply({
       description: 'Second page.',

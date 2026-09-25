@@ -53,7 +53,8 @@ export interface ApiRequestFailure {
   readonly message: string;
 }
 
-export type PublicInteractionFailure = ApiValidationFailure | ApiRateLimitFailure | ApiRequestFailure;
+export type PublicInteractionFailure =
+  ApiValidationFailure | ApiRateLimitFailure | ApiRequestFailure;
 
 export interface ProjectLikeViewState {
   readonly slug: string;
@@ -64,7 +65,8 @@ export interface ProjectLikeViewState {
 }
 
 export interface SubmissionState {
-  readonly status: 'idle' | 'submitting' | 'success' | 'validation-error' | 'rate-limit' | 'failure';
+  readonly status:
+    'idle' | 'submitting' | 'success' | 'validation-error' | 'rate-limit' | 'failure';
   readonly message?: string;
   readonly errors?: Record<string, readonly string[]>;
 }

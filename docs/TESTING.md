@@ -189,6 +189,11 @@ Testing is required at each layer: Laravel backend tests, Angular unit tests, Pl
   - INT-002 Pint check passed for touched backend files.
   - INT-002 Composer validation and audit passed after adding Herd PHP to the command PATH; Composer emitted PHP 8.5 deprecation notices from its bundled dependencies, and no security advisories were found.
   - INT-002 browser/E2E checks were not run because this task changes backend scheduler/jobs/query behavior only and does not alter browser workflows.
+  - QA-001 backend `composer run ci`: passed; it cleared config, ran the full backend test suite, and ran Pint. Full backend suite passed, 77 tests and 728 assertions.
+  - QA-001 Composer validation and audit: passed; Composer emitted PHP 8.5 deprecation notices from its bundled dependencies, and no security advisories were found.
+  - QA-001 frontend `npm run ci`: passed; Prettier check passed, Angular unit tests passed with 8 files and 20 tests, and Angular production SSR build completed.
+  - QA-001 `npm audit`: initial sandboxed attempt failed on registry/cache access; approved rerun passed with 0 vulnerabilities.
+  - QA-001 added `.github/workflows/quality-gates.yml` for secret-free backend/frontend CI using SQLite tests, generated CI app key, Node.js 24, npm ci, Composer validate/audit, npm audit, Pint, Prettier, tests, and build.
 
 ## Backend Tests
 
@@ -235,6 +240,7 @@ npm --version
 npx @angular/cli@22 ng version
 npm run build
 npm test
+npm run ci
 npx playwright test
 ```
 
@@ -248,9 +254,11 @@ herd composer --working-dir=backend validate
 herd composer --working-dir=backend audit
 cd backend
 herd php artisan test
+herd composer run ci
 npx @angular/cli@22 ng version
 npm run build
 npm test -- --watch=false
+npm run ci
 npm audit
 npm run test:e2e
 ```
@@ -265,6 +273,18 @@ cd backend
 C:\Users\hamza\.config\herd\bin\php85\php.exe artisan test
 C:\Users\hamza\.config\herd\bin\php85\php.exe vendor\bin\pint --test
 ```
+
+QA-001 local quality commands:
+
+```powershell
+cd backend
+composer run ci
+
+cd ..\frontend
+npm run ci
+```
+
+In the Codex sandbox, prepend `C:\Users\hamza\.config\herd\bin\php85` to `PATH` before direct Composer commands so Composer can find PHP 8.5.
 
 Use `cmd /c npm ...` when PowerShell script execution blocks `npm.ps1`.
 

@@ -36,6 +36,7 @@ Angular work must use Node.js 24 LTS and the project-local Angular CLI 22:
 
 ```powershell
 cd frontend
+npm run ci
 npm run build
 npm test -- --watch=false
 npm run test:e2e
@@ -79,7 +80,16 @@ Run backend tests from the backend directory so PHPUnit vendor paths resolve cor
 ```powershell
 cd backend
 herd php artisan test
+herd composer run ci
 ```
+
+## Quality Gates
+
+QA-001 adds local and CI quality gates:
+
+- Backend: `composer run ci` from `backend/` runs config clear, the Laravel test suite, and Pint.
+- Frontend: `npm run ci` from `frontend/` runs Prettier check, Angular unit tests, and the production SSR build.
+- GitHub Actions workflow: `.github/workflows/quality-gates.yml` runs backend and frontend gates without production secrets or external services.
 
 List the implemented public API routes:
 

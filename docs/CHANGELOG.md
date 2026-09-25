@@ -51,6 +51,9 @@
 - Playwright coverage for SEO metadata, JSON-LD duplication prevention, and API-provided dynamic language switching.
 - Isolated INT-001 Playwright acceptance harness covering project views, likes/unlikes, contact submissions, testimonial submissions, WhatsApp action behavior, credentialed CORS, and encrypted visitor-cookie behavior against a temp SQLite Laravel backend and built Angular SSR frontend.
 - Scheduled analytics aggregation and cleanup jobs with count-only daily summaries, configurable raw event retention, and scheduler tests.
+- Secret-free GitHub Actions quality gates for backend and frontend verification.
+- Backend Composer quality scripts and frontend npm quality scripts for local CI dry runs.
+- Frontend Prettier ignore rules and formatted frontend source files.
 
 ### Changed
 
@@ -76,6 +79,7 @@
 - Dynamic project/blog language switching now uses API-provided localized slug mappings when available.
 - Angular SSR now serves `/portfolio-public-config.js` so browser hydration can use the same runtime API base URL as SSR in isolated and deployed environments.
 - Dashboard daily trend metrics now prefer complete daily analytics summaries when available and fall back to live tables when summaries are missing.
+- `.env.example` no longer carries a generated Laravel `APP_KEY`; CI generates a temporary key during verification.
 
 ### Fixed
 
@@ -100,6 +104,7 @@
 - Public APIs continue to hide testimonial verification emails, contact messages, admin notes, raw identifiers, and raw IP data.
 - INT-001 browser verification confirms the visitor cookie is HTTP-only, unavailable to JavaScript, accepted cross-origin with explicit credentialed CORS, and not used as localStorage-derived like state.
 - Analytics daily summaries store aggregate counts only, and scheduled cleanup prunes raw analytics events after the configured retention period while preserving summaries.
+- Baseline CI runs without production secrets, external databases, Redis, SMTP, S3 credentials, or public demo credentials.
 
 ### Removed
 

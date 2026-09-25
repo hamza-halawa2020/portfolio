@@ -1,7 +1,11 @@
 <a class="skip-link" href="#main-content">{{ copy().skipToContent }}</a>
 
 <header class="site-header">
-  <nav class="navbar navbar-expand-lg shell-nav" [class.is-rtl]="isRtl()" [attr.aria-label]="copy().primaryNavigation">
+  <nav
+    class="navbar navbar-expand-lg shell-nav"
+    [class.is-rtl]="isRtl()"
+    [attr.aria-label]="copy().primaryNavigation"
+  >
     <a class="brand" [routerLink]="['/', currentLocale()]">{{ copy().brand }}</a>
 
     <button
@@ -31,13 +35,29 @@
       </ul>
 
       <div class="shell-controls" [attr.aria-label]="copy().languageLabel">
-        <a class="control-link" [class.is-active]="currentLocale() === 'en'" [routerLink]="languageSwitchUrl('en')" (click)="setLocale('en')">EN</a>
-        <a class="control-link" [class.is-active]="currentLocale() === 'ar'" [routerLink]="languageSwitchUrl('ar')" (click)="setLocale('ar')">AR</a>
+        <a
+          class="control-link"
+          [class.is-active]="currentLocale() === 'en'"
+          [routerLink]="languageSwitchUrl('en')"
+          (click)="setLocale('en')"
+          >EN</a
+        >
+        <a
+          class="control-link"
+          [class.is-active]="currentLocale() === 'ar'"
+          [routerLink]="languageSwitchUrl('ar')"
+          (click)="setLocale('ar')"
+          >AR</a
+        >
       </div>
 
       <div class="theme-controls" [attr.aria-label]="copy().themeLabel">
         @for (theme of themeOptions; track theme) {
-          <button type="button" [class.is-active]="themeService.preference() === theme" (click)="setTheme(theme)">
+          <button
+            type="button"
+            [class.is-active]="themeService.preference() === theme"
+            (click)="setTheme(theme)"
+          >
             {{ copy().themes[theme] }}
           </button>
         }

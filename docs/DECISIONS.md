@@ -238,3 +238,12 @@ Update on 2026-09-18: BE-004 implemented this strategy with thin controllers, Fo
 - Selected option: schedule daily count-only summary generation for common dashboard trend metrics, keep live fallbacks for missing summary days, and prune only raw `analytics_events` after the configured retention window.
 - Reason: This improves production reporting and retention hygiene without inventing statistics, losing dashboard functionality before the first scheduled run, or storing identifiers in summary records.
 - Consequences: Operations must run Laravel scheduler and queue workers. Summaries intentionally cannot answer identifier-level questions, and visitor uniqueness remains approximate because cookies, VPNs, shared networks, browser privacy settings, device changes, and changing IP/user-agent data affect analytics inputs.
+
+## DEC-026 - Secret-free baseline CI quality gates
+
+- Date: 2026-09-25
+- Context: QA-001 requires backend/frontend tests, builds, linting/static validation, and formatting through documented commands, with CI that does not require secrets for basic verification.
+- Options considered: add a single monolithic workflow; add separate backend/frontend jobs; wait for Redis/MySQL 8.4/SMTP infrastructure before adding CI.
+- Selected option: add separate backend and frontend GitHub Actions jobs that use only local test dependencies, generated ephemeral CI configuration, SQLite testing, Composer/npm audits, formatting checks, unit tests, and production build checks.
+- Reason: Separate jobs make failures easier to diagnose and keep the baseline gate usable without production services or credentials.
+- Consequences: CI does not prove Redis queues, MySQL 8.4 staging compatibility, SMTP delivery, S3 storage, Lighthouse, or browser E2E behavior. Those remain covered by their dedicated tasks and documented local harnesses.

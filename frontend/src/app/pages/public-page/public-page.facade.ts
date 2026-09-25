@@ -95,7 +95,10 @@ interface PageCopy {
 const COPY: Record<PublicPageKey, Record<AppLocale, PageCopy>> = {
   about: {
     ar: { description: 'نبذة مهنية وخبرة وتقنيات منشورة من واجهة المحتوى العامة.', title: 'نبذة' },
-    en: { description: 'Professional profile, experience, and skills from the public content API.', title: 'About' },
+    en: {
+      description: 'Professional profile, experience, and skills from the public content API.',
+      title: 'About',
+    },
   },
   blog: {
     ar: { description: 'مقالات منشورة من المدونة العامة.', title: 'المدونة' },
@@ -119,11 +122,17 @@ const COPY: Record<PublicPageKey, Record<AppLocale, PageCopy>> = {
   },
   privacy: {
     ar: { description: 'ملخص خصوصية يوضح البيانات العامة والمؤجلة.', title: 'الخصوصية' },
-    en: { description: 'Privacy summary for public portfolio data and deferred interactions.', title: 'Privacy' },
+    en: {
+      description: 'Privacy summary for public portfolio data and deferred interactions.',
+      title: 'Privacy',
+    },
   },
   projectDetail: {
     ar: { description: 'تفاصيل عمل منشور من واجهة الأعمال العامة.', title: 'تفاصيل العمل' },
-    en: { description: 'Published project detail from the public projects API.', title: 'Project detail' },
+    en: {
+      description: 'Published project detail from the public projects API.',
+      title: 'Project detail',
+    },
   },
   projects: {
     ar: { description: 'أعمال منشورة من واجهة المشاريع العامة.', title: 'الأعمال' },
@@ -155,16 +164,28 @@ export class PublicPageFacade {
     );
   }
 
-  private request(pageKey: PublicPageKey, locale: AppLocale, slug: string): Observable<PagePayload> {
+  private request(
+    pageKey: PublicPageKey,
+    locale: AppLocale,
+    slug: string,
+  ): Observable<PagePayload> {
     switch (pageKey) {
       case 'home':
         return forkJoin({
           about: this.api.about(locale).pipe(map((response) => response.data)),
-          posts: this.api.posts(locale, { perPage: 3, sort: 'latest' }).pipe(map((response) => response.data)),
-          projects: this.api.projects(locale, { featured: true, perPage: 3 }).pipe(map((response) => response.data)),
-          services: this.api.services(locale, { perPage: 4 }).pipe(map((response) => response.data)),
+          posts: this.api
+            .posts(locale, { perPage: 3, sort: 'latest' })
+            .pipe(map((response) => response.data)),
+          projects: this.api
+            .projects(locale, { featured: true, perPage: 3 })
+            .pipe(map((response) => response.data)),
+          services: this.api
+            .services(locale, { perPage: 4 })
+            .pipe(map((response) => response.data)),
           site: this.api.site(locale).pipe(map((response) => response.data)),
-          testimonials: this.api.testimonials(locale, { featured: true, perPage: 3 }).pipe(map((response) => response.data)),
+          testimonials: this.api
+            .testimonials(locale, { featured: true, perPage: 3 })
+            .pipe(map((response) => response.data)),
         });
       case 'projects':
         return this.api.projects(locale, { perPage: 12 }).pipe(map((projects) => ({ projects })));
@@ -175,11 +196,18 @@ export class PublicPageFacade {
       case 'services':
         return this.api.services(locale, { perPage: 12 }).pipe(map((services) => ({ services })));
       case 'blog':
-        return this.api.posts(locale, { perPage: 12, sort: 'latest' }).pipe(map((posts) => ({ posts })));
+        return this.api
+          .posts(locale, { perPage: 12, sort: 'latest' })
+          .pipe(map((posts) => ({ posts })));
       case 'blogDetail':
         return this.api.post(locale, slug).pipe(map((response) => ({ post: response.data })));
       case 'contact':
-        return this.api.site(locale).pipe(map((response) => ({ body: this.contactBody(locale, response.data), site: response.data })));
+        return this.api.site(locale).pipe(
+          map((response) => ({
+            body: this.contactBody(locale, response.data),
+            site: response.data,
+          })),
+        );
       case 'privacy':
         return of({ body: this.privacyBody(locale) });
       default:
@@ -187,7 +215,13 @@ export class PublicPageFacade {
     }
   }
 
-  private toState(pageKey: PublicPageKey, locale: AppLocale, path: string, copy: PageCopy, payload: PagePayload): PageState {
+  private toState(
+    pageKey: PublicPageKey,
+    locale: AppLocale,
+    path: string,
+    copy: PageCopy,
+    payload: PagePayload,
+  ): PageState {
     const title = this.payloadTitle(pageKey, payload) ?? copy.title;
     const description = this.payloadDescription(pageKey, payload) ?? copy.description;
     const state = this.success(pageKey, locale, path, { description, title }, payload);
@@ -195,7 +229,13 @@ export class PublicPageFacade {
     return this.isEmpty(pageKey, payload) ? { ...state, status: 'empty' } : state;
   }
 
-  private success(pageKey: PublicPageKey, locale: AppLocale, path: string, copy: PageCopy, payload: PagePayload): PageState {
+  private success(
+    pageKey: PublicPageKey,
+    locale: AppLocale,
+    path: string,
+    copy: PageCopy,
+    payload: PagePayload,
+  ): PageState {
     return {
       ...this.base(pageKey, locale, path, copy),
       payload,
@@ -203,7 +243,12 @@ export class PublicPageFacade {
     };
   }
 
-  private base(pageKey: PublicPageKey, locale: AppLocale, path: string, copy: PageCopy): Omit<PageState, 'status'> {
+  private base(
+    pageKey: PublicPageKey,
+    locale: AppLocale,
+    path: string,
+    copy: PageCopy,
+  ): Omit<PageState, 'status'> {
     return {
       description: copy.description,
       locale,
@@ -266,7 +311,9 @@ export class PublicPageFacade {
       : [
           'Only public contact channels returned by site settings are shown here.',
           publicEmail ? `Public email: ${publicEmail}` : 'No public email has been published yet.',
-          whatsappUrl ? 'A WhatsApp contact link is available from site settings.' : 'No WhatsApp link has been published yet.',
+          whatsappUrl
+            ? 'A WhatsApp contact link is available from site settings.'
+            : 'No WhatsApp link has been published yet.',
         ];
   }
 

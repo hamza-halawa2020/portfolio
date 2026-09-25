@@ -26,7 +26,9 @@ describe('PublicInteractionApiService', () => {
       expect(response.data.count).toBe(3);
     });
 
-    const state = http.expectOne((request) => request.urlWithParams.includes('/api/v1/projects/client%20work/likes?locale=ar'));
+    const state = http.expectOne((request) =>
+      request.urlWithParams.includes('/api/v1/projects/client%20work/likes?locale=ar'),
+    );
     expect(state.request.method).toBe('GET');
     expect(state.request.withCredentials).toBe(true);
     state.flush({ data: { count: 3, liked: true } });
@@ -35,7 +37,9 @@ describe('PublicInteractionApiService', () => {
       expect(response.data.created).toBe(true);
     });
 
-    const view = http.expectOne((request) => request.url.endsWith('/api/v1/projects/client-work/views'));
+    const view = http.expectOne((request) =>
+      request.url.endsWith('/api/v1/projects/client-work/views'),
+    );
     expect(view.request.method).toBe('POST');
     expect(view.request.withCredentials).toBe(true);
     expect(view.request.body).toEqual({ locale: 'en' });
@@ -43,15 +47,17 @@ describe('PublicInteractionApiService', () => {
   });
 
   it('posts form payloads exactly to the public write contract', () => {
-    service.submitContact({
-      email: 'client@example.test',
-      locale: 'en',
-      message: 'I would like to discuss a project.',
-      name: 'Client Person',
-      privacy_consent: true,
-    }).subscribe((response) => {
-      expect(response.data.message).toContain('received');
-    });
+    service
+      .submitContact({
+        email: 'client@example.test',
+        locale: 'en',
+        message: 'I would like to discuss a project.',
+        name: 'Client Person',
+        privacy_consent: true,
+      })
+      .subscribe((response) => {
+        expect(response.data.message).toContain('received');
+      });
 
     const contact = http.expectOne((request) => request.url.endsWith('/api/v1/contact'));
     expect(contact.request.method).toBe('POST');

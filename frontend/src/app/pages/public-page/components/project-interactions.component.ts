@@ -14,7 +14,9 @@ import { ProjectLikeViewState } from '../../../core/interactions/public-interact
       </div>
       <div class="interaction-stat">
         <span>{{ locale === 'ar' ? 'الإعجابات' : 'Likes' }}</span>
-        <strong data-testid="project-like-count">{{ likeState?.count ?? project.like_count }}</strong>
+        <strong data-testid="project-like-count">{{
+          likeState?.count ?? project.like_count
+        }}</strong>
       </div>
       <button
         type="button"
@@ -27,7 +29,13 @@ import { ProjectLikeViewState } from '../../../core/interactions/public-interact
         {{ likeText }}
       </button>
       @if (likeState?.status === 'failure') {
-        <p class="form-status">{{ locale === 'ar' ? 'تعذر تحديث الإعجاب. حاول مرة أخرى.' : 'The like could not be updated. Please try again.' }}</p>
+        <p class="form-status">
+          {{
+            locale === 'ar'
+              ? 'تعذر تحديث الإعجاب. حاول مرة أخرى.'
+              : 'The like could not be updated. Please try again.'
+          }}
+        </p>
       }
     </section>
   `,
@@ -44,12 +52,22 @@ export class ProjectInteractionsComponent {
       return this.locale === 'ar' ? 'جار التحديث' : 'Updating';
     }
 
-    return this.likeState?.liked ? (this.locale === 'ar' ? 'إلغاء الإعجاب' : 'Unlike') : (this.locale === 'ar' ? 'إعجاب' : 'Like');
+    return this.likeState?.liked
+      ? this.locale === 'ar'
+        ? 'إلغاء الإعجاب'
+        : 'Unlike'
+      : this.locale === 'ar'
+        ? 'إعجاب'
+        : 'Like';
   }
 
   get likeLabel(): string {
     return this.likeState?.liked
-      ? (this.locale === 'ar' ? `إلغاء الإعجاب بمشروع ${this.project.title}` : `Unlike ${this.project.title}`)
-      : (this.locale === 'ar' ? `الإعجاب بمشروع ${this.project.title}` : `Like ${this.project.title}`);
+      ? this.locale === 'ar'
+        ? `إلغاء الإعجاب بمشروع ${this.project.title}`
+        : `Unlike ${this.project.title}`
+      : this.locale === 'ar'
+        ? `الإعجاب بمشروع ${this.project.title}`
+        : `Like ${this.project.title}`;
   }
 }

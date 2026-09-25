@@ -16,15 +16,24 @@ export class PublicInteractionApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = publicSiteConfig.apiBaseUrl.replace(/\/$/, '');
 
-  projectLikeState(locale: AppLocale, slug: string): Observable<ApiItem<ProjectInteractionPayload>> {
-    return this.http.get<ApiItem<ProjectInteractionPayload>>(`${this.baseUrl}/projects/${encodeURIComponent(slug)}/likes`, {
-      params: this.localeParams(locale),
-      transferCache: false,
-      withCredentials: true,
-    });
+  projectLikeState(
+    locale: AppLocale,
+    slug: string,
+  ): Observable<ApiItem<ProjectInteractionPayload>> {
+    return this.http.get<ApiItem<ProjectInteractionPayload>>(
+      `${this.baseUrl}/projects/${encodeURIComponent(slug)}/likes`,
+      {
+        params: this.localeParams(locale),
+        transferCache: false,
+        withCredentials: true,
+      },
+    );
   }
 
-  recordProjectView(locale: AppLocale, slug: string): Observable<ApiItem<ProjectInteractionPayload>> {
+  recordProjectView(
+    locale: AppLocale,
+    slug: string,
+  ): Observable<ApiItem<ProjectInteractionPayload>> {
     return this.http.post<ApiItem<ProjectInteractionPayload>>(
       `${this.baseUrl}/projects/${encodeURIComponent(slug)}/views`,
       { locale },
@@ -41,24 +50,40 @@ export class PublicInteractionApiService {
   }
 
   unlikeProject(locale: AppLocale, slug: string): Observable<ApiItem<ProjectInteractionPayload>> {
-    return this.http.delete<ApiItem<ProjectInteractionPayload>>(`${this.baseUrl}/projects/${encodeURIComponent(slug)}/likes`, {
-      params: this.localeParams(locale),
+    return this.http.delete<ApiItem<ProjectInteractionPayload>>(
+      `${this.baseUrl}/projects/${encodeURIComponent(slug)}/likes`,
+      {
+        params: this.localeParams(locale),
+        withCredentials: true,
+      },
+    );
+  }
+
+  submitContact(payload: ContactSubmissionPayload): Observable<ApiItem<AcknowledgmentPayload>> {
+    return this.http.post<ApiItem<AcknowledgmentPayload>>(`${this.baseUrl}/contact`, payload, {
       withCredentials: true,
     });
   }
 
-  submitContact(payload: ContactSubmissionPayload): Observable<ApiItem<AcknowledgmentPayload>> {
-    return this.http.post<ApiItem<AcknowledgmentPayload>>(`${this.baseUrl}/contact`, payload, { withCredentials: true });
-  }
-
-  submitTestimonial(payload: TestimonialSubmissionPayload): Observable<ApiItem<AcknowledgmentPayload>> {
-    return this.http.post<ApiItem<AcknowledgmentPayload>>(`${this.baseUrl}/testimonials`, payload, { withCredentials: true });
+  submitTestimonial(
+    payload: TestimonialSubmissionPayload,
+  ): Observable<ApiItem<AcknowledgmentPayload>> {
+    return this.http.post<ApiItem<AcknowledgmentPayload>>(`${this.baseUrl}/testimonials`, payload, {
+      withCredentials: true,
+    });
   }
 
   static validationErrors(error: unknown): Record<string, readonly string[]> {
-    if (error instanceof HttpErrorResponse && error.status === 422 && isRecord(error.error?.errors)) {
+    if (
+      error instanceof HttpErrorResponse &&
+      error.status === 422 &&
+      isRecord(error.error?.errors)
+    ) {
       return Object.fromEntries(
-        Object.entries(error.error.errors).map(([field, messages]) => [field, Array.isArray(messages) ? messages.map(String) : [String(messages)]]),
+        Object.entries(error.error.errors).map(([field, messages]) => [
+          field,
+          Array.isArray(messages) ? messages.map(String) : [String(messages)],
+        ]),
       );
     }
 

@@ -56,7 +56,8 @@ const ENGLISH_COPY: ShellCopy = {
   notFoundEyebrow: '404',
   notFoundTitle: 'Page not found',
   placeholderEyebrow: 'Frontend foundation',
-  placeholderNote: 'This route is intentionally wired for the frontend foundation. Full page content, API data, and interaction states remain in later tasks.',
+  placeholderNote:
+    'This route is intentionally wired for the frontend foundation. Full page content, API data, and interaction states remain in later tasks.',
   primaryNavigation: 'Primary navigation',
   skipToContent: 'Skip to content',
   states: {
@@ -95,7 +96,8 @@ const ARABIC_COPY: ShellCopy = {
   notFoundEyebrow: '404',
   notFoundTitle: 'الصفحة غير موجودة',
   placeholderEyebrow: 'أساس الواجهة',
-  placeholderNote: 'هذا المسار مهيأ ضمن أساس الواجهة. محتوى الصفحات الكامل وبيانات الواجهة البرمجية وحالات التفاعل مؤجلة لمهام لاحقة.',
+  placeholderNote:
+    'هذا المسار مهيأ ضمن أساس الواجهة. محتوى الصفحات الكامل وبيانات الواجهة البرمجية وحالات التفاعل مؤجلة لمهام لاحقة.',
   primaryNavigation: 'التنقل الرئيسي',
   skipToContent: 'تجاوز إلى المحتوى',
   states: {
@@ -153,7 +155,9 @@ export class LocaleService {
   }
 
   resolveLocaleFromUrl(url: string): AppLocale {
-    return this.isLocale(url.split('?')[0].split('/').filter(Boolean)[0]) ? (url.split('?')[0].split('/').filter(Boolean)[0] as AppLocale) : 'en';
+    return this.isLocale(url.split('?')[0].split('/').filter(Boolean)[0])
+      ? (url.split('?')[0].split('/').filter(Boolean)[0] as AppLocale)
+      : 'en';
   }
 
   persistedLocale(): AppLocale | null {

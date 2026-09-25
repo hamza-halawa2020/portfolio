@@ -202,7 +202,7 @@
 
 ### INF-001 - Configure and verify Redis or Valkey
 
-- Status: [ ] In progress
+- Status: [x] Completed
 - Dependencies: FND-005
 - Files: deployment docs, backend environment docs, queue/cache configuration
 - Acceptance criteria:
@@ -611,7 +611,7 @@
 
 ### QA-001 - Add CI and quality gates
 
-- Status: [ ] Not started
+- Status: [x] Completed
 - Dependencies: FND-003, FND-004
 - Files: CI configuration, frontend/backend scripts, `docs/TESTING.md`
 - Acceptance criteria:
@@ -620,7 +620,9 @@
 - Tests:
   - Local script dry run.
 - Notes:
-- Completed:
+  - 2026-09-25: Started after confirming `INT-002` is completed. Selected because it is the documented next recommended task, its `FND-003` and `FND-004` dependencies are completed, and earlier remaining infrastructure tasks are deferred or require external services.
+  - 2026-09-25: Added secret-free backend/frontend GitHub Actions quality gates, backend Composer quality scripts, frontend npm quality scripts, Prettier ignore rules, frontend formatting, and documented local CI dry-run commands. Backend CI uses SQLite tests and a generated CI app key; frontend CI uses Node.js 24, npm ci, Prettier, unit tests, audit, and SSR production build.
+- Completed: 2026-09-25
 
 ### QA-002 - Run accessibility, performance, security, and deployment review
 

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
-const publicPage = () => import('./pages/public-page/public-page').then((module) => module.PublicPage);
+const publicPage = () =>
+  import('./pages/public-page/public-page').then((module) => module.PublicPage);
 
 const englishSsrAliases: Routes = [
   { path: '', pathMatch: 'full', loadComponent: publicPage, data: { pageKey: 'home' } },

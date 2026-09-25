@@ -28,10 +28,12 @@ export class App {
   constructor() {
     this.localeService.activateLocaleFromUrl(this.router.url);
 
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event) => {
-      this.localeService.activateLocaleFromUrl(event.urlAfterRedirects);
-      this.isMenuOpen.set(false);
-    });
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.localeService.activateLocaleFromUrl(event.urlAfterRedirects);
+        this.isMenuOpen.set(false);
+      });
   }
 
   protected localizedUrl(pageKey: string): string {

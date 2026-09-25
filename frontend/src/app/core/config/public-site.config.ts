@@ -14,10 +14,15 @@ declare const process:
     }
   | undefined;
 
-const runtimeConfig = (globalThis as { PORTFOLIO_PUBLIC_CONFIG?: RuntimePortfolioConfig }).PORTFOLIO_PUBLIC_CONFIG;
+const runtimeConfig = (globalThis as { PORTFOLIO_PUBLIC_CONFIG?: RuntimePortfolioConfig })
+  .PORTFOLIO_PUBLIC_CONFIG;
 const serverEnv = typeof process === 'undefined' ? undefined : process.env;
 
 export const publicSiteConfig: PublicSiteConfig = {
-  apiBaseUrl: runtimeConfig?.apiBaseUrl ?? serverEnv?.['PORTFOLIO_API_BASE_URL'] ?? 'http://localhost:8000/api/v1',
-  publicOrigin: runtimeConfig?.publicOrigin ?? serverEnv?.['PORTFOLIO_PUBLIC_ORIGIN'] ?? 'https://example.com',
+  apiBaseUrl:
+    runtimeConfig?.apiBaseUrl ??
+    serverEnv?.['PORTFOLIO_API_BASE_URL'] ??
+    'http://localhost:8000/api/v1',
+  publicOrigin:
+    runtimeConfig?.publicOrigin ?? serverEnv?.['PORTFOLIO_PUBLIC_ORIGIN'] ?? 'https://example.com',
 };

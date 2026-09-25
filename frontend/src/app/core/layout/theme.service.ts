@@ -12,7 +12,9 @@ export class ThemeService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly storageKey = 'portfolio.theme';
   private readonly preferenceSignal = signal<ThemePreference>(this.readInitialPreference());
-  private readonly appliedThemeSignal = signal<AppliedTheme>(this.resolveAppliedTheme(this.preferenceSignal()));
+  private readonly appliedThemeSignal = signal<AppliedTheme>(
+    this.resolveAppliedTheme(this.preferenceSignal()),
+  );
 
   readonly preference = this.preferenceSignal.asReadonly();
   readonly appliedTheme = this.appliedThemeSignal.asReadonly();

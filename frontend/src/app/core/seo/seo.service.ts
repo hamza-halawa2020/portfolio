@@ -33,11 +33,17 @@ export class SeoService {
 
     this.title.setTitle(meta.title);
     this.meta.updateTag({ content: meta.description, name: 'description' });
-    this.meta.updateTag({ content: meta.noindex ? 'noindex, nofollow' : 'index, follow', name: 'robots' });
+    this.meta.updateTag({
+      content: meta.noindex ? 'noindex, nofollow' : 'index, follow',
+      name: 'robots',
+    });
     this.meta.updateTag({ content: meta.title, property: 'og:title' });
     this.meta.updateTag({ content: meta.description, property: 'og:description' });
     this.meta.updateTag({ content: canonical, property: 'og:url' });
-    this.meta.updateTag({ content: meta.type === 'article' ? 'article' : 'website', property: 'og:type' });
+    this.meta.updateTag({
+      content: meta.type === 'article' ? 'article' : 'website',
+      property: 'og:type',
+    });
     this.meta.updateTag({ content: meta.locale, property: 'og:locale' });
     this.meta.updateTag({ content: 'summary_large_image', name: 'twitter:card' });
     this.meta.updateTag({ content: meta.title, name: 'twitter:title' });
@@ -109,9 +115,11 @@ export class SeoService {
   }
 
   private clearAlternates(): void {
-    this.document.head.querySelectorAll('link[rel="alternate"][data-managed-by="seo-service"]').forEach((link) => {
-      link.remove();
-    });
+    this.document.head
+      .querySelectorAll('link[rel="alternate"][data-managed-by="seo-service"]')
+      .forEach((link) => {
+        link.remove();
+      });
   }
 
   private addManagedMeta(attribute: 'name' | 'property', key: string, content: string): void {
@@ -123,9 +131,11 @@ export class SeoService {
   }
 
   private clearManagedMeta(attribute: 'name' | 'property', key: string): void {
-    this.document.head.querySelectorAll(`meta[${attribute}="${key}"][data-managed-by="seo-service"]`).forEach((tag) => {
-      tag.remove();
-    });
+    this.document.head
+      .querySelectorAll(`meta[${attribute}="${key}"][data-managed-by="seo-service"]`)
+      .forEach((tag) => {
+        tag.remove();
+      });
   }
 
   private addJsonLd(schema: unknown): void {
@@ -137,8 +147,10 @@ export class SeoService {
   }
 
   private clearJsonLd(): void {
-    this.document.head.querySelectorAll('script[type="application/ld+json"][data-managed-by="seo-service"]').forEach((script) => {
-      script.remove();
-    });
+    this.document.head
+      .querySelectorAll('script[type="application/ld+json"][data-managed-by="seo-service"]')
+      .forEach((script) => {
+        script.remove();
+      });
   }
 }

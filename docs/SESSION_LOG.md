@@ -657,3 +657,25 @@
   - Browser/E2E checks were not applicable because INT-002 changed backend scheduler/jobs/query behavior only.
 - Current blockers: None for INT-002. Herd PHP still prints the known OPcache API warning, but PHP commands exit successfully.
 - Recommended next task: QA-001 - Add CI and quality gates, unless another pending task is intentionally prioritized.
+
+## 2026-09-25 - QA-001
+
+- Tasks attempted: QA-001 - Add CI and quality gates.
+- Tasks completed: QA-001 - Add CI and quality gates.
+- Selection rationale:
+  - `INT-002` was completed, `QA-001` was the documented next recommended task, and its `FND-003` and `FND-004` dependencies were completed.
+  - Earlier remaining infrastructure items are deferred or require external services, and `QA-002` is the later review task after baseline quality gates.
+- Implemented:
+  - Added `.github/workflows/quality-gates.yml` with separate backend and frontend jobs.
+  - Added backend Composer scripts for `ci`, `format`, and `format:check`.
+  - Added frontend npm scripts for `ci`, `build:ci`, `test:ci`, `format`, and `format:check`.
+  - Added `frontend/.prettierignore` and formatted existing frontend source/test/config files with the repository Prettier configuration.
+  - Removed the generated Laravel `APP_KEY` from `backend/.env.example`; CI generates a temporary key during verification.
+  - Documented CI behavior, local dry-run commands, limitations, and the secret-free quality-gate decision.
+- Verification:
+  - Backend `composer run ci`: passed; full backend suite passed with 77 tests and 728 assertions, and Pint passed.
+  - Composer validation and audit: passed; Composer emitted PHP 8.5 deprecation notices from its bundled dependencies, and no security advisories were found.
+  - Frontend `npm run ci`: passed; Prettier check passed, Angular unit tests passed with 8 files and 20 tests, and Angular production SSR build completed.
+  - `npm audit`: initial sandboxed attempt failed on registry/cache access; approved rerun passed with 0 vulnerabilities.
+- Current blockers: None for QA-001. CI was not executed on GitHub from this local environment, but the same local backend/frontend gate scripts passed.
+- Recommended next task: QA-002 - Run accessibility, performance, security, and deployment review, unless deferred infrastructure tasks are intentionally prioritized first.

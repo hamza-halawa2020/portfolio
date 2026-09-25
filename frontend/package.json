@@ -5,8 +5,13 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:ci": "ng build",
+    "ci": "npm run format:check && npm run test:ci && npm run build:ci",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:ci": "ng test --watch=false",
     "test:e2e": "playwright test",
     "test:e2e:int001": "node tools/int001-e2e-runner.mjs",
     "serve:ssr:portfolio-frontend": "node dist/portfolio-frontend/server/server.mjs"

@@ -12,9 +12,10 @@ const repoRoot = resolve(frontendRoot, '..');
 const backendRoot = join(repoRoot, 'backend');
 const phpBin = process.env.HERD_PHP ?? 'C:\\Users\\hamza\\.config\\herd\\bin\\php85\\php.exe';
 const nodeBin = process.execPath;
-const npxCommand = process.platform === 'win32'
-  ? { command: process.env.ComSpec ?? 'cmd.exe', args: ['/d', '/c', 'npx.cmd'] }
-  : { command: 'npx', args: [] };
+const npxCommand =
+  process.platform === 'win32'
+    ? { command: process.env.ComSpec ?? 'cmd.exe', args: ['/d', '/c', 'npx.cmd'] }
+    : { command: 'npx', args: [] };
 const playwrightConfig = process.env.INT001_PLAYWRIGHT_CONFIG ?? 'playwright.int001.config.ts';
 const runId = `int001-${Date.now()}-${process.pid}`;
 const workDir = join(tmpdir(), runId);
@@ -64,14 +65,26 @@ try {
   console.log(`[int001] frontend: ${frontendOrigin}`);
   console.log(`[int001] api: ${apiOrigin}`);
 
-  await run(phpBin, ['artisan', 'migrate', '--force', '--no-interaction'], { cwd: backendRoot, env: e2eEnv, name: 'migrate' });
-  await run(phpBin, ['artisan', 'db:seed', '--class=E2EInteractionSeeder', '--force', '--no-interaction'], { cwd: backendRoot, env: e2eEnv, name: 'seed' });
-
-  const api = start(phpBin, ['artisan', 'serve', '--host=127.0.0.1', `--port=${apiPort}`, '--no-reload'], {
+  await run(phpBin, ['artisan', 'migrate', '--force', '--no-interaction'], {
     cwd: backendRoot,
     env: e2eEnv,
-    name: 'laravel',
+    name: 'migrate',
   });
+  await run(
+    phpBin,
+    ['artisan', 'db:seed', '--class=E2EInteractionSeeder', '--force', '--no-interaction'],
+    { cwd: backendRoot, env: e2eEnv, name: 'seed' },
+  );
+
+  const api = start(
+    phpBin,
+    ['artisan', 'serve', '--host=127.0.0.1', `--port=${apiPort}`, '--no-reload'],
+    {
+      cwd: backendRoot,
+      env: e2eEnv,
+      name: 'laravel',
+    },
+  );
   const frontend = start(nodeBin, ['dist/portfolio-frontend/server/server.mjs'], {
     cwd: frontendRoot,
     env: frontendEnv,
@@ -86,17 +99,23 @@ try {
     name: 'Laravel API',
     validate: (response) => response.statusCode === 200,
   });
-  console.log(`[int001] API CORS readiness headers: origin=${apiReadiness.headers['access-control-allow-origin'] ?? '<missing>'}, credentials=${apiReadiness.headers['access-control-allow-credentials'] ?? '<missing>'}`);
+  console.log(
+    `[int001] API CORS readiness headers: origin=${apiReadiness.headers['access-control-allow-origin'] ?? '<missing>'}, credentials=${apiReadiness.headers['access-control-allow-credentials'] ?? '<missing>'}`,
+  );
   await waitFor(`${frontendOrigin}/en`, {
     name: 'Angular SSR',
     validate: (response) => response.statusCode === 200,
   });
 
-  await run(npxCommand.command, [...npxCommand.args, 'playwright', 'test', `--config=${playwrightConfig}`], {
-    cwd: frontendRoot,
-    env: frontendEnv,
-    name: 'playwright-int001',
-  });
+  await run(
+    npxCommand.command,
+    [...npxCommand.args, 'playwright', 'test', `--config=${playwrightConfig}`],
+    {
+      cwd: frontendRoot,
+      env: frontendEnv,
+      name: 'playwright-int001',
+    },
+  );
 } catch (error) {
   console.error(`[int001] failed: ${error instanceof Error ? error.message : String(error)}`);
   console.error(`[int001] logs are in ${logsDir}`);
@@ -165,7 +184,10 @@ function pipeLogs(child, name) {
 
 function waitForExit(child, timeoutMs) {
   return new Promise((resolveExit, rejectExit) => {
-    const timeout = setTimeout(() => rejectExit(new Error('Timed out waiting for process exit')), timeoutMs);
+    const timeout = setTimeout(
+      () => rejectExit(new Error('Timed out waiting for process exit')),
+      timeoutMs,
+    );
     child.once('exit', () => {
       clearTimeout(timeout);
       resolveExit();
@@ -185,7 +207,9 @@ function waitFor(url, options) {
             return;
           }
 
-          retry(`unexpected status/header for ${options.name}: status=${response.statusCode}, headers=${JSON.stringify(response.headers)}`);
+          retry(
+            `unexpected status/header for ${options.name}: status=${response.statusCode}, headers=${JSON.stringify(response.headers)}`,
+          );
         })
         .catch((error) => retry(error.message));
     };

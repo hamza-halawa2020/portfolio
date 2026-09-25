@@ -42,40 +42,56 @@ export class PublicInteractionService {
     }
 
     this.recordedViews.add(key);
-    this.api.recordProjectView(locale, project.slug).pipe(
-      tap((response) => this.setViewCount(project.slug, response.data.count)),
-      catchError(() => EMPTY),
-    ).subscribe();
+    this.api
+      .recordProjectView(locale, project.slug)
+      .pipe(
+        tap((response) => this.setViewCount(project.slug, response.data.count)),
+        catchError(() => EMPTY),
+      )
+      .subscribe();
   }
 
   loadProjectLikeState(locale: AppLocale, project: ProjectDetail): void {
     if (!this.isBrowser()) {
-      this._projectLikeState.set({ count: project.like_count, liked: false, slug: project.slug, status: 'idle' });
+      this._projectLikeState.set({
+        count: project.like_count,
+        liked: false,
+        slug: project.slug,
+        status: 'idle',
+      });
       return;
     }
 
-    this._projectLikeState.set({ count: project.like_count, liked: false, slug: project.slug, status: 'loading' });
-    this.api.projectLikeState(locale, project.slug).pipe(
-      tap((response) => {
-        this._projectLikeState.set({
-          count: response.data.count,
-          liked: response.data.liked ?? false,
-          slug: project.slug,
-          status: 'ready',
-        });
-      }),
-      catchError((error) => {
-        this._projectLikeState.set({
-          count: project.like_count,
-          failure: this.toFailure(error),
-          liked: false,
-          slug: project.slug,
-          status: 'failure',
-        });
+    this._projectLikeState.set({
+      count: project.like_count,
+      liked: false,
+      slug: project.slug,
+      status: 'loading',
+    });
+    this.api
+      .projectLikeState(locale, project.slug)
+      .pipe(
+        tap((response) => {
+          this._projectLikeState.set({
+            count: response.data.count,
+            liked: response.data.liked ?? false,
+            slug: project.slug,
+            status: 'ready',
+          });
+        }),
+        catchError((error) => {
+          this._projectLikeState.set({
+            count: project.like_count,
+            failure: this.toFailure(error),
+            liked: false,
+            slug: project.slug,
+            status: 'failure',
+          });
 
-        return EMPTY;
-      }),
-    ).subscribe();
+          return EMPTY;
+        }),
+      )
+      .subscribe();
   }
 
   toggleProjectLike(locale: AppLocale, project: ProjectDetail): void {
@@ -93,29 +109,33 @@ export class PublicInteractionService {
       status: 'submitting',
     });
 
-    const request = liked ? this.api.unlikeProject(locale, project.slug) : this.api.likeProject(locale, project.slug);
-    request.pipe(
-      tap((response) => {
-        this._projectLikeState.set({
-          count: response.data.count,
-          liked: response.data.liked ?? !liked,
-          slug: project.slug,
-          status: 'ready',
-        });
-      }),
-      catchError((error) => {
-        this._projectLikeState.set({
-          count: current?.slug === project.slug ? current.count : project.like_count,
-          failure: this.toFailure(error),
-          liked,
-          slug: project.slug,
-          status: 'failure',
-        });
+    const request = liked
+      ? this.api.unlikeProject(locale, project.slug)
+      : this.api.likeProject(locale, project.slug);
+    request
+      .pipe(
+        tap((response) => {
+          this._projectLikeState.set({
+            count: response.data.count,
+            liked: response.data.liked ?? !liked,
+            slug: project.slug,
+            status: 'ready',
+          });
+        }),
+        catchError((error) => {
+          this._projectLikeState.set({
+            count: current?.slug === project.slug ? current.count : project.like_count,
+            failure: this.toFailure(error),
+            liked,
+            slug: project.slug,
+            status: 'failure',
+          });
 
-        return EMPTY;
-      }),
-      finalize(() => this.pendingLikes.delete(project.slug)),
-    ).subscribe();
+          return EMPTY;
+        }),
+        finalize(() => this.pendingLikes.delete(project.slug)),
+      )
+      .subscribe();
   }
 
   submitContact(payload: ContactSubmissionPayload): void {
@@ -124,14 +144,17 @@ export class PublicInteractionService {
     }
 
     this._contactSubmission.set({ status: 'submitting' });
-    this.api.submitContact(payload).pipe(
-      tap(() => this._contactSubmission.set({ status: 'success' })),
-      catchError((error) => {
-        this._contactSubmission.set(this.toSubmissionState(error));
+    this.api
+      .submitContact(payload)
+      .pipe(
+        tap(() => this._contactSubmission.set({ status: 'success' })),
+        catchError((error) => {
+          this._contactSubmission.set(this.toSubmissionState(error));
 
-        return EMPTY;
-      }),
-    ).subscribe();
+          return EMPTY;
+        }),
+      )
+      .subscribe();
   }
 
   submitTestimonial(payload: TestimonialSubmissionPayload): void {
@@ -140,14 +163,17 @@ export class PublicInteractionService {
     }
 
     this._testimonialSubmission.set({ status: 'submitting' });
-    this.api.submitTestimonial(payload).pipe(
-      tap(() => this._testimonialSubmission.set({ status: 'success' })),
-      catchError((error) => {
-        this._testimonialSubmission.set(this.toSubmissionState(error));
+    this.api
+      .submitTestimonial(payload)
+      .pipe(
+        tap(() => this._testimonialSubmission.set({ status: 'success' })),
+        catchError((error) => {
+          this._testimonialSubmission.set(this.toSubmissionState(error));
 
-        return EMPTY;
-      }),
-    ).subscribe();
+          return EMPTY;
+        }),
+      )
+      .subscribe();
   }
 
   resetContactSubmission(): void {
@@ -181,7 +207,10 @@ export class PublicInteractionService {
       if (error.status === 422) {
         return {
           errors: PublicInteractionApiService.validationErrors(error),
-          message: typeof error.error?.message === 'string' ? error.error.message : 'Please check the highlighted fields.',
+          message:
+            typeof error.error?.message === 'string'
+              ? error.error.message
+              : 'Please check the highlighted fields.',
           type: 'validation',
         };
       }

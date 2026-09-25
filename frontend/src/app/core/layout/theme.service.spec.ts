@@ -31,7 +31,9 @@ describe('ThemeService', () => {
     });
     document.documentElement.removeAttribute('data-bs-theme');
     document.documentElement.removeAttribute('data-theme-preference');
-    document.head.querySelectorAll('meta[name="theme-color"]').forEach((element) => element.remove());
+    document.head
+      .querySelectorAll('meta[name="theme-color"]')
+      .forEach((element) => element.remove());
     TestBed.resetTestingModule();
   });
 

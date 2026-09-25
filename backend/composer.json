@@ -32,6 +32,13 @@
         }
     },
     "scripts": {
+        "ci": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test",
+            "vendor/bin/pint --test"
+        ],
+        "format": "vendor/bin/pint",
+        "format:check": "vendor/bin/pint --test",
         "setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",

@@ -5,7 +5,7 @@
 - Current root: `D:\hamza\portfolio`
 - Existing foundation files: `AGENTS.md`, `README.md`, `.editorconfig`, `.gitignore`, `.nvmrc`, `project.md`, `docs/`, `.git/`.
 - Application state: Laravel backend initialized in `backend/`; Angular frontend initialized in `frontend/`.
-- Missing application code: CI files, notification delivery, and secure contact attachment storage. Frontend public write workflows/interactions are implemented and browser-verified for INT-001. Analytics aggregation and raw-event cleanup jobs are implemented for INT-002.
+- Missing application code: notification delivery and secure contact attachment storage. Frontend public write workflows/interactions are implemented and browser-verified for INT-001. Analytics aggregation and raw-event cleanup jobs are implemented for INT-002. CI quality gates are implemented for QA-001.
 - Decision: keep the requested monorepo layout with `frontend/`, `backend/`, and `docs/` non-destructively. Docker is not used because the selected local environment is Laravel Herd on Windows.
 
 ## Verified Local Tools
@@ -347,6 +347,13 @@ npm --version
 - Local development uses the database queue driver.
 - Production should use Redis or Valkey queue drivers once the deferred infrastructure task is complete.
 - Document worker and scheduler commands in deployment docs.
+
+## Quality Gate Strategy
+
+- QA-001 adds a GitHub Actions workflow at `.github/workflows/quality-gates.yml` with separate backend and frontend jobs.
+- Backend CI uses PHP 8.5, Composer validation/audit, dependency installation, a generated temporary Laravel app key, SQLite-backed PHPUnit tests, and Pint formatting checks. It does not require MySQL, Redis, SMTP, local Herd, or production secrets.
+- Frontend CI uses Node.js 24, `npm ci`, `npm audit`, Prettier formatting checks, Angular unit tests, and Angular production SSR build. It does not require API credentials or deployed services.
+- Local quality commands mirror CI through backend Composer scripts and frontend npm scripts.
 
 ## Deployment Topology
 

@@ -96,6 +96,7 @@ cd backend
 herd php artisan --version
 herd php artisan about
 herd php artisan test
+herd composer run ci
 vendor\bin\pint.bat --test
 ```
 
@@ -106,10 +107,19 @@ $nodeDir="$env:USERPROFILE\.config\herd\bin\nvm\v24.21.0"
 $env:PATH="$nodeDir;$env:PATH"
 cd frontend
 npm install
+npm run ci
 npm run build
 npm test -- --watch=false
 npm audit
 ```
+
+## CI Quality Gates
+
+QA-001 adds `.github/workflows/quality-gates.yml` for basic secret-free verification on push, pull request, and manual dispatch.
+
+- Backend job: PHP 8.5, Composer validate/install/audit, generated temporary `APP_KEY`, `composer run ci`, SQLite testing, and Pint check.
+- Frontend job: Node.js 24, `npm ci`, `npm audit`, `npm run ci`, Prettier check, Angular unit tests, and production SSR build.
+- CI does not require MySQL, Redis/Valkey, SMTP, S3, production `.env` files, local Herd, or committed credentials.
 
 Framework initialization command used for the backend:
 

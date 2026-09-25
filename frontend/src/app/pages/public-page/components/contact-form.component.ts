@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AppLocale } from '../../../core/i18n/locale.service';
-import { ContactSubmissionPayload, SubmissionState } from '../../../core/interactions/public-interaction.models';
+import {
+  ContactSubmissionPayload,
+  SubmissionState,
+} from '../../../core/interactions/public-interaction.models';
 
 @Component({
   imports: [ReactiveFormsModule],
@@ -9,18 +12,39 @@ import { ContactSubmissionPayload, SubmissionState } from '../../../core/interac
   standalone: true,
   template: `
     <form class="interaction-form" [formGroup]="form" (ngSubmit)="submit()">
-      <input class="visually-hidden" type="text" formControlName="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <input
+        class="visually-hidden"
+        type="text"
+        formControlName="website"
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+      />
 
       <label>
         <span>{{ locale === 'ar' ? 'الاسم' : 'Name' }}</span>
-        <input type="text" formControlName="name" autocomplete="name" [attr.aria-invalid]="fieldError('name') ? 'true' : null" />
-        @if (fieldError('name')) { <small>{{ fieldError('name') }}</small> }
+        <input
+          type="text"
+          formControlName="name"
+          autocomplete="name"
+          [attr.aria-invalid]="fieldError('name') ? 'true' : null"
+        />
+        @if (fieldError('name')) {
+          <small>{{ fieldError('name') }}</small>
+        }
       </label>
 
       <label>
         <span>{{ locale === 'ar' ? 'البريد الإلكتروني' : 'Email' }}</span>
-        <input type="email" formControlName="email" autocomplete="email" [attr.aria-invalid]="fieldError('email') ? 'true' : null" />
-        @if (fieldError('email')) { <small>{{ fieldError('email') }}</small> }
+        <input
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          [attr.aria-invalid]="fieldError('email') ? 'true' : null"
+        />
+        @if (fieldError('email')) {
+          <small>{{ fieldError('email') }}</small>
+        }
       </label>
 
       <label>
@@ -45,18 +69,38 @@ import { ContactSubmissionPayload, SubmissionState } from '../../../core/interac
 
       <label class="wide">
         <span>{{ locale === 'ar' ? 'الرسالة' : 'Message' }}</span>
-        <textarea rows="6" formControlName="message" [attr.aria-invalid]="fieldError('message') ? 'true' : null"></textarea>
-        @if (fieldError('message')) { <small>{{ fieldError('message') }}</small> }
+        <textarea
+          rows="6"
+          formControlName="message"
+          [attr.aria-invalid]="fieldError('message') ? 'true' : null"
+        ></textarea>
+        @if (fieldError('message')) {
+          <small>{{ fieldError('message') }}</small>
+        }
       </label>
 
       <label class="checkbox-label wide">
         <input type="checkbox" formControlName="privacy_consent" />
-        <span>{{ locale === 'ar' ? 'أوافق على استخدام بياناتي للرد على هذه الرسالة.' : 'I agree that my details may be used to respond to this message.' }}</span>
+        <span>{{
+          locale === 'ar'
+            ? 'أوافق على استخدام بياناتي للرد على هذه الرسالة.'
+            : 'I agree that my details may be used to respond to this message.'
+        }}</span>
       </label>
-      @if (fieldError('privacy_consent')) { <small class="wide">{{ fieldError('privacy_consent') }}</small> }
+      @if (fieldError('privacy_consent')) {
+        <small class="wide">{{ fieldError('privacy_consent') }}</small>
+      }
 
       <button class="button-link" type="submit" [disabled]="state.status === 'submitting'">
-        {{ state.status === 'submitting' ? (locale === 'ar' ? 'جار الإرسال' : 'Sending') : (locale === 'ar' ? 'إرسال الرسالة' : 'Send message') }}
+        {{
+          state.status === 'submitting'
+            ? locale === 'ar'
+              ? 'جار الإرسال'
+              : 'Sending'
+            : locale === 'ar'
+              ? 'إرسال الرسالة'
+              : 'Send message'
+        }}
       </button>
 
       @if (state.status !== 'idle') {

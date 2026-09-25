@@ -1,257 +1,324 @@
 @if (pageState$ | async; as state) {
-<article class="page">
-  <header class="page-hero">
-    <p class="eyebrow">{{ state.status === 'loading' ? copy().states.loading : state.pageKey }}</p>
-    <h1>{{ state.title }}</h1>
-    <p class="lede">{{ state.description }}</p>
-  </header>
+  <article class="page">
+    <header class="page-hero">
+      <p class="eyebrow">
+        {{ state.status === 'loading' ? copy().states.loading : state.pageKey }}
+      </p>
+      <h1>{{ state.title }}</h1>
+      <p class="lede">{{ state.description }}</p>
+    </header>
 
-  @if (state.status === 'loading') {
-  <section class="state-panel" aria-live="polite">
-    <p>{{ copy().states.loading }}</p>
-  </section>
-  } @else if (state.status === 'error') {
-  <section class="state-panel" aria-live="polite">
-    <h2>{{ copy().states.error }}</h2>
-    <p>{{ locale() === 'ar' ? 'تعذر تحميل المحتوى العام من الواجهة البرمجية.' : 'The public API content could not be
-      loaded.' }}</p>
-    <a class="button-link" [routerLink]="['/', locale()]">{{ copy().backHome }}</a>
-  </section>
-  } @else if (state.status === 'empty') {
-  <section class="state-panel" aria-live="polite">
-    <h2>{{ copy().states.empty }}</h2>
-    <p>{{ locale() === 'ar' ? 'لا توجد عناصر منشورة لهذا القسم بعد.' : 'No published items are available for this
-      section yet.' }}</p>
-  </section>
-  } @else {
-  @switch (state.pageKey) {
-  @case ('home') {
-  @let home = asHome(state);
-  <section class="section-grid">
-    <div>
-      <h2>{{ locale() === 'ar' ? 'ملخص مهني' : 'Professional Summary' }}</h2>
-      <p>{{ locale() === 'ar' ? 'واجهة عامة سريعة تعرض محتوى الملف الشخصي المنشور من لوحة التحكم.' : 'A fast public
-        portfolio rendering dashboard-managed content through the Laravel API.' }}</p>
-    </div>
-    <div class="cta-row">
-      <a class="button-link" [routerLink]="projectsUrl()">{{ copy().navigation.projects }}</a>
-      <a class="button-link secondary" [routerLink]="contactUrl()">{{ copy().navigation.contact }}</a>
-    </div>
-  </section>
+    @if (state.status === 'loading') {
+      <section class="state-panel" aria-live="polite">
+        <p>{{ copy().states.loading }}</p>
+      </section>
+    } @else if (state.status === 'error') {
+      <section class="state-panel" aria-live="polite">
+        <h2>{{ copy().states.error }}</h2>
+        <p>
+          {{
+            locale() === 'ar'
+              ? 'تعذر تحميل المحتوى العام من الواجهة البرمجية.'
+              : 'The public API content could not be
+      loaded.'
+          }}
+        </p>
+        <a class="button-link" [routerLink]="['/', locale()]">{{ copy().backHome }}</a>
+      </section>
+    } @else if (state.status === 'empty') {
+      <section class="state-panel" aria-live="polite">
+        <h2>{{ copy().states.empty }}</h2>
+        <p>
+          {{
+            locale() === 'ar'
+              ? 'لا توجد عناصر منشورة لهذا القسم بعد.'
+              : 'No published items are available for this
+      section yet.'
+          }}
+        </p>
+      </section>
+    } @else {
+      @switch (state.pageKey) {
+        @case ('home') {
+          @let home = asHome(state);
+          <section class="section-grid">
+            <div>
+              <h2>{{ locale() === 'ar' ? 'ملخص مهني' : 'Professional Summary' }}</h2>
+              <p>
+                {{
+                  locale() === 'ar'
+                    ? 'واجهة عامة سريعة تعرض محتوى الملف الشخصي المنشور من لوحة التحكم.'
+                    : 'A fast public
+        portfolio rendering dashboard-managed content through the Laravel API.'
+                }}
+              </p>
+            </div>
+            <div class="cta-row">
+              <a class="button-link" [routerLink]="projectsUrl()">{{
+                copy().navigation.projects
+              }}</a>
+              <a class="button-link secondary" [routerLink]="contactUrl()">{{
+                copy().navigation.contact
+              }}</a>
+            </div>
+          </section>
 
-  <section>
-    <div class="section-heading">
-      <h2>{{ copy().navigation.projects }}</h2>
-      <a [routerLink]="projectsUrl()">{{ locale() === 'ar' ? 'عرض الكل' : 'View all' }}</a>
-    </div>
-    <div class="card-grid">
-      @for (project of home.projects; track trackProject($index, project)) {
-      <a class="content-card" [routerLink]="projectUrl(project)">
-        @if (hasImage(project.cover_image_url)) {
-        <img [src]="project.cover_image_url" [alt]="project.title" width="640" height="360" />
+          <section>
+            <div class="section-heading">
+              <h2>{{ copy().navigation.projects }}</h2>
+              <a [routerLink]="projectsUrl()">{{ locale() === 'ar' ? 'عرض الكل' : 'View all' }}</a>
+            </div>
+            <div class="card-grid">
+              @for (project of home.projects; track trackProject($index, project)) {
+                <a class="content-card" [routerLink]="projectUrl(project)">
+                  @if (hasImage(project.cover_image_url)) {
+                    <img
+                      [src]="project.cover_image_url"
+                      [alt]="project.title"
+                      width="640"
+                      height="360"
+                    />
+                  }
+                  <span class="meta">{{ project.category?.name }}</span>
+                  <h3>{{ project.title }}</h3>
+                  <p>{{ project.summary }}</p>
+                </a>
+              }
+            </div>
+          </section>
+
+          <section>
+            <div class="section-heading">
+              <h2>{{ copy().navigation.services }}</h2>
+              <a [routerLink]="servicesUrl()">{{
+                locale() === 'ar' ? 'عرض الخدمات' : 'View services'
+              }}</a>
+            </div>
+            <div class="card-grid compact">
+              @for (service of home.services; track trackService($index, service)) {
+                <article class="content-card">
+                  <h3>{{ service.title }}</h3>
+                  <p>{{ service.description }}</p>
+                </article>
+              }
+            </div>
+          </section>
+
+          <section class="section-grid">
+            <div>
+              <h2>{{ locale() === 'ar' ? 'المهارات' : 'Skills' }}</h2>
+              <div class="badge-list">
+                @for (skill of home.about.skills.slice(0, 12); track trackSkill($index, skill)) {
+                  <span>{{ skill.name }}</span>
+                }
+              </div>
+            </div>
+            <div>
+              <h2>{{ locale() === 'ar' ? 'آخر المقالات' : 'Latest Posts' }}</h2>
+              <div class="stack-list">
+                @for (post of home.posts; track trackPost($index, post)) {
+                  <a [routerLink]="postUrl(post)">{{ post.title }}</a>
+                }
+              </div>
+            </div>
+          </section>
         }
-        <span class="meta">{{ project.category?.name }}</span>
-        <h3>{{ project.title }}</h3>
-        <p>{{ project.summary }}</p>
-      </a>
-      }
-    </div>
-  </section>
 
-  <section>
-    <div class="section-heading">
-      <h2>{{ copy().navigation.services }}</h2>
-      <a [routerLink]="servicesUrl()">{{ locale() === 'ar' ? 'عرض الخدمات' : 'View services' }}</a>
-    </div>
-    <div class="card-grid compact">
-      @for (service of home.services; track trackService($index, service)) {
-      <article class="content-card">
-        <h3>{{ service.title }}</h3>
-        <p>{{ service.description }}</p>
-      </article>
-      }
-    </div>
-  </section>
-
-  <section class="section-grid">
-    <div>
-      <h2>{{ locale() === 'ar' ? 'المهارات' : 'Skills' }}</h2>
-      <div class="badge-list">
-        @for (skill of home.about.skills.slice(0, 12); track trackSkill($index, skill)) {
-        <span>{{ skill.name }}</span>
+        @case ('projects') {
+          @let projects = asProjects(state).projects;
+          <div class="card-grid">
+            @for (project of projects.data; track trackProject($index, project)) {
+              <a class="content-card" [routerLink]="projectUrl(project)">
+                @if (hasImage(project.cover_image_url)) {
+                  <img
+                    [src]="project.cover_image_url"
+                    [alt]="project.title"
+                    width="640"
+                    height="360"
+                    loading="lazy"
+                  />
+                }
+                <span class="meta">{{ project.category?.name }}</span>
+                <h2>{{ project.title }}</h2>
+                <p>{{ project.summary }}</p>
+                <div class="badge-list">
+                  @for (technology of project.technologies; track technology.slug) {
+                    <span>{{ technology.name }}</span>
+                  }
+                </div>
+              </a>
+            }
+          </div>
         }
-      </div>
-    </div>
-    <div>
-      <h2>{{ locale() === 'ar' ? 'آخر المقالات' : 'Latest Posts' }}</h2>
-      <div class="stack-list">
-        @for (post of home.posts; track trackPost($index, post)) {
-        <a [routerLink]="postUrl(post)">{{ post.title }}</a>
+
+        @case ('projectDetail') {
+          @let project = asProjectDetail(state).project;
+          <section class="detail-layout">
+            @if (hasImage(project.cover_image_url)) {
+              <img
+                class="detail-cover"
+                [src]="project.cover_image_url"
+                [alt]="project.title"
+                width="960"
+                height="540"
+              />
+            }
+            <div class="detail-meta">
+              <span>{{ project.category?.name }}</span>
+              <span>{{ project.role }}</span>
+              <span>{{ project.duration }}</span>
+            </div>
+            <p>{{ project.body }}</p>
+            <app-project-interactions
+              [project]="project"
+              [locale]="locale()"
+              [likeState]="projectLikeState()"
+              [viewCount]="projectViewCounts()[project.slug]"
+              (likeToggle)="toggleProjectLike(project)"
+            />
+            <h2>{{ locale() === 'ar' ? 'التحدي' : 'Challenge' }}</h2>
+            <p>{{ project.challenge }}</p>
+            <h2>{{ locale() === 'ar' ? 'الحل' : 'Solution' }}</h2>
+            <p>{{ project.solution }}</p>
+            <h2>{{ locale() === 'ar' ? 'النتائج' : 'Results' }}</h2>
+            <p>{{ project.results }}</p>
+            <section class="interaction-section">
+              <h2>{{ locale() === 'ar' ? 'إرسال شهادة' : 'Submit a testimonial' }}</h2>
+              <app-testimonial-form
+                [locale]="locale()"
+                [projectSlug]="project.slug"
+                [state]="testimonialSubmission()"
+                (submitted)="submitTestimonial($event)"
+              />
+            </section>
+          </section>
         }
-      </div>
-    </div>
-  </section>
-  }
 
-  @case ('projects') {
-  @let projects = asProjects(state).projects;
-  <div class="card-grid">
-    @for (project of projects.data; track trackProject($index, project)) {
-    <a class="content-card" [routerLink]="projectUrl(project)">
-      @if (hasImage(project.cover_image_url)) {
-      <img [src]="project.cover_image_url" [alt]="project.title" width="640" height="360" loading="lazy" />
-      }
-      <span class="meta">{{ project.category?.name }}</span>
-      <h2>{{ project.title }}</h2>
-      <p>{{ project.summary }}</p>
-      <div class="badge-list">
-        @for (technology of project.technologies; track technology.slug) {
-        <span>{{ technology.name }}</span>
+        @case ('about') {
+          @let about = asAbout(state);
+          <section>
+            <h2>{{ locale() === 'ar' ? 'الخبرة' : 'Experience' }}</h2>
+            <div class="timeline">
+              @for (item of about.experience; track item.title + item.company) {
+                <article>
+                  <h3>{{ item.title }}</h3>
+                  <p class="meta">{{ item.company }} · {{ item.location }}</p>
+                  <p>{{ item.description }}</p>
+                </article>
+              }
+            </div>
+          </section>
+          <section>
+            <h2>{{ locale() === 'ar' ? 'المهارات والتقنيات' : 'Skills and Technologies' }}</h2>
+            <div class="badge-list">
+              @for (skill of about.skills; track trackSkill($index, skill)) {
+                <span>{{ skill.name }}</span>
+              }
+              @for (technology of about.technologies; track technology.slug) {
+                <span>{{ technology.name }}</span>
+              }
+            </div>
+          </section>
         }
-      </div>
-    </a>
-    }
-  </div>
-  }
 
-  @case ('projectDetail') {
-  @let project = asProjectDetail(state).project;
-  <section class="detail-layout">
-    @if (hasImage(project.cover_image_url)) {
-    <img class="detail-cover" [src]="project.cover_image_url" [alt]="project.title" width="960" height="540" />
-    }
-    <div class="detail-meta">
-      <span>{{ project.category?.name }}</span>
-      <span>{{ project.role }}</span>
-      <span>{{ project.duration }}</span>
-    </div>
-    <p>{{ project.body }}</p>
-    <app-project-interactions
-      [project]="project"
-      [locale]="locale()"
-      [likeState]="projectLikeState()"
-      [viewCount]="projectViewCounts()[project.slug]"
-      (likeToggle)="toggleProjectLike(project)"
-    />
-    <h2>{{ locale() === 'ar' ? 'التحدي' : 'Challenge' }}</h2>
-    <p>{{ project.challenge }}</p>
-    <h2>{{ locale() === 'ar' ? 'الحل' : 'Solution' }}</h2>
-    <p>{{ project.solution }}</p>
-    <h2>{{ locale() === 'ar' ? 'النتائج' : 'Results' }}</h2>
-    <p>{{ project.results }}</p>
-    <section class="interaction-section">
-      <h2>{{ locale() === 'ar' ? 'إرسال شهادة' : 'Submit a testimonial' }}</h2>
-      <app-testimonial-form
-        [locale]="locale()"
-        [projectSlug]="project.slug"
-        [state]="testimonialSubmission()"
-        (submitted)="submitTestimonial($event)"
-      />
-    </section>
-  </section>
-  }
+        @case ('services') {
+          <div class="card-grid compact">
+            @for (service of asServices(state).services.data; track trackService($index, service)) {
+              <article class="content-card">
+                <h2>{{ service.title }}</h2>
+                <p>{{ service.description }}</p>
+                <a [routerLink]="contactUrl()">{{ copy().navigation.contact }}</a>
+              </article>
+            }
+          </div>
+        }
 
-  @case ('about') {
-  @let about = asAbout(state);
-  <section>
-    <h2>{{ locale() === 'ar' ? 'الخبرة' : 'Experience' }}</h2>
-    <div class="timeline">
-      @for (item of about.experience; track item.title + item.company) {
-      <article>
-        <h3>{{ item.title }}</h3>
-        <p class="meta">{{ item.company }} · {{ item.location }}</p>
-        <p>{{ item.description }}</p>
-      </article>
+        @case ('blog') {
+          <div class="card-grid">
+            @for (post of asBlog(state).posts.data; track trackPost($index, post)) {
+              <a class="content-card" [routerLink]="postUrl(post)">
+                @if (hasImage(post.cover_image_url)) {
+                  <img
+                    [src]="post.cover_image_url"
+                    [alt]="post.title"
+                    width="640"
+                    height="360"
+                    loading="lazy"
+                  />
+                }
+                <span class="meta"
+                  >{{ post.category?.name }} · {{ post.published_at | date: 'mediumDate' }}</span
+                >
+                <h2>{{ post.title }}</h2>
+                <p>{{ post.excerpt }}</p>
+              </a>
+            }
+          </div>
+        }
+
+        @case ('blogDetail') {
+          @let post = asBlogDetail(state).post;
+          <section class="detail-layout">
+            @if (hasImage(post.cover_image_url)) {
+              <img
+                class="detail-cover"
+                [src]="post.cover_image_url"
+                [alt]="post.title"
+                width="960"
+                height="540"
+              />
+            }
+            <p class="meta">
+              {{ post.category?.name }} · {{ post.published_at | date: 'mediumDate' }}
+            </p>
+            <p>{{ post.body }}</p>
+          </section>
+        }
+
+        @case ('contact') {
+          @let contact = asContact(state);
+          <section class="section-grid">
+            <div class="stack-list">
+              @for (paragraph of contact.body; track paragraph) {
+                <p>{{ paragraph }}</p>
+              }
+              @if (whatsappUrl(contact); as url) {
+                <a class="button-link" [href]="url" target="_blank" rel="noopener noreferrer">
+                  {{ locale() === 'ar' ? 'التواصل عبر واتساب' : 'Contact on WhatsApp' }}
+                </a>
+              }
+            </div>
+            <app-contact-form
+              [locale]="locale()"
+              [state]="contactSubmission()"
+              (submitted)="submitContact($event)"
+            />
+          </section>
+          <section class="interaction-section">
+            <h2>{{ locale() === 'ar' ? 'إرسال شهادة' : 'Submit a testimonial' }}</h2>
+            <app-testimonial-form
+              [locale]="locale()"
+              [state]="testimonialSubmission()"
+              (submitted)="submitTestimonial($event)"
+            />
+          </section>
+        }
+
+        @case ('privacy') {
+          <section class="section-grid">
+            @for (paragraph of asStatic(state).body; track paragraph) {
+              <p>{{ paragraph }}</p>
+            }
+          </section>
+        }
+
+        @case ('notFound') {
+          <section class="state-panel">
+            <p>{{ copy().notFoundDescription }}</p>
+            <a class="button-link" [routerLink]="['/', locale()]">{{ copy().backHome }}</a>
+          </section>
+        }
       }
-    </div>
-  </section>
-  <section>
-    <h2>{{ locale() === 'ar' ? 'المهارات والتقنيات' : 'Skills and Technologies' }}</h2>
-    <div class="badge-list">
-      @for (skill of about.skills; track trackSkill($index, skill)) {
-      <span>{{ skill.name }}</span>
-      }
-      @for (technology of about.technologies; track technology.slug) {
-      <span>{{ technology.name }}</span>
-      }
-    </div>
-  </section>
-  }
-
-  @case ('services') {
-  <div class="card-grid compact">
-    @for (service of asServices(state).services.data; track trackService($index, service)) {
-    <article class="content-card">
-      <h2>{{ service.title }}</h2>
-      <p>{{ service.description }}</p>
-      <a [routerLink]="contactUrl()">{{ copy().navigation.contact }}</a>
-    </article>
     }
-  </div>
-  }
-
-  @case ('blog') {
-  <div class="card-grid">
-    @for (post of asBlog(state).posts.data; track trackPost($index, post)) {
-    <a class="content-card" [routerLink]="postUrl(post)">
-      @if (hasImage(post.cover_image_url)) {
-      <img [src]="post.cover_image_url" [alt]="post.title" width="640" height="360" loading="lazy" />
-      }
-      <span class="meta">{{ post.category?.name }} · {{ post.published_at | date: 'mediumDate' }}</span>
-      <h2>{{ post.title }}</h2>
-      <p>{{ post.excerpt }}</p>
-    </a>
-    }
-  </div>
-  }
-
-  @case ('blogDetail') {
-  @let post = asBlogDetail(state).post;
-  <section class="detail-layout">
-    @if (hasImage(post.cover_image_url)) {
-    <img class="detail-cover" [src]="post.cover_image_url" [alt]="post.title" width="960" height="540" />
-    }
-    <p class="meta">{{ post.category?.name }} · {{ post.published_at | date: 'mediumDate' }}</p>
-    <p>{{ post.body }}</p>
-  </section>
-  }
-
-  @case ('contact') {
-  @let contact = asContact(state);
-  <section class="section-grid">
-    <div class="stack-list">
-      @for (paragraph of contact.body; track paragraph) {
-      <p>{{ paragraph }}</p>
-      }
-      @if (whatsappUrl(contact); as url) {
-      <a class="button-link" [href]="url" target="_blank" rel="noopener noreferrer">
-        {{ locale() === 'ar' ? 'التواصل عبر واتساب' : 'Contact on WhatsApp' }}
-      </a>
-      }
-    </div>
-    <app-contact-form [locale]="locale()" [state]="contactSubmission()" (submitted)="submitContact($event)" />
-  </section>
-  <section class="interaction-section">
-    <h2>{{ locale() === 'ar' ? 'إرسال شهادة' : 'Submit a testimonial' }}</h2>
-    <app-testimonial-form [locale]="locale()" [state]="testimonialSubmission()" (submitted)="submitTestimonial($event)" />
-  </section>
-  }
-
-  @case ('privacy') {
-  <section class="section-grid">
-    @for (paragraph of asStatic(state).body; track paragraph) {
-    <p>{{ paragraph }}</p>
-    }
-  </section>
-  }
-
-  @case ('notFound') {
-  <section class="state-panel">
-    <p>{{ copy().notFoundDescription }}</p>
-    <a class="button-link" [routerLink]="['/', locale()]">{{ copy().backHome }}</a>
-  </section>
-  }
-  }
-  }
-</article>
+  </article>
 }
